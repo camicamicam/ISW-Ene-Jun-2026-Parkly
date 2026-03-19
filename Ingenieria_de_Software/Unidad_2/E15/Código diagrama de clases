@@ -1,0 +1,129 @@
+@startuml
+top to bottom direction
+
+'======================
+' CLASES (ENTIDADES)
+'======================
+
+abstract class Usuario{
+-numeroEmpleado:String
+-nombre:String
+-correo:String
++consultarDatos()
+}
+
+class Docente{
+-idPlaza:int
++consultarCursos()
++inscribirseCurso()
+}
+
+class Administrativo{
+-idDepartamento:int
++consultarCursos()
++inscribirseCurso()
+}
+
+class Instructor{
+-passwordAcceso:String
++iniciarSesion()
++registrarHoras(numeroEmpleado, idCurso, horas)
++registrarCurso()
+}
+
+Usuario <|-- Docente
+Usuario <|-- Administrativo
+Usuario <|-- Instructor
+
+
+class Curso{
+-idCurso:int
+-nombre:String
+-descripcion:String
+-duracion:String
+-totalHoras:int
+-cupoMaximo:int
+
++validarHoras()
++consultarDisponibilidad()
+}
+
+
+class Inscripcion{
+-idInscripcion:int
+-fechaInscripcion:Date
+-estado:String
+-horasCompletadas:int
+
++registrarInscripcion()
++actualizarHoras()
++verificarCupo()
+}
+
+
+class Constancia{
+-folio:int
+-fechaGeneracion:Date
+-tipoFormato:String
+-urlDescarga:String
+
++generarConstancia()
++validarFinalizacion()
+}
+
+
+class Departamento{
+-idDepartamento:int
+-nombre:nombreDepartamento
+}
+
+
+class TipoPlaza{
+-idPlaza:int
+-nombre:nombrePlaza
+}
+
+class AdministradorDDA{
+-nivelAcceso: String
++inhabilitarCuentas()
++eliminarCursos()
++agregarDepartamento()
++editarDepartamento()
++agregarTipoPlaza()
++editarTipoPlaza()
+}
+
+enum nombrePlaza{
+TC
+3/4
+1/2
+asignatura
+honorarios
+}
+
+enum nombreDepartamento{
+Ciencias Básicas
+​Ingeniería Eléctrica Electrónica
+​Ciencias de la Tierra
+​Ciencias Económico Administrativas
+​Sistemas y Computación
+​Ingeniería Industrial
+​Metal Mecánica
+}
+'======================
+' RELACIONES
+'======================
+
+Usuario "1" -- "0..*" Inscripcion : genera
+Curso "1" -- "0..*" Inscripcion : contiene
+
+Inscripcion "1" *-- "1" Constancia : contiene
+
+Departamento "1" -- "0..*" Administrativo : pertenece
+TipoPlaza "1" -- "0..*" Docente : tiene
+
+Usuario <|-- AdministradorDDA
+
+TipoPlaza "1" -- "1" nombrePlaza: tiene
+Departamento "1" -- "1" nombreDepartamento: tiene
+@enduml

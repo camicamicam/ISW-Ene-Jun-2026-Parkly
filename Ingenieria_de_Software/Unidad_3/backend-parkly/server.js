@@ -22,7 +22,7 @@ app.get('/ping', (req, res) => {
 app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'OK',
-        mensaje: 'El servidor de parkly esta en línea y funcionando',
+        mensaje: 'El servidor de docly esta en línea y funcionando',
         timestamp: new Date()
     });
 });
@@ -30,7 +30,7 @@ app.get('/health', (req, res) => {
 // ==========================================
 // Iniciar el servidor
 // ==========================================
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
     console.log(`Prueba el ping en: http://localhost:${PORT}/ping`);

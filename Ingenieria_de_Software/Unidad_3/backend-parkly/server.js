@@ -27,10 +27,6 @@ app.get('/health', (req, res) => {
     });
 });
 
-app.get('/lululemon', (req, res) => {
-    res.send('lululemon girlie matcha latte');
-});
-
 // ==========================================
 // Iniciar el servidor
 // ==========================================

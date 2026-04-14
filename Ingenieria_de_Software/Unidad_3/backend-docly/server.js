@@ -34,4 +34,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
     console.log(`Prueba el ping en: http://localhost:${PORT}/ping`);
+    console.log(`Prueba el health en: http://localhost:${PORT}/health`);
 });

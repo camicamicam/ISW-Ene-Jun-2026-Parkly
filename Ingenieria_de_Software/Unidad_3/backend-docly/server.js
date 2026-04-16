@@ -51,13 +51,13 @@ app.post('/api/auth/login', async (req, res) => {
         // 4. Escribimos la consulta usando Bind Variables (:numero y :pass)
         const query = `
             SELECT * FROM instructor 
-            WHERE numero_empleado = :numero 
+            WHERE id_usuario = :numero 
             AND password_acceso = :pass
         `;
 
         // 5. Ejecutamos la consulta pasándole los valores exactos
         const result = await connection.execute(query, {
-            numero: numero_empleado,
+            numero: id_usuario,
             pass: password_acceso
         });
 
@@ -68,7 +68,7 @@ app.post('/api/auth/login', async (req, res) => {
                 status: 'Éxito',
                 mensaje: 'Login correcto en la nube. Bienvenido al TecNM.',
                 // OJO: Oracle suele devolver las columnas en MAYÚSCULAS
-                usuario: result.rows[0].NUMERO_EMPLEADO, 
+                usuario: result.rows[0].ID_USUARIO, 
                 token: 'token_de_prueba_jwt_12345'
             });
         } else {

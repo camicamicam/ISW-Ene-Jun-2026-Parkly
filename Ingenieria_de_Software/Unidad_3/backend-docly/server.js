@@ -31,6 +31,34 @@ app.get('/health', (req, res) => {
 // ==========================================
 // RUTA DE LOGIN (POST) - VERSIÓN ORACLE CLOUD
 // ==========================================
+app.post('/api/auth/login', async (req, res) => {
+    const { id_usuario, password_acceso } = req.body;
+
+    if (!id_usuario || !password_acceso) {
+        return res.status(400).json({ mensaje: 'Por favor ingresa ID y contraseña' });
+    }
+
+    try {
+        // Le pasamos los datos al Modelo
+        const rows = await verificarCredenciales(id_usuario, password_acceso);
+
+        // Si la base de datos nos regresó al menos un registro...
+        if (rows && rows.length > 0) {
+            res.status(200).json({
+                status: 'Éxito',
+                mensaje: 'Login correcto.',
+                usuario: rows[0].ID_USUARIO, 
+                token: 'token_de_prueba_jwt_12345'
+            });
+        } else {
+            res.status(401).json({ mensaje: 'Credenciales incorrectas. Intenta de nuevo.' });
+        }
+
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+});
 /*app.post('/api/auth/login', async (req, res) => {
     // 1. Extraemos los datos
     const { id_usuario, password_acceso } = req.body;
@@ -57,7 +85,7 @@ app.get('/health', (req, res) => {
         });
     }
 });*/
-app.post('/api/auth/login', async (req, res) => {
+/*app.post('/api/auth/login', async (req, res) => {
     // 1. Extraemos los datos del body
     const { id_usuario, password_acceso } = req.body;
 
@@ -117,7 +145,7 @@ app.post('/api/auth/login', async (req, res) => {
             }
         }
     }
-});
+});*/
 
 // ==========================================
 // Iniciar el servidor                      |
@@ -127,4 +155,5 @@ app.listen(PORT, () => {
     console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
     console.log(`Prueba el ping en: http://localhost:${PORT}/ping`);
     console.log(`Prueba el health en: http://localhost:${PORT}/health`);
+    console.log(`Endpoint de login: http://localhost:${PORT}/api/auth/login`);
 });

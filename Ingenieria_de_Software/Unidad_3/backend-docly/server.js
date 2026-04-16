@@ -33,12 +33,12 @@ app.get('/health', (req, res) => {
 // ==========================================
 app.post('/api/auth/login', async (req, res) => {
     // 1. Extraemos los datos del body
-    const { numero_empleado, password_acceso } = req.body;
+    const { id_usuario, password_acceso } = req.body;
 
     // 2. Validamos que no vengan vacíos
-    if (!numero_empleado || !password_acceso) {
+    if (!id_usuario || !password_acceso) {
         return res.status(400).json({ 
-            mensaje: 'Por favor ingresa número de empleado y contraseña' 
+            mensaje: 'Por favor ingresa ID de usuario y contraseña' 
         });
     }
 

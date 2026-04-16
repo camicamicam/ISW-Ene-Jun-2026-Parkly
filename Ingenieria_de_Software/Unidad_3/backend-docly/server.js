@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 
+const { verificarCredenciales } = require('./models/instructorModel');
+
 // 2. Inicializar la aplicación
 const app = express();
 

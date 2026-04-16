@@ -3,7 +3,7 @@ Dialecto: Oracle 11g
 
 Driver: oracle.jdbc.driver.OracleDriver
 
-URL: jdbc:oracle:thin:@192.168.100.248:1521:xe
+URL: jdbc:oracle:thin:@172.20.178:1521:xe
 
 Usuario: backenduser
 

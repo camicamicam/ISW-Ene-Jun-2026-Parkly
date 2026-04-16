@@ -31,10 +31,7 @@ app.get('/health', (req, res) => {
 // ==========================================
 // RUTA DE LOGIN (POST) - VERSIÓN ORACLE CLOUD
 // ==========================================
-// ==========================================
-// RUTA DE LOGIN (POST) - MODO EMERGENCIA (MOCKUP)
-// ==========================================
-app.post('/api/auth/login', async (req, res) => {
+/*app.post('/api/auth/login', async (req, res) => {
     // 1. Extraemos los datos
     const { id_usuario, password_acceso } = req.body;
 
@@ -59,8 +56,8 @@ app.post('/api/auth/login', async (req, res) => {
             mensaje: 'Credenciales incorrectas. Intenta de nuevo.' 
         });
     }
-});
-/*app.post('/api/auth/login', async (req, res) => {
+});*/
+app.post('/api/auth/login', async (req, res) => {
     // 1. Extraemos los datos del body
     const { id_usuario, password_acceso } = req.body;
 
@@ -120,7 +117,7 @@ app.post('/api/auth/login', async (req, res) => {
             }
         }
     }
-});*/
+});
 
 // ==========================================
 // Iniciar el servidor                      |

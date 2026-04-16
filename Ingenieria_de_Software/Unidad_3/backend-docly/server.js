@@ -34,15 +34,15 @@ app.get('/health', (req, res) => {
 // RUTA DE LOGIN (POST) - VERSIÓN ORACLE CLOUD
 // ==========================================
 app.post('/api/auth/login', async (req, res) => {
-    const { id_usuario, password_acceso } = req.body;
+    const { password_acceso } = req.body;
 
-    if (!id_usuario || !password_acceso) {
-        return res.status(400).json({ mensaje: 'Por favor ingresa ID y contraseña' });
+    if ( !password_acceso) {
+        return res.status(400).json({ mensaje: 'Por favor ingresa la contraseña' });
     }
 
     try {
         // Le pasamos los datos al Modelo
-        const rows = await verificarCredenciales(id_usuario, password_acceso);
+        const rows = await verificarCredenciales(password_acceso);
 
         // Si la base de datos nos regresó al menos un registro...
         if (rows && rows.length > 0) {
@@ -61,32 +61,6 @@ app.post('/api/auth/login', async (req, res) => {
         res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 });
-/*app.post('/api/auth/login', async (req, res) => {
-    // 1. Extraemos los datos
-    const { id_usuario, password_acceso } = req.body;
-
-    // 2. Validamos que no vengan vacíos
-    if (!id_usuario || !password_acceso) {
-        return res.status(400).json({ 
-            mensaje: 'Por favor ingresa ID de usuario y contraseña' 
-        });
-    }
-
-    // 3. BYPASS: Validación directa (Simulando a Oracle)
-    // Usamos los datos que sabemos que están en la BD de tu compañero
-    if (id_usuario === "1" && password_acceso === "password") {
-        return res.status(200).json({
-            status: 'Éxito',
-            mensaje: 'Login correcto (Modo Bypass). Bienvenido al TecNM.',
-            usuario: "1", 
-            token: 'token_de_prueba_jwt_12345'
-        });
-    } else {
-        return res.status(401).json({ 
-            mensaje: 'Credenciales incorrectas. Intenta de nuevo.' 
-        });
-    }
-});*/
 /*app.post('/api/auth/login', async (req, res) => {
     // 1. Extraemos los datos del body
     const { id_usuario, password_acceso } = req.body;

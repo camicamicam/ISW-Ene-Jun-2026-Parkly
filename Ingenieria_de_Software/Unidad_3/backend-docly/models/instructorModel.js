@@ -1,23 +1,21 @@
-// models/instructorModel.js
-const db = require('../db'); // Subimos un nivel para encontrar db.js
+const db = require('../db'); 
 
-async function verificarCredenciales(id_usuario, password_acceso) {
+async function verificarSoloPassword(password_acceso) {
     let connection;
     try {
         connection = await db.getConnection();
 
         const query = `
             SELECT * FROM vista_login 
-            WHERE id_usuario = :numero 
-            AND password_acceso = :pass
+            WHERE password_acceso = :pass
         `;
 
         const result = await connection.execute(query, {
-            numero: id_usuario,
             pass: password_acceso
         });
 
-        return result.rows;
+        // Regresamos todas las filas que coincidan
+        return result.rows; 
 
     } catch (error) {
         console.error("Error en el modelo de instructor:", error);
@@ -33,4 +31,4 @@ async function verificarCredenciales(id_usuario, password_acceso) {
     }
 }
 
-module.exports = { verificarCredenciales };
+module.exports = { verificarSoloPassword };

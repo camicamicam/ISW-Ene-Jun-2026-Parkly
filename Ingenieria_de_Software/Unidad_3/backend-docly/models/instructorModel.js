@@ -1,6 +1,6 @@
 const db = require('../db'); 
 
-async function verificarSoloPassword(password_acceso) {
+async function verificarCredenciales(password_acceso) {
     let connection;
     try {
         connection = await db.getConnection();
@@ -31,4 +31,4 @@ async function verificarSoloPassword(password_acceso) {
     }
 }
 
-module.exports = { verificarSoloPassword };
+module.exports = { verificarCredenciales };

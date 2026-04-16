@@ -1,6 +1,7 @@
 // 1. Importar las librerías
 const express = require('express');
 const cors = require('cors');
+const db = require('./db');
 
 // 2. Inicializar la aplicación
 const app = express();

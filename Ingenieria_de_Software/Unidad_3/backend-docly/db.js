@@ -9,8 +9,9 @@ async function getConnection() {
         const connection = await oracledb.getConnection({
             user: "backenduser",
             password: "zorroITQ2604",
-            connectString: "localhost:1521/XEPDB1",
-            configDir: walletPath
+            connectString: "s52etnzap8x1a69t_high",
+            configDir: walletPath,
+            walletPassword: "zorroITQ2604"
         });
         return connection;
     } catch (err) {

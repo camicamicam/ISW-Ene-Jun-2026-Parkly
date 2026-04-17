@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docly</title>
+</head>
+<body>
+
+    <h1>Sistema Docly</h1>
+
+    <button onclick="probarPing()">Probar Ping</button>
+    <button onclick="probarHealth()">Probar Health</button>
+
+    <p id="resultado"></p>
+
+    <script>
+        function probarPing() {
+            fetch("https://api-cursos-itq.onrender.com/ping")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("resultado").innerText =
+                        "Ping respondió: " + data;
+                })
+                .catch(error => {
+                    document.getElementById("resultado").innerText =
+                        "Error: " + error;
+                });
+        }
+
+        function probarHealth() {
+            fetch("https://api-cursos-itq.onrender.com/health")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("resultado").innerText =
+                        "Health respondió: " + data;
+                })
+                .catch(error => {
+                    document.getElementById("resultado").innerText =
+                        "Error: " + error;
+                });
+        }
+    </script>
+
+    <nav>
+        <ul>
+            <li><a href="perfil.html?tipo=profesional">Cursos de actualización profesional</a></li>
+            <li><a href="perfil.html?tipo=docente">Cursos de actualización docente</a></li>
+            <li><a href="login.html?tipo=constancia">Constancias de cursos</a></li>
+        </ul>
+    </nav>
+
+
+</body>
+</html>

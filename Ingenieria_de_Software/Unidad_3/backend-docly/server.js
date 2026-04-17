@@ -2,8 +2,9 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
+const jwt = require('jsonwebtoken');
 
-const { verificarCredenciales } = require('./models/instructorModel');
+const { verificarCredenciales } = require('./models/authModel');
 
 // 2. Inicializar la aplicación
 const app = express();
@@ -35,7 +36,7 @@ app.get('/hooligan', (req, res) => {
 });
 
 // ==========================================
-// RUTA DE LOGIN (POST) - VERSIÓN ORACLE CLOUD
+// RUTA DE LOGIN (POST)
 // ==========================================
 app.post('/api/auth/login', async (req, res) => {
     const { password_acceso } = req.body;
@@ -50,11 +51,25 @@ app.post('/api/auth/login', async (req, res) => {
 
         // Si la base de datos nos regresó al menos un registro...
         if (rows && rows.length > 0) {
+            usuarioEncontrado = rows[0];
+
+            const datos_usuario = {
+                id: usuarioEncontrado.ID_USUARIO,
+                rol: usuarioEncontrado.ROL
+            };
+
+            const tokenReal = jwt.sign(
+                datos_usuario,
+                "Mi_llave_secreta",
+                {expiresIn: '2h'}
+            );
+
             res.status(200).json({
                 status: 'Éxito',
-                mensaje: 'Login correcto.',
-                usuario: rows[0].ID_USUARIO, 
-                token: 'token_de_prueba_jwt_12345'
+                mensaje: 'Login correcto, bienvenido ${usuarioEncontrado.ROL}',
+                usuario: usuarioEncontrado.ID_USUARIO,
+                rol:    usuarioEncontrado.ROL,
+                token: tokenreal
             });
         } else {
             res.status(401).json({ mensaje: 'Credenciales incorrectas. Intenta de nuevo.' });

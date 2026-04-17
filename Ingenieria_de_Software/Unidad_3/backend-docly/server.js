@@ -30,6 +30,10 @@ app.get('/health', (req, res) => {
     });
 });
 
+app.get('/hooligan', (req, res) => {
+    res.send('HA HA HA HA HA HA ¡Hooligan!');
+});
+
 // ==========================================
 // RUTA DE LOGIN (POST) - VERSIÓN ORACLE CLOUD
 // ==========================================

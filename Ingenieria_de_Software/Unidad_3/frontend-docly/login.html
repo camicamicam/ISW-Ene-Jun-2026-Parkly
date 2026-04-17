@@ -58,8 +58,8 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    //alert(JSON.stringify(data));
-                    if (data.status === "Éxito") {
+                    alert(JSON.stringify(data));
+                    if (data.token) {
                         window.location.href = "instructor.html";
                     } else {
                         alert("Contraseña incorrecta");
@@ -72,7 +72,32 @@
             }
 
             if(tipo === "constancia"){
+                let num = document.getElementById("numero").value;
+
+                console.log("Enviando numero:", num);
                 
+                fetch("https://api-cursos-itq.onrender.com/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        password_acceso: num
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(JSON.stringify(data));
+                    if (data.token) {
+                        window.location.href = "constancias.html";
+                    } else {
+                        alert("Clave incorrecta");
+                    }
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
             }
         }
     </script>

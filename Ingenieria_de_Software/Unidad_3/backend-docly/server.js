@@ -69,7 +69,7 @@ app.post('/api/auth/login', async (req, res) => {
                 mensaje: 'Login correcto, bienvenido ${usuarioEncontrado.ROL}',
                 usuario: usuarioEncontrado.ID_USUARIO,
                 rol:    usuarioEncontrado.ROL,
-                token: tokenreal
+                token: tokenReal
             });
         } else {
             res.status(401).json({ mensaje: 'Credenciales incorrectas. Intenta de nuevo.' });

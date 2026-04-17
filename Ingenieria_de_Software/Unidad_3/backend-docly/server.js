@@ -66,7 +66,7 @@ app.post('/api/auth/login', async (req, res) => {
 
             res.status(200).json({
                 status: 'Éxito',
-                mensaje: 'Login correcto, bienvenido ${usuarioEncontrado.ROL}',
+                mensaje: `Login correcto. Bienvenido, ${usuarioEncontrado.ROL}`,
                 usuario: usuarioEncontrado.ID_USUARIO,
                 rol:    usuarioEncontrado.ROL,
                 token: tokenReal

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Actualización Profesional</title>
+</head>
+<body>
+    <h1 id="titulo"></h1>
+    <p>Selecciona tu perfil:</p>
+    <ul>
+        <li><a href="perfil-docente.html">Docente</a></li>
+        <li><a href="perfil-administrativo.html">Administrativo</a></li>
+        <li><a href="login.html?tipo=instructor">Instructor</a></li>
+    </ul>
+    <br>
+    <a href="index.html">← Volver al inicio</a>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const tipo = params.get("tipo");
+
+        if (tipo === "profesional") {
+            document.getElementById("titulo").innerText =
+                "Cursos de actualización profesional";
+        } else if (tipo === "docente") {
+            document.getElementById("titulo").innerText =
+                "Cursos de actualización docente";
+        }
+    </script>
+</body>
+</html>

@@ -2,6 +2,137 @@
 <html>
 <head>
     <title>Docly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2c3e50;
+            padding: 10px 20px;
+        }
+
+        /* LOGO */
+        .logo {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* MENU */
+        .menu {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ITEMS */
+        .menu li {
+            position: relative;
+        }
+
+        .menu li a {
+            display: block;
+            padding: 10px 15px;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* HOVER */
+        .menu li a:hover {
+            background-color: #34495e;
+        }
+
+        /* SUBMENU */
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #2c3e50;
+            list-style: none;
+            padding: 0;
+            min-width: 200px;
+        }
+
+        /* ITEMS DEL SUBMENU */
+        .submenu li a {
+            padding: 10px;
+        }
+
+        /* BOTÓN OCULTO EN DESKTOP */
+        .menu-toggle {
+            display: none;
+            font-size: 25px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+
+            .menu {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #2c3e50;
+                position: absolute;
+                top: 60px;
+                left: 0;
+            }
+
+            .menu.active {
+                display: flex;
+            }
+
+            .menu li {
+                text-align: center;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .navbar {
+                position: relative;
+            }
+
+            /* submenu móvil */
+            .submenu {
+                position: static;
+                display: none;
+            }
+
+            /* MOSTRAR SUBMENU */
+            .dropdown.active .submenu {
+                display: block;
+            }
+        }
+
+        .dropdown > a::after {
+            content: " ▼";
+            font-size: 12px;
+        }
+
+        /* Para escritorio */
+        @media (min-width: 769px) {
+            .dropdown:hover .submenu {
+                display: block;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 <body>
 
@@ -11,6 +142,38 @@
     <button onclick="probarHealth()">Probar Health</button>
 
     <p id="resultado"></p>
+    <!-- MENÚ -->
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='index.html'">
+            Docly
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">
+            ☰
+        </div>
+        <ul class="menu">
+            <li class="dropdown">
+                <a href="#">Cursos de actualización profesional</a>
+                <ul class="submenu">
+                    <li><a href="perfil-docente.html">Docente</a></li>
+                    <li><a href="perfil-administrativo.html">Administrativo</a></li>
+                    <li><a href="login.html?tipo=instructor">Instructor</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#">Cursos de actualización docente</a>
+                <ul class="submenu">
+                    <li><a href="perfil-docente.html">Docente</a></li>
+                    <li><a href="perfil-administrativo.html">Administrativo</a></li>
+                    <li><a href="login.html?tipo=instructor">Instructor</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="login.html?tipo=constancia">Constancias de cursos</a>
+            </li>
+        </ul>        
+    </nav>
 
     <script>
         function probarPing() {
@@ -38,16 +201,27 @@
                         "Error: " + error;
                 });
         }
+
+        /*MENU CON SUBMENU Y RESPONSIVO*/
+        function toggleMenu() {
+            document.querySelector(".menu").classList.toggle("active");
+        }
+
+        document.querySelectorAll(".dropdown > a").forEach(item => {
+            item.addEventListener("click", function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault(); // evita redirección
+                    let parent = this.parentElement;
+
+                    // cerrar otros menús abiertos
+                    document.querySelectorAll(".dropdown").forEach(d => {
+                        if (d !== parent) d.classList.remove("active");
+                    });
+
+                    parent.classList.toggle("active");
+                }
+            });
+        });
     </script>
-
-    <nav>
-        <ul>
-            <li><a href="perfil.html?tipo=profesional">Cursos de actualización profesional</a></li>
-            <li><a href="perfil.html?tipo=docente">Cursos de actualización docente</a></li>
-            <li><a href="login.html?tipo=constancia">Constancias de cursos</a></li>
-        </ul>
-    </nav>
-
-
 </body>
 </html>

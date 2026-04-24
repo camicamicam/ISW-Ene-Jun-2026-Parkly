@@ -1,8 +1,8 @@
 const authRepository = require('../repositories/authRepository');
 const jwt = require('jsonwebtoken');
 
-async function procesarLogin(password_acceso, rol_esperado) {
-    // 1. Pedirle al bodeguero que busque
+async function procesarLogin(password_acceso) {
+    // 1. Pedirle al repo que busque
     const rows = await authRepository.verificarCredenciales(password_acceso);
 
     // 2. Lógica de negocio: ¿Existe?
@@ -12,13 +12,9 @@ async function procesarLogin(password_acceso, rol_esperado) {
 
     const usuarioEncontrado = rows[0];
 
-    if(usuarioEncontrado.ROL != rol_esperado.toUpperCase()){
-        throw new Error("ROL_INCORRECTO");
-    }
-
     // 3. Lógica de negocio: Fabricar el Token
     const datosUsuario = {
-        id: usuarioEncontrado.ID_REAL,
+        id: usuarioEncontrado.ID,
         rol: usuarioEncontrado.ROL
     };
 
@@ -26,7 +22,7 @@ async function procesarLogin(password_acceso, rol_esperado) {
 
     // 4. Retornar el objeto limpio al Controller
     return {
-        id: usuarioEncontrado.ID_REAL,
+        id: usuarioEncontrado.ID,
         rol: usuarioEncontrado.ROL,
         token: token
     };

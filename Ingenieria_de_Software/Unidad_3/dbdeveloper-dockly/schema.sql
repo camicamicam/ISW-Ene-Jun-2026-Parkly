@@ -1,7 +1,7 @@
 --------- TABLAS DE CATALOGO
 
 CREATE TABLE tipo_plaza (
-    id_plaza NUMBER,
+    id_plaza NUMBER GENERATED ALWAYS AS IDENTITY,
     nombre VARCHAR2(50) NOT NULL,
 	
     CONSTRAINT pk_tipo_plaza PRIMARY KEY (id_plaza),
@@ -9,7 +9,7 @@ CREATE TABLE tipo_plaza (
 );
 
 CREATE TABLE departamento (
-    id_departamento NUMBER,
+    id_departamento NUMBER GENERATED ALWAYS AS IDENTITY,
     nombre VARCHAR2(100) NOT NULL,
 	
     CONSTRAINT pk_departamento PRIMARY KEY (id_departamento),
@@ -18,7 +18,7 @@ CREATE TABLE departamento (
 
 ----------- USUARIO -----------
 CREATE TABLE usuario (
-    id_usuario NUMBER,
+    id_usuario NUMBER GENERATED ALWAYS AS IDENTITY,
     numero_empleado NUMBER NOT NULL,
     nombre VARCHAR2(50) NOT NULL,
     apellido_paterno VARCHAR2(50) NOT NULL,
@@ -32,18 +32,6 @@ CREATE TABLE usuario (
     CONSTRAINT chk_correo_institucional CHECK (correo LIKE '%@queretaro.tecnm.mx'),
     CONSTRAINT chk_nivel_acceso CHECK (nivel_acceso IN (0,1))
 );
-
-
------------ SECUENCIA Y TRIGGER PARA ID_USUARIO -----------
-CREATE SEQUENCE seq_usuario START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TRIGGER trg_id_usuario
-BEFORE INSERT ON usuario
-FOR EACH ROW
-BEGIN
-  SELECT seq_usuario.NEXTVAL INTO :NEW.id_usuario FROM dual;
-END;
-/
 
 ------------ DOCENTE ---------------
 
@@ -95,7 +83,8 @@ CREATE TABLE administrador (
 
 ----------- CURSO -----------
 CREATE TABLE curso (
-    id_curso NUMBER,
+    id_curso NUMBER GENERATED ALWAYS AS IDENTITY,
+    id_instructor NUMBER NOT NULL,
     nombre VARCHAR2(100) NOT NULL,
     descripcion VARCHAR2(300),
     duracion NUMBER NOT NULL,
@@ -106,26 +95,30 @@ CREATE TABLE curso (
     periodo NUMBER(1) NOT NULL,
 
     CONSTRAINT pk_curso PRIMARY KEY (id_curso),
-
+    CONSTRAINT fk_curso_instructor FOREIGN KEY (id_instructor) 
+        REFERENCES instructor(id_usuario),
     CONSTRAINT chk_curso_horas CHECK (total_horas > 0 AND total_horas <= 40),
     CONSTRAINT chk_curso_cupo CHECK (cupo_maximo > 0 AND cupo_maximo <= 35),
     CONSTRAINT chk_periodo CHECK (periodo IN (1,2))
 );
 
-CREATE SEQUENCE seq_curso START WITH 1 INCREMENT BY 1;
+----------- TEMARIO DEL CURSO -----------
+CREATE TABLE tema_curso (
+    id_tema NUMBER GENERATED ALWAYS AS IDENTITY,
+    id_curso NUMBER NOT NULL,
+    titulo_tema VARCHAR2(100) NOT NULL,
+    horas_duracion NUMBER NOT NULL,
 
-CREATE OR REPLACE TRIGGER trg_id_curso
-BEFORE INSERT ON curso
-FOR EACH ROW
-BEGIN
-  SELECT seq_curso.NEXTVAL INTO :NEW.id_curso FROM dual;
-END;
-/
+    CONSTRAINT pk_tema PRIMARY KEY (id_tema),
+    CONSTRAINT fk_tema_curso FOREIGN KEY (id_curso) 
+        REFERENCES curso(id_curso) ON DELETE CASCADE,
+    CONSTRAINT chk_tema_horas CHECK (horas_duracion > 0)
+);
 
 ------------ INSCRIPCION -------------
 
 CREATE TABLE inscripcion (
-    id_inscripcion NUMBER,
+    id_inscripcion NUMBER GENERATED ALWAYS AS IDENTITY,
     id_usuario NUMBER NOT NULL,
     id_curso NUMBER NOT NULL,
     fecha_inscripcion DATE DEFAULT SYSDATE,
@@ -142,20 +135,10 @@ CREATE TABLE inscripcion (
     CONSTRAINT chk_horas CHECK (horas_completadas >= 0)
 );
 
-CREATE SEQUENCE seq_inscripcion START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TRIGGER trg_id_inscripcion
-BEFORE INSERT ON inscripcion
-FOR EACH ROW
-BEGIN
-  SELECT seq_inscripcion.NEXTVAL INTO :NEW.id_inscripcion FROM dual;
-END;
-/
-
 -------- CONSTANCIA --------------------
 
 CREATE TABLE constancia (
-    folio_numero NUMBER,
+    folio_numero NUMBER GENERATED ALWAYS AS IDENTITY,
     id_inscripcion NUMBER NOT NULL,
     fecha_generacion DATE DEFAULT SYSDATE,
     tipo_formato VARCHAR2(50),
@@ -168,13 +151,3 @@ CREATE TABLE constancia (
 
     CONSTRAINT uq_constancia_inscripcion UNIQUE (id_inscripcion)
 );
-
-CREATE SEQUENCE seq_constancia START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TRIGGER trg_id_constancia
-BEFORE INSERT ON constancia
-FOR EACH ROW
-BEGIN
-  SELECT seq_constancia.NEXTVAL INTO :NEW.folio_numero FROM dual;
-END;
-/

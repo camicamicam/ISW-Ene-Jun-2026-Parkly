@@ -1,4 +1,4 @@
-const db = require('../db'); 
+const db = require('../../config/db');
 
 async function verificarCredenciales(password_acceso) {
     let connection;
@@ -6,27 +6,22 @@ async function verificarCredenciales(password_acceso) {
         connection = await db.getConnection();
 
         const query = `
-            SELECT * FROM vista_login 
-            WHERE password_acceso = :pass
+            SELECT * FROM v_usuarios_roles
+            WHERE password_acceso = :pass OR TO_CHAR(numero_empleado) = :pass
         `;
 
         const result = await connection.execute(query, {
             pass: password_acceso
         });
 
-        // Regresamos todas las filas que coincidan
         return result.rows; 
 
     } catch (error) {
-        console.error("Error en el modelo de instructor:", error);
+        console.error("Error en el modelo de auth:", error);
         throw error;
     } finally {
         if (connection) {
-            try {
-                await connection.close();
-            } catch (cerrarError) {
-                console.error("Error al cerrar conexión:", cerrarError);
-            }
+            try { await connection.close(); } catch (e) { console.error(e); }
         }
     }
 }

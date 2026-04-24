@@ -1,3 +1,15 @@
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#main-content {
+    flex: 1; /* Esto empuja el footer hacia abajo */
+}
 /* RESET */
 * {
     box-sizing: border-box;
@@ -89,12 +101,72 @@ body {
     cursor: pointer;
 }
 
+/* ================= FOOTER COMPONENT ================= */
+.footer {
+    background-color: #2c3e50; /* Color igual al navbar */
+    color: #ecf0f1;
+    padding: 25px 20px;
+    margin-top: auto; /* Empuja el footer al fondo en layouts flex */
+    width: 100%;
+}
+
+.footer-content {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Texto a la izquierda, links a la derecha */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.footer-info p {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.footer-links {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-links a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.separator {
+    color: #7f8c8d;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .separator {
+        display: none;
+    }
+}
+
 /* ================= LOGIN CARD ================= */
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 87.2vh;
+    background-color: rgba(44, 62, 80, 0.452);
 }
 
 .card {
@@ -124,7 +196,7 @@ input {
 button {
     width: 100%;
     padding: 10px;
-    background-color: #3498db;
+    background-color: #34495e;
     color: white;
     border: none;
     border-radius: 5px;
@@ -132,7 +204,7 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #34495e;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -185,4 +257,56 @@ button:hover {
         margin-top: 40px;
         padding: 20px;
     }
+}
+
+/* ===================== Contenedor Inicio ==================*/
+.inicio-container {
+    position: relative;
+    height: 87.2vh; /* Ocupa el 80% de la altura de la pantalla */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    
+    /*Cambiar tonalidad y brillo de la imagen */
+    background-color: rgba(44, 62, 80, 0.452);
+    /*background-color: rgba(44, 62, 80, 0.7);*/ /* Color azul oscuro con 70% de opacidad */
+    background-blend-mode: multiply; /* Mezcla el color con la imagen */
+}
+.inicio-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    background-image: url('img/logo-fondo.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* Cambiar color de imagen */
+    filter: hue-rotate(190deg) brightness(0.3) opacity(0.5); 
+    z-index: 1;
+}
+
+/* Contenido (Texto) */
+.inicio-content {
+    position: relative;
+    z-index: 2; /* Asegura que el texto esté por encima de todo */
+    color: white;
+    text-align: center;
+}
+
+.inicio-title {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5); /* Sombra para que resalte más */
+}
+
+.inicio-subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
 }

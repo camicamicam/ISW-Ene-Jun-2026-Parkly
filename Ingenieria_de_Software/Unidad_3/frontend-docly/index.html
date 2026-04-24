@@ -9,16 +9,18 @@
 </head>
 <body>
     <div id="navbar-container"></div>
-
     <main id="main-content"></main>
+    <div id="footer-container"></div>
 
     <script type="module">
         import { renderNavbar } from './components/navbar.js';
+        import { renderFooter } from './components/footer.js';
         import { handleRoute } from './routes/router.js'; // IMPORTANTE: Importar handleRoute
 
         // Función de inicio
         const init = () => {
-            renderNavbar(); // Ahora sí encontrará el contenedor
+            renderNavbar();
+            renderFooter();
             handleRoute();  // Carga la página inicial
         };
 

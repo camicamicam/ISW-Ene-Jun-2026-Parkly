@@ -14,7 +14,7 @@ async function login(req, res) {
         // Si todo sale bien, respondemos
         res.status(200).json({
             status: 'Éxito',
-            mensaje: `Bienvenido al sistema, ${resultado.rol} ${resultado.nombre}`,
+            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre}`,
             usuario_id: resultado.id,
             rol: resultado.rol,
             token: resultado.token

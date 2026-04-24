@@ -1,0 +1,188 @@
+/* RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* BODY */
+body {
+    background-color: #f4f6f9;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    padding: 10px 20px;
+}
+
+/* LOGO */
+.logo {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* MENU */
+.menu {
+    list-style: none;
+    display: flex;
+}
+
+/* ITEMS */
+.menu li {
+    position: relative;
+}
+
+/* LINKS */
+.menu li a {
+    display: block;
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+/* HOVER */
+.menu li a:hover {
+    background-color: #34495e;
+}
+
+/* SUBMENU */
+.submenu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #2c3e50;
+    list-style: none;
+    min-width: 200px;
+}
+
+/* ITEMS SUBMENU */
+.submenu li a {
+    padding: 10px;
+}
+
+/* FLECHITA */
+.dropdown > a::after {
+    content: " ▼";
+    font-size: 12px;
+}
+
+/* DESKTOP: mostrar con hover */
+@media (min-width: 769px) {
+    .dropdown:hover .submenu {
+        display: block;
+    }
+}
+
+/* BOTÓN MENU (MÓVIL) */
+.menu-toggle {
+    display: none;
+    font-size: 25px;
+    color: white;
+    cursor: pointer;
+}
+
+/* ================= LOGIN CARD ================= */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.card h1 {
+    margin-bottom: 20px;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* BOTONES */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+    .menu {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #2c3e50;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    .menu.active {
+        display: flex;
+    }
+
+    .menu li {
+        text-align: center;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar {
+        position: relative;
+    }
+
+    /* SUBMENU EN MÓVIL */
+    .submenu {
+        position: static;
+        display: none;
+    }
+
+    .dropdown.active .submenu {
+        display: block;
+    }
+
+    /* LOGIN RESPONSIVE */
+    .card {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .container {
+        height: auto;
+        margin-top: 40px;
+        padding: 20px;
+    }
+}

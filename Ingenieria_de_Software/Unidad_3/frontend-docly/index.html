@@ -1,53 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Docly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="icon" href="data:,"> <!--SOLO PARA QUE NO MUESTRE ESE ERROR-->
 </head>
 <body>
+    <div id="navbar-container"></div>
 
-    <h1>Sistema Docly</h1>
+    <main id="main-content"></main>
 
-    <button onclick="probarPing()">Probar Ping</button>
-    <button onclick="probarHealth()">Probar Health</button>
+    <script type="module">
+        import { renderNavbar } from './components/navbar.js';
+        import { handleRoute } from './routes/router.js'; // IMPORTANTE: Importar handleRoute
 
-    <p id="resultado"></p>
+        // Función de inicio
+        const init = () => {
+            renderNavbar(); // Ahora sí encontrará el contenedor
+            handleRoute();  // Carga la página inicial
+        };
 
-    <script>
-        function probarPing() {
-            fetch("https://api-cursos-itq.onrender.com/ping")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("resultado").innerText =
-                        "Ping respondió: " + data;
-                })
-                .catch(error => {
-                    document.getElementById("resultado").innerText =
-                        "Error: " + error;
-                });
-        }
-
-        function probarHealth() {
-            fetch("https://api-cursos-itq.onrender.com/health")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("resultado").innerText =
-                        "Health respondió: " + data;
-                })
-                .catch(error => {
-                    document.getElementById("resultado").innerText =
-                        "Error: " + error;
-                });
+        // Aseguramos que el DOM esté listo
+        if (document.readyState === 'complete') {
+            init();
+        } else {
+            window.addEventListener('DOMContentLoaded', init);
         }
     </script>
-
-    <nav>
-        <ul>
-            <li><a href="perfil.html?tipo=profesional">Cursos de actualización profesional</a></li>
-            <li><a href="perfil.html?tipo=docente">Cursos de actualización docente</a></li>
-            <li><a href="login.html?tipo=constancia">Constancias de cursos</a></li>
-        </ul>
-    </nav>
-
-
 </body>
 </html>

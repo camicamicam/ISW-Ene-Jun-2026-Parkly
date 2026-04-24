@@ -12,11 +12,16 @@ async function procesarLogin(credencial) {
 
     const usuarioEncontrado = rows[0];
 
+    if(usuarioEncontrado.ROL != rol_esperado.toUpperCase()){
+        throw new Error("ROL_INCORRECTO");
+    }
+
     // 3. Lógica de negocio: Fabricar el Token
     const datosUsuario = {
         id: usuarioEncontrado.ID_REAL,
         rol: usuarioEncontrado.ROL
     };
+    
     const token = jwt.sign(datosUsuario, "Mi_llave_secreta", { expiresIn: '2h' });
 
     // 4. Retornar el objeto limpio al Controller

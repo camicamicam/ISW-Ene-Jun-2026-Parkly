@@ -1,15 +1,15 @@
 const authService = require('../services/authService');
 
 async function login(req, res) {
-    const { credencial } = req.body;
+    const { password_acceso } = req.body;
 
-    if (!credencial) {
+    if (!password_acceso) {
         return res.status(400).json({ mensaje: 'Por favor ingresa tu credencial de acceso' });
     }
 
     try {
         // Le pasamos la bronca al Service
-        const resultado = await authService.procesarLogin(credencial);
+        const resultado = await authService.procesarLogin(password_acceso);
 
         // Si todo sale bien, respondemos
         res.status(200).json({

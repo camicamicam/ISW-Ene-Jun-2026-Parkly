@@ -1,9 +1,9 @@
 const authRepository = require('../repositories/authRepository');
 const jwt = require('jsonwebtoken');
 
-async function procesarLogin(password_acceso, rol_esperado) {
+async function procesarLogin(password_acceso ) {
     // 1. Pedirle al repo que busque
-    const rows = await authRepository.verificarCredenciales(password_acceso, rol_esperado);
+    const rows = await authRepository.verificarCredenciales(password_acceso);
 
     // 2. Lógica de negocio: ¿Existe?
     if (!rows || rows.length === 0) {
@@ -12,9 +12,9 @@ async function procesarLogin(password_acceso, rol_esperado) {
 
     const usuarioEncontrado = rows[0];
 
-    if (usuarioEncontrado.ROL !== rol_esperado.toUpperCase()) {
+    /*if (usuarioEncontrado.ROL !== rol_esperado.toUpperCase()) {
         throw new Error("ROL_INCORRECTO");
-    }
+    }*/
 
     // 3. Lógica de negocio: Fabricar el Token
     const datosUsuario = {

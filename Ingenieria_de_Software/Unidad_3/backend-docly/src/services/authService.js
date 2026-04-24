@@ -1,9 +1,9 @@
 const authRepository = require('../repositories/authRepository');
 const jwt = require('jsonwebtoken');
 
-async function procesarLogin(credencial) {
+async function procesarLogin(password_acceso, rol_esperado) {
     // 1. Pedirle al bodeguero que busque
-    const rows = await authRepository.verificarCredenciales(credencial);
+    const rows = await authRepository.verificarCredenciales(password_acceso);
 
     // 2. Lógica de negocio: ¿Existe?
     if (!rows || rows.length === 0) {
@@ -21,7 +21,7 @@ async function procesarLogin(credencial) {
         id: usuarioEncontrado.ID_REAL,
         rol: usuarioEncontrado.ROL
     };
-    
+
     const token = jwt.sign(datosUsuario, "Mi_llave_secreta", { expiresIn: '2h' });
 
     // 4. Retornar el objeto limpio al Controller

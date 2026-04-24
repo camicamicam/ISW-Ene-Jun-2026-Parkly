@@ -8,7 +8,7 @@ async function login(req, res) {
     }
 
     if (!rol_esperado){
-        return res.status(400).json({ mensaje: 'Aun no sabemos cual es tu rol, prueba de nuevo.' });
+        return res.status(400).json({ mensaje: 'Por favor ingresa tu rol y prueba de nuevo.' });
     }
 
     try {
@@ -27,7 +27,7 @@ async function login(req, res) {
     } catch (error) {
         // Manejamos los errores que nos aviente el Service
         if (error.message === "CREDENCIAL_INVALIDA") {
-            res.status(401).json({ mensaje: 'Credencial incorrecta o usuario no encontrado.' });
+            res.status(401).json({ mensaje: 'Credencial incorrecta.' });
         } else if (error.message === "ROL_INCORRECTO") {
             res.status(403).json({ mensaje: 'Acceso denegado. Esta no es tu familia Dewey.' });
         }

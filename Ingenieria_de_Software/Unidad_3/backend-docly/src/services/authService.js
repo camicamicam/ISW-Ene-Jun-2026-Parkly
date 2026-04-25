@@ -1,7 +1,7 @@
 const authRepository = require('../repositories/authRepository');
 const jwt = require('jsonwebtoken');
 
-async function procesarLogin(password_acceso ) {
+async function procesarLogin(password_acceso) {
     // 1. Pedirle al repo que busque
     const rows = await authRepository.verificarCredenciales(password_acceso);
 
@@ -19,7 +19,8 @@ async function procesarLogin(password_acceso ) {
     // 3. Lógica de negocio: Fabricar el Token
     const datosUsuario = {
         id: usuarioEncontrado.ID,
-        rol: usuarioEncontrado.ROL
+        rol: usuarioEncontrado.ROL,
+        nombre: usuarioEncontrado.NOMBRE_COMPLETO
     };
 
     const token = jwt.sign(datosUsuario, "Mi_llave_secreta", { expiresIn: '2h' });
@@ -28,6 +29,7 @@ async function procesarLogin(password_acceso ) {
     return {
         id: usuarioEncontrado.ID,
         rol: usuarioEncontrado.ROL,
+        nombre: usuarioEncontrado.NOMBRE_COMPLETO,
         token: token
     };
 }

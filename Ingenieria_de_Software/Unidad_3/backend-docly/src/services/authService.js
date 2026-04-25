@@ -16,13 +16,13 @@ async function procesarLogin(password_acceso, rol_esperado) {
 
     if (portal === 'instructor') {
         // Puerta 1: Solo Instructores
-        if (rolBD !== 'INSTRUCTOR') {
+        if (rol !== 'INSTRUCTOR') {
             throw new Error("ROL_INCORRECTO");
         }
     } 
     else if (portal === 'constancia' || portal === 'docente') {
         // Puerta 2: Aceptamos que Yaneli mande "constancia" o que tú mandes "docente" en pruebas
-        if (rolBD !== 'DOCENTE' && rolBD !== 'ADMINISTRATIVO') {
+        if (rol !== 'DOCENTE' && rol !== 'ADMINISTRATIVO') {
             throw new Error("ROL_INCORRECTO");
         }
     } 

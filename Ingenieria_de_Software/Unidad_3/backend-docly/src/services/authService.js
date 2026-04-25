@@ -11,14 +11,23 @@ async function procesarLogin(password_acceso, rol_esperado) {
     }
 
     const usuarioEncontrado = rows[0];
-
     const rol = usuarioEncontrado.ROL;
+    const portal = rol_esperado.toLowerCase();
 
-    if (rol_esperado === "instructor" && rol !== "INSTRUCTOR") {
-        throw new Error("ROL_INCORRECTO");
-    }
-
-    if (rol_esperado === "constancia" && rol !== "DOCENTE" && rol !== "ADMINISTRATIVO") {
+    if (portal === 'instructor') {
+        // Puerta 1: Solo Instructores
+        if (rolBD !== 'INSTRUCTOR') {
+            throw new Error("ROL_INCORRECTO");
+        }
+    } 
+    else if (portal === 'constancia' || portal === 'docente') {
+        // Puerta 2: Aceptamos que Yaneli mande "constancia" o que tú mandes "docente" en pruebas
+        if (rolBD !== 'DOCENTE' && rolBD !== 'ADMINISTRATIVO') {
+            throw new Error("ROL_INCORRECTO");
+        }
+    } 
+    else {
+        // Puerta 3 (La trampa): Si alguien manda un rol inventado, vacío o mal escrito, lo rebotamos por defecto.
         throw new Error("ROL_INCORRECTO");
     }
 

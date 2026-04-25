@@ -1,6 +1,7 @@
 // pages/login.js
 import { apiService } from "../services/apiService.js";
 import { navigate } from "../routes/router.js";
+import { Loader } from "../components/loader.js";
 
 export function loginPage() {
     // 1. Configuración de títulos (esto se ejecuta cada vez que se renderiza la página)
@@ -26,6 +27,7 @@ export function loginPage() {
     if (!window.loginInitialized) {
         document.addEventListener("click", async (e) => {
             if (e.target && e.target.id === "btnLogin") {
+                Loader.show();
                 // IMPORTANTE: Volvemos a leer el 'tipo' justo en el momento del click
                 const urlParams = new URLSearchParams(window.location.search);
                 const tipoEnClick = urlParams.get("tipo") || "instructor";
@@ -45,7 +47,7 @@ export function loginPage() {
                 errorElement.style.display = "none";
                 
                 try {
-                    const data = await apiService.login(pass);
+                    const data = await apiService.login(pass, tipoEnClick);
 
                     if (data.token) {
                         const userRole = data.rol ? data.rol.toLowerCase() : "";
@@ -82,6 +84,8 @@ export function loginPage() {
                     }
                 } catch (err) {
                     mostrarMensaje("Error de conexión con el servidor.", true);
+                }finally{
+                    Loader.hide();
                 }
             }
         });

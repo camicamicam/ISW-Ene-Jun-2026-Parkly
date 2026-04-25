@@ -1,6 +1,6 @@
 const authService = require('../services/authService');
 
-async function login(req, res) {
+async function login(req, res/*, rol_esperado */) {
     const { password_acceso } = req.body;
 
     if (!password_acceso) {

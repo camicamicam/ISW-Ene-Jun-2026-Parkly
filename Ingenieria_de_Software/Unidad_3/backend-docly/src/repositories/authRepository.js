@@ -6,7 +6,8 @@ async function verificarCredenciales(password_acceso) {
         connection = await db.getConnection();
 
         const query = `
-            SELECT * FROM v_usuarios_roles
+            SELECT id_usuario AS id, rol, nombre_completo 
+            FROM v_usuarios_roles
             WHERE password_acceso = :pass OR TO_CHAR(numero_empleado) = :pass
         `;
 

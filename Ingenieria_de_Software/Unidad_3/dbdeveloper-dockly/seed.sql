@@ -44,7 +44,7 @@ INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno
 VALUES (21140906, 'Gabriela', 'Ruiz', 'Vaca', 'gabriela.ruiz@queretaro.tecnm.mx', 0);
 
 INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso)
-VALUES (21140907, 'Camila', 'Hernández', 'Gallegos', 'camila.mata@queretaro.tecnm.mx', 1);
+VALUES (21140907, 'Camila', 'Hernández', 'Gallegos', 'camila.gallegos@queretaro.tecnm.mx', 1);
 
 INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso)
 VALUES (21140908, 'Jhoel', 'Hernández', 'Perrusquia', 'jhoel.hernandez@queretaro.tecnm.mx', 1);
@@ -122,10 +122,10 @@ INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (3, 'Cifra
 ---INSCRIPCION---
 
 INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140781), 1, SYSDATE, 0);
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001), 1, SYSDATE, 0);
 
 INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140782), 2, SYSDATE, 0);
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140002), 2, SYSDATE, 0);
 
 INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
 VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140903), 1, SYSDATE, 0);

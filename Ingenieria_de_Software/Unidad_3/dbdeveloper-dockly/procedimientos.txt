@@ -1,0 +1,93 @@
+---PROCEDURES USUARIOS---
+--CREATE--
+CREATE OR REPLACE PROCEDURE alta_usuario (
+		p_num_empleado IN usuario.numero_empleado%TYPE,
+		p_nombre IN usuario.nombre%TYPE,
+		p_apellido_p IN usuario.apellido_paterno%TYPE,
+		p_apellido_m IN usuario.apellido_materno%TYPE,
+		p_correo IN usuario.correo%TYPE,
+		p_nivel_acceso IN usuario.nivel_acceso%TYPE
+	)
+	IS BEGIN
+		INSERT INTO CLIENTES(numero_empleado,nombre,apellido_paterno,apellido_materno,correo,nivel_acceso)
+		VALUES(p_num_empleado,p_nombre,p_apellido_p,p_apellido_m,p_correo,p_nivel_acceso);
+		COMMIT;
+	END alta_usuario;
+/
+
+--READ--
+
+--UPDATE--
+
+--DELETE--
+
+
+---PROCEDURES INSTRUCTORES---
+--CREATE--
+
+--READ--
+
+--UPDATE--
+
+--DELETE--
+
+
+---PROCEDURES CURSOS---
+--CREATE--
+CREATE OR REPLACE PROCEDURE alta_curso (
+    p_nombre_instructor IN VARCHAR2,        
+    p_nombre_curso      IN curso.nombre%TYPE,
+    p_duracion          IN curso.duracion%TYPE,
+    p_total_horas       IN curso.total_horas%TYPE,
+    p_cupo_maximo       IN curso.cupo_maximo%TYPE,
+    p_anio              IN curso.anio%TYPE,
+    p_periodo           IN curso.periodo%TYPE,
+    p_id_generado       OUT curso.id_curso%TYPE
+)
+IS 
+    v_id_instructor instructor.id_usuario%TYPE;
+BEGIN
+    SELECT id_usuario INTO v_id_instructor
+    FROM usuario
+    WHERE TRIM(nombre || ' ' || apellido_paterno || ' ' || NVL(apellido_materno, '')) = TRIM(p_nombre_instructor)
+    AND id_usuario IN (SELECT id_usuario FROM instructor); 
+    
+    INSERT INTO CURSO (
+        id_instructor, nombre, duracion, 
+        total_horas, cupo_maximo, anio, periodo
+    )
+    VALUES (
+        v_id_instructor, p_nombre_curso, p_duracion, 
+        p_total_horas, p_cupo_maximo, p_anio, p_periodo
+    )
+    RETURNING id_curso INTO p_id_generado;
+    
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Error: No se encontró un instructor con el nombre: ' || p_nombre_instructor);
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Error inesperado: ' || SQLERRM);
+END alta_curso;
+/
+
+--READ--
+
+--UPDATE--
+
+--DELETE--
+
+PROCEDURES TEMA_CURSO
+--CREATE--
+CREATE OR REPLACE PROCEDURE alta_tema_curso (
+		p_id_curso IN tema_curso.id_curso%TYPE,
+		p_titulo_tema IN tema_curso.titulo_tema%TYPE,
+		p_horas_duracion IN tema_curso.horas_duracion%TYPE
+	)
+	IS BEGIN
+		INSERT INTO TEMA_CURSO(id_curso,titulo_tema,horas_duracion)
+		VALUES(p_id_curso,p_titulo_tema,p_horas_duracion);
+		COMMIT;
+	END alta_tema_curso;
+/

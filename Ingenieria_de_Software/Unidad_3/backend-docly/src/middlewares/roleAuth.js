@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const checkRole = (rolesPermitidos) => {
     return (req, res, next) => {
         try {
-            const authHeader = req.headers.autorization;
+            const authHeader = req.headers.autorization || req.headers.authorization;
         if (!authHeader){
             return res.status(401).json({ error: "Acceso denegado: Token no proporcionado" });
         }

@@ -3,11 +3,13 @@ const cursoService = require('../services/cursoService');
 async function registrar(req, res) {
     const { curso, temas } = req.body;
 
-    if (!curso || !temas || temas.length === 0) {
-        return res.status(400).json({ mensaje: 'Faltan los datos del curso o el temario está vacío.' });
+    if (!curso || !curso.nombre || !curso.duracion || !temas || temas.length === 0) {
+        return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso o el temario.' });
     }
 
     const idInstructor = req.usuario.id;
+    const nombreDesdeFrontend = curso.nombre_instructor; 
+    const nombreFinal = nombreDesdeFrontend ? nombreDesdeFrontend : req.usuario.nombre;
 
     try {
         curso.id_instructor = idInstructor;
@@ -15,7 +17,7 @@ async function registrar(req, res) {
         
         res.status(201).json({ 
             status: 'Éxito', 
-            mensaje: resultado.mensaje,
+            mensaje: `Instructor(a) ${nombreFinal}, su curso '${curso.nombre}' fue registrado con éxito.`,
             id_curso: resultado.id_curso
         });
 

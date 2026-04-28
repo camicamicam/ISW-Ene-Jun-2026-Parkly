@@ -86,7 +86,6 @@ CREATE TABLE curso (
     id_curso NUMBER GENERATED ALWAYS AS IDENTITY,
     id_instructor NUMBER NOT NULL,
     nombre VARCHAR2(100) NOT NULL,
-    descripcion VARCHAR2(300),
     duracion NUMBER NOT NULL,
     total_horas NUMBER NOT NULL,
     cupo_maximo NUMBER NOT NULL,

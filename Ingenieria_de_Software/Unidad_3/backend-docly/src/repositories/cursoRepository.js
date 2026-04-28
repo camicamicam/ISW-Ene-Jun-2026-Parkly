@@ -10,14 +10,13 @@ async function guardarCurso(datosCurso, temas) {
 
         const queryCurso = `
                 BEGIN
-                    alta_curso(:id_inst, :nom, :desc, :dur, :horas, :cupo, :anio, :per, :id_generado)
+                    alta_curso(:id_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado)
                 END
             `;
         
             const bindVarCurso = {
                 id_inst: datosCurso.id_instructor,
                 nom: datosCurso.nombre,
-                desc: datosCurso.descripcion,
                 dur: datosCurso.duracion,
                 horas: datosCurso.horas,
                 cupo: datosCurso.cupo,

@@ -1,4 +1,4 @@
-const { autoCommit } = require('oracledb');
+const oracledb = require('oracledb');
 const db = require('../../config/db');
 
 async function guardarCurso(datosCurso, temas) {
@@ -11,15 +11,15 @@ async function guardarCurso(datosCurso, temas) {
         const queryCurso = `
                 BEGIN
                     alta_curso(:id_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado)
-                END
+                END;
             `;
         
             const bindVarCurso = {
                 id_inst: datosCurso.id_instructor,
                 nom: datosCurso.nombre,
                 dur: datosCurso.duracion,
-                horas: datosCurso.horas,
-                cupo: datosCurso.cupo,
+                horas: datosCurso.total_horas,
+                cupo: datosCurso.cupo_maximo,
                 anio: datosCurso.anio,
                 per: datosCurso.periodo,
                 id_generado: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }

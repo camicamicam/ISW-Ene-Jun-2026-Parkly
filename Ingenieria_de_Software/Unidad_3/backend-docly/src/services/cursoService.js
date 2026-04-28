@@ -21,7 +21,6 @@ async function crearCurso(datosCurso, temas) {
         throw new Error("PERIODO_INVALIDO");
     }
 
-    // Validamos que el temario de Yaneli sí sume las 40 horas exactas
     let sumaHorasTemas = 0;
     temas.forEach((tema) => (sumaHorasTemas += tema.horas_duracion));
 

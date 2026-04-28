@@ -1,6 +1,16 @@
-const cursoRepository = require('../repositories/cursoRepository');
+const cursoRepository = require("../repositories/cursoRepository");
 
 async function crearCurso(datosCurso, temas) {
+
+    const fechaActual = new Date();
+    const mesActual = fechaActual.getMonth() + 1;
+
+    datosCurso.anio = parseInt(fechaActual.getFullYear().toString().slice(-2));
+    datosCurso.periodo = mesActual >= 1 && mesActual <= 6 ? 1 : 2;
+
+    datosCurso.cupo_maximo = 35;
+    datosCurso.total_horas = 40;
+
     if (datosCurso.total_horas <= 0 || datosCurso.total_horas > 40) {
         throw new Error("HORAS_INVALIDAS");
     }
@@ -11,18 +21,19 @@ async function crearCurso(datosCurso, temas) {
         throw new Error("PERIODO_INVALIDO");
     }
 
+    // Validamos que el temario de Yaneli sí sume las 40 horas exactas
     let sumaHorasTemas = 0;
-    temas.forEach(tema => sumaHorasTemas += tema.horas_duracion);
-    
+    temas.forEach((tema) => (sumaHorasTemas += tema.horas_duracion));
+
     if (sumaHorasTemas !== datosCurso.total_horas) {
         throw new Error("DESCUADRE_DE_HORAS");
     }
 
     const idGenerado = await cursoRepository.guardarCurso(datosCurso, temas);
 
-    return { 
+    return {
         id_curso: idGenerado,
-        mensaje: `El curso '${datosCurso.nombre}' y sus ${temas.length} temas fueron registrados con éxito.` 
+        mensaje: `El curso '${datosCurso.nombre}' y sus ${temas.length} temas fueron registrados con éxito.`,
     };
 }
 

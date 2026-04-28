@@ -7,7 +7,10 @@ async function registrar(req, res) {
         return res.status(400).json({ mensaje: 'Faltan los datos del curso o el temario está vacío.' });
     }
 
+    const idInstructor = req.usuario.id;
+
     try {
+        curso.id_instructor = idInstructor;
         const resultado = await cursoService.crearCurso(curso, temas);
         
         res.status(201).json({ 

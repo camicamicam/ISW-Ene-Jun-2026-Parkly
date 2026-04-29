@@ -10,7 +10,7 @@ async function guardarCurso(datosCurso, temas) {
 
         const queryCurso = `
                 BEGIN
-                    alta_curso(:nom_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado);
+                    alta_curso(:nom_inst, :nom, :dur, :horas, :cupo, :anio, :per, :f_inicio, :f_termino, :dias, :hora, :id_generado);
                 END;
             `;
         
@@ -22,6 +22,10 @@ async function guardarCurso(datosCurso, temas) {
             cupo: datosCurso.cupo_maximo,  
             anio: datosCurso.anio,
             per: datosCurso.periodo,
+            f_inicio: datosCurso.fecha_inicio_obj,
+            f_termino: datosCurso.fecha_termino_obj,
+            dias: datosCurso.dias_semana,
+            hora: datosCurso.horario,
             id_generado: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
         };
 

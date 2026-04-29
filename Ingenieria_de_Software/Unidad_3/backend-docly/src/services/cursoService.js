@@ -28,6 +28,13 @@ async function crearCurso(datosCurso, temas) {
 
     datosCurso.total_horas = sumaHorasTemas;
 
+    datosCurso.fecha_inicio_obj = new Date(datosCurso.fecha_inicio);
+    datosCurso.fecha_termino_obj = new Date(datosCurso.fecha_termino);
+
+    if(datosCurso.fecha_termino_obj < datosCurso.fecha_inicio_obj) {
+        throw new Error("FECHAS_INVALIDAS");
+    }
+
     const idGenerado = await cursoRepository.guardarCurso(datosCurso, temas);
 
     return {

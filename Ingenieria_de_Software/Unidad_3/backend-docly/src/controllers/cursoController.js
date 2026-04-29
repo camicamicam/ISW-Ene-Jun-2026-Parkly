@@ -3,8 +3,9 @@ const cursoService = require('../services/cursoService');
 async function registrar(req, res) {
     const { curso, temas } = req.body;
 
-    if (!curso || !curso.nombre || !curso.duracion || !temas || temas.length === 0) {
-        return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso o el temario.' });
+    if (!curso || !curso.nombre || !curso.duracion || !temas || temas.length === 0||
+        !curso.fecha_inicio || !curso.fecha_termino || !curso.dias_semana || !curso.horario) {
+        return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso (fechas, horario, días, etc.) o el temario.' });
     }
 
     const idInstructor = req.usuario.id;

@@ -11,8 +11,14 @@ async function registrar(req, res) {
     const nombreDesdeFrontend = curso.nombre_instructor; 
     const nombreFinal = nombreDesdeFrontend ? nombreDesdeFrontend : req.usuario.nombre;
 
+    console.log("=== DEBUG DE NOMBRE ===");
+    console.log("Lo que mandó el Frontend:", nombreDesdeFrontend);
+    console.log("Lo que venía en el Token:", req.usuario.nombre);
+    console.log("El nombre FINAL que viajará a Oracle:", nombreFinal);
+
     try {
         curso.id_instructor = idInstructor;
+        curso.nombre_instructor_final = nombreFinal;
         const resultado = await cursoService.crearCurso(curso, temas);
         
         res.status(201).json({ 

@@ -10,7 +10,7 @@ async function guardarCurso(datosCurso, temas) {
 
         const queryCurso = `
                 BEGIN
-                    alta_curso(:nom_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado)
+                    alta_curso(:nom_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado);
                 END;
             `;
         
@@ -30,7 +30,7 @@ async function guardarCurso(datosCurso, temas) {
 
         const queryTema = `
                     BEGIN
-                        alta_tema_curso(:id_curso, :titulo, :horas)
+                        alta_tema_curso(:id_curso, :titulo, :horas);
                     END;
             `;
 

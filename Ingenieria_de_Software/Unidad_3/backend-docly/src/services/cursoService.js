@@ -9,7 +9,7 @@ async function crearCurso(datosCurso, temas) {
     datosCurso.periodo = mesActual >= 1 && mesActual <= 6 ? 1 : 2;
 
     datosCurso.cupo_maximo = 35;
-    datosCurso.total_horas = 40;
+    
 
     if (datosCurso.total_horas <= 0 || datosCurso.total_horas > 40) {
         throw new Error("HORAS_INVALIDAS");
@@ -22,11 +22,11 @@ async function crearCurso(datosCurso, temas) {
     }
 
     let sumaHorasTemas = 0;
-    temas.forEach((tema) => (sumaHorasTemas += tema.horas_duracion));
+    temas.forEach((tema) => {
+        sumaHorasTemas += tema.horas_duracion;
+    });
 
-    if (sumaHorasTemas !== datosCurso.total_horas) {
-        throw new Error("DESCUADRE_DE_HORAS");
-    }
+    datosCurso.total_horas = sumaHorasTemas;
 
     const idGenerado = await cursoRepository.guardarCurso(datosCurso, temas);
 

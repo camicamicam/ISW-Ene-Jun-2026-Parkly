@@ -11,6 +11,7 @@ async function registrar(req, res) {
     const nombreDesdeFrontend = curso.nombre_instructor; 
     const nombreFinal = nombreDesdeFrontend ? nombreDesdeFrontend : req.usuario.nombre;
 
+    console.log(" ");
     console.log("=== DEBUG DE NOMBRE ===");
     console.log("Lo que mandó el Frontend:", nombreDesdeFrontend);
     console.log("Lo que venía en el Token:", req.usuario.nombre);
@@ -26,6 +27,8 @@ async function registrar(req, res) {
             mensaje: `Instructor(a) ${nombreFinal}, su curso '${curso.nombre}' fue registrado con éxito.`,
             id_curso: resultado.id_curso
         });
+
+        console.log(`Curso '${curso.nombre}' registrado exitosamente con ID ${resultado.id_curso} por el instructor ${nombreFinal}.`);
 
     } catch (error) {
         switch(error.message) {

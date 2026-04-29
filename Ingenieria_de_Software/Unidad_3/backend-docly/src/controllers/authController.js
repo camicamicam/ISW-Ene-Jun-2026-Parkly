@@ -27,7 +27,7 @@ async function login(req, res/*, rol_esperado */) {
     } catch (error) {
         // Manejamos los errores que nos aviente el Service
         if (error.message === "CREDENCIAL_INVALIDA") {
-            res.status(401).json({ mensaje: 'Credencial incorrecta, revisa si eta bien o acude a DDA.' });
+            res.status(401).json({ mensaje: 'Credencial incorrecta, revisa si esta bien o acude a DDA.' });
         } else if (error.message === "ROL_INCORRECTO") {
             res.status(403).json({ mensaje: 'Acceso denegado, esta no es tu familia Dewey.' });
         }else {

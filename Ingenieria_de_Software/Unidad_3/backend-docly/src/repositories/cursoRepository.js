@@ -10,23 +10,22 @@ async function guardarCurso(datosCurso, temas) {
 
         const queryCurso = `
                 BEGIN
-                    alta_curso(:id_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado)
+                    alta_curso(:nom_inst, :nom, :dur, :horas, :cupo, :anio, :per, :id_generado)
                 END;
             `;
         
             const bindVarCurso = {
-                id_inst: datosCurso.id_instructor,
-                nom: datosCurso.nombre,
-                dur: datosCurso.duracion,
-                horas: datosCurso.total_horas,
-                cupo: datosCurso.cupo_maximo,
-                anio: datosCurso.anio,
-                per: datosCurso.periodo,
-                id_generado: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
-            };
+            nom_inst: datosCurso.nombre_instructor_final, // El nombre que decidimos usar
+            nom: datosCurso.nombre,
+            dur: datosCurso.duracion,
+            horas: datosCurso.total_horas, 
+            cupo: datosCurso.cupo_maximo,  
+            anio: datosCurso.anio,
+            per: datosCurso.periodo,
+            id_generado: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
+        };
 
         const resultCurso = await connection.execute(queryCurso, bindVarCurso, opciones);
-
         const idNuevoCurso = resultCurso.outBinds.id_generado;
 
         const queryTema = `

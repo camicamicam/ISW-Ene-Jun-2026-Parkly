@@ -3,23 +3,21 @@ const cursoService = require('../services/cursoService');
 async function registrar(req, res) {
     const { curso, temas } = req.body;
 
-    if (!curso || !curso.nombre || !curso.duracion || !temas || temas.length === 0||
-        !curso.fecha_inicio || !curso.fecha_termino || !curso.dias_semana || !curso.horario) {
-        return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso (fechas, horario, días, etc.) o el temario.' });
+    if (!curso || !curso.nombre || !curso.duracion || !temas || temas.length === 0 ||
+        !curso.fecha_inicio || !curso.fecha_termino || !curso.dias_semana || !curso.horario ||
+        !curso.instructor_numero_empleado || !curso.instructor_nombre || 
+        !curso.instructor_paterno || !curso.instructor_correo) {
+        return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso o del instructor.' });
     }
 
-    const idInstructor = req.usuario.id;
-    const nombreDesdeFrontend = curso.nombre_instructor; 
-    const nombreFinal = nombreDesdeFrontend ? nombreDesdeFrontend : req.usuario.nombre;
+    const nombreFinal = `${curso.instructor_nombre} ${curso.instructor_paterno}`;
 
     console.log(" ");
     console.log("=== DEBUG DE NOMBRE ===");
-    console.log("Lo que mandó el Frontend:", nombreDesdeFrontend);
-    console.log("Lo que venía en el Token:", req.usuario.nombre);
-    console.log("El nombre FINAL que viajará a Oracle:", nombreFinal);
+    console.log("Instructor a procesar:", nombreFinal);
+    console.log("Número de empleado:", curso.instructor_numero_empleado);
 
     try {
-        curso.id_instructor = idInstructor;
         curso.nombre_instructor_final = nombreFinal;
         const resultado = await cursoService.crearCurso(curso, temas);
         
@@ -41,11 +39,27 @@ async function registrar(req, res) {
                 return res.status(400).json({ mensaje: 'El periodo solo puede ser 1 o 2.' });
             case "DESCUADRE_DE_HORAS":
                 return res.status(400).json({ mensaje: 'La suma de horas del temario no coincide con las horas totales del curso.' });
+            case "FECHAS_INVALIDAS":
+                return res.status(400).json({ mensaje: 'La fecha de término no puede ser anterior a la fecha de inicio.' });
             default:
                 console.error(error);
-                return res.status(500).json({ mensaje: 'Error al registrar el curso en el servidor (tal vez no hay base de datos).' });
+                return res.status(500).json({ mensaje: 'Error al registrar el curso en el servidor.' });
         }
     }
 }
 
-module.exports = { registrar };
+async function obtenerCursos(req, res) {
+    try {
+        const cursos = await cursoService.listarCursos();
+        res.status(200).json({ 
+            status: 'Éxito', 
+            cantidad: cursos.length,
+            datos: cursos
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al obtener los cursos en el servidor.' });
+    }
+}
+
+module.exports = { registrar, obtenerCursos };

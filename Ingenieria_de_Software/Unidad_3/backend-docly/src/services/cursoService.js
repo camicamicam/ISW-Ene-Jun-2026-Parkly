@@ -7,9 +7,14 @@ async function crearCurso(datosCurso, temas) {
 
     datosCurso.anio = parseInt(fechaActual.getFullYear().toString().slice(-2));
     datosCurso.periodo = mesActual >= 1 && mesActual <= 6 ? 1 : 2;
-
     datosCurso.cupo_maximo = 35;
     
+    let sumaHorasTemas = 0;
+    temas.forEach((tema) => {
+        sumaHorasTemas += tema.horas_duracion;
+    });
+
+    datosCurso.total_horas = sumaHorasTemas;
 
     if (datosCurso.total_horas <= 0 || datosCurso.total_horas > 40) {
         throw new Error("HORAS_INVALIDAS");
@@ -20,13 +25,6 @@ async function crearCurso(datosCurso, temas) {
     if (datosCurso.periodo !== 1 && datosCurso.periodo !== 2) {
         throw new Error("PERIODO_INVALIDO");
     }
-
-    let sumaHorasTemas = 0;
-    temas.forEach((tema) => {
-        sumaHorasTemas += tema.horas_duracion;
-    });
-
-    datosCurso.total_horas = sumaHorasTemas;
 
     datosCurso.fecha_inicio_obj = new Date(datosCurso.fecha_inicio);
     datosCurso.fecha_termino_obj = new Date(datosCurso.fecha_termino);
@@ -43,4 +41,9 @@ async function crearCurso(datosCurso, temas) {
     };
 }
 
-module.exports = { crearCurso };
+async function listarCursos() {
+    
+    return await cursoRepository.obtenerCursos();
+}
+
+module.exports = { crearCurso, listarCursos };

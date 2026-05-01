@@ -50,7 +50,7 @@ async function listarCursos() {
         if(cursoExistente){
             cursoExistente.TEMAS.push({
                 TITULO_TEMA: filaActual.TITULO_TEMA,
-                HORAS_DURACION: filaActual.HORAS_DURACION
+                HORAS_TEMA: filaActual.HORAS_TEMA
             });
         } else {
             acumulador.push({

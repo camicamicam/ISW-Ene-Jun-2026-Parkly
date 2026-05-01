@@ -42,8 +42,40 @@ async function crearCurso(datosCurso, temas) {
 }
 
 async function listarCursos() {
-    
-    return await cursoRepository.obtenerCursos();
+    const filasCrudas = await cursoRepository.obtenerCursos();
+
+    const cursosAgrupados = filasCrudas.reduce((acumulador, filaActual) => {
+        const cursoExistente = acumulador.find(c => c.ID_CURSO === filaActual.ID_CURSO);
+
+        if(cursoExistente){
+            cursoExistente.TEMAS.push({
+                TITULO_TEMA: filaActual.TITULO_TEMA,
+                HORAS_DURACION: filaActual.HORAS_DURACION
+            });
+        } else {
+            acumulador.push({
+                ID_CURSO: filaActual.ID_CURSO,
+                NOMBRE_CURSO: filaActual.NOMBRE_CURSO,
+                INSTRUCTOR: filaActual.INSTRUCTOR,
+                TOTAL_HORAS: filaActual.TOTAL_HORAS,
+                CUPO_MAXIMO: filaActual.CUPO_MAXIMO,
+                ANIO: filaActual.ANIO,
+                PERIODO: filaActual.PERIODO,
+                FECHA_INICIO: filaActual.FECHA_INICIO,
+                FECHA_TERMINO: filaActual.FECHA_TERMINO,
+                DIAS_SEMANA: filaActual.DIAS_SEMANA,
+                HORARIO: filaActual.HORARIO,
+                TEMAS: [{
+                    TITULO_TEMA: filaActual.TITULO_TEMA,
+                    HORAS_TEMA: filaActual.HORAS_TEMA
+                }]
+            });
+        }
+        return acumulador;
+    }, []);
+
+    return cursosAgrupados;
+
 }
 
 module.exports = { crearCurso, listarCursos };

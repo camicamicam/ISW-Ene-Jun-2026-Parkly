@@ -15,8 +15,8 @@ export function renderNavbar() {
                 <li class="dropdown">
                     <a href="#" class="dropdown-link">Cursos Profesional</a>
                     <ul class="submenu">
-                        <li><a href="#" data-path="/perfil-docente">Docente</a></li>
-                        <li><a href="#" data-path="/perfil-administrativo">Administrativo</a></li>
+                        <li><a href="#" data-path="/docente">Docente</a></li>
+                        <li><a href="#" data-path="/administrativo">Administrativo</a></li>
                         <li><a href="#" data-path="/login?tipo=instructor">Instructor</a></li>
                     </ul>
                 </li>

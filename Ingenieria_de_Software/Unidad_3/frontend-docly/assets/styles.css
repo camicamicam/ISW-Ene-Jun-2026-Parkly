@@ -373,3 +373,116 @@ button:hover {
     font-weight: bold;
     font-family: Arial, sans-serif;
 }
+
+/* ================= INSTRUCTOR ESTILOS================= */
+.instructor-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    padding: 40px 20px;
+    background-color: rgba(44, 62, 80, 0.452);
+}
+
+.form-group { 
+    margin-bottom: 15px; 
+    text-align: left; 
+}
+
+.form-group label { 
+    display: block; 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+    color: #2c3e50; 
+    font-size: 14px;
+}
+
+.tema-row { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 10px; 
+}
+
+.btn-add { 
+    background-color: #27ae60; 
+    margin: 5px 0 20px 0; 
+    font-size: 13px;
+}
+
+.btn-add:hover { background-color: #219150; }
+
+/* Ficha de Resumen */
+.summary-card {
+    max-width: 550px;
+    text-align: left;
+    border-top: 8px solid #34495e;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #ddd;
+}
+
+.temas-list {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+    margin: 15px 0;
+}
+
+.temas-list ul { list-style: none; }
+
+.temas-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.btn-group-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-confirm { background-color: #27ae60 !important; }
+.btn-cancel { background-color: #e74c3c !important; }
+
+/* ================= DOCENTE/ADMINISTRATIVO ESTILOS ================= */
+.docente-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    padding: 40px 20px;
+    background-color: rgba(44, 62, 80, 0.452);
+}
+
+.course-item {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    border-left: 4px solid #3498db;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    display: block;
+    margin-bottom: 2px;
+}
+.admin-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    padding: 40px 20px;
+    background-color: rgba(44, 62, 80, 0.452);
+}

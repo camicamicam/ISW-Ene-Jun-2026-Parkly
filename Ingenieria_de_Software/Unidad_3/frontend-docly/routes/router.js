@@ -1,6 +1,9 @@
 // routes/router.js
 import { homePage } from '../pages/home.js';
 import { loginPage } from '../pages/login.js';
+import { instructorPage } from '../pages/instructor.js';
+//import { docentePage } from '../pages/docente.js';
+//import { administrativoPage } from '../pages/administrativo.js';
 
 const Placeholder = (title) => () => `<h1>${title}</h1><p>Próximamente...</p>`;
 
@@ -8,9 +11,9 @@ const routes = {
     '/': homePage,
     '/index.html': homePage,
     '/login': loginPage,
-    '/perfil-docente': Placeholder("Perfil Docente"),
-    '/perfil-administrativo': Placeholder("Perfil Administrativo"),
-    '/instructor': Placeholder("Panel de Instructor"),
+    '/docente': Placeholder("Perfil Docente"),
+    '/administrativo': Placeholder("Perfil Administrativo"),
+    '/instructor': instructorPage,
     '/constancias': Placeholder("Constancias de Cursos")
 };
 

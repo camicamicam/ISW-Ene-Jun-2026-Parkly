@@ -86,15 +86,16 @@ async function obtenerCursos(tipoFiltro) {
     try {
         connection = await db.getConnection();
 
-        let query = `SELECT * FROM v_detalle_cursos`;
+        let query = `SELECT * FROM v_detalle_cursos `;
         let bindVars = {};
 
         if (tipoFiltro) {
-            query += `WHERE tipo_curso = :tipo`;
+            query += `WHERE tipo_curso = :tipo `;
             bindVars.tipo = tipoFiltro;
         }
 
         query += `ORDER BY id_curso ASC`;
+        console.log("Query a ejecutar:", query);
         const result = await connection.execute(query, bindVars, { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
         return result.rows;

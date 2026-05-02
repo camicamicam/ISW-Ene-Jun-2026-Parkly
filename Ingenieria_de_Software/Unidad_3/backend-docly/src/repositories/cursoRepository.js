@@ -81,7 +81,7 @@ async function guardarCurso(datosCurso, temas) {
     }
 }
 
-async function obtenerCursos() {
+async function obtenerCursos(tipoFiltro) {
     let connection;
     try {
         connection = await db.getConnection();

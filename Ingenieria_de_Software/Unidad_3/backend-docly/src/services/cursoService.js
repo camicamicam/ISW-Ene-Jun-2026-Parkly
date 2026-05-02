@@ -41,8 +41,8 @@ async function crearCurso(datosCurso, temas) {
     };
 }
 
-async function listarCursos() {
-    const filasCrudas = await cursoRepository.obtenerCursos();
+async function listarCursos(tipoFiltro) {
+    const filasCrudas = await cursoRepository.obtenerCursos(tipoFiltro);
 
     const cursosAgrupados = filasCrudas.reduce((acumulador, filaActual) => {
         const cursoExistente = acumulador.find(c => c.ID_CURSO === filaActual.ID_CURSO);
@@ -56,6 +56,7 @@ async function listarCursos() {
             acumulador.push({
                 ID_CURSO: filaActual.ID_CURSO,
                 NOMBRE_CURSO: filaActual.NOMBRE_CURSO,
+                TIPO_CURSO: filaActual.TIPO_CURSO,
                 INSTRUCTOR: filaActual.INSTRUCTOR,
                 TOTAL_HORAS: filaActual.TOTAL_HORAS,
                 CUPO_MAXIMO: filaActual.CUPO_MAXIMO,

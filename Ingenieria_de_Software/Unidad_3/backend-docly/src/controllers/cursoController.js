@@ -3,7 +3,7 @@ const cursoService = require('../services/cursoService');
 async function registrar(req, res) {
     const { curso, temas } = req.body;
 
-    if (!curso || !curso.nombre || !curso.duracion || !temas || temas.length === 0 ||
+    if (!curso || !curso.nombre || !curso.tipo_curso || !curso.duracion || !temas || temas.length === 0 ||
         !curso.fecha_inicio || !curso.fecha_termino || !curso.dias_semana || !curso.horario ||
         !curso.instructor_numero_empleado || !curso.instructor_nombre || 
         !curso.instructor_paterno || !curso.instructor_correo) {
@@ -50,7 +50,8 @@ async function registrar(req, res) {
 
 async function obtenerCursos(req, res) {
     try {
-        const cursos = await cursoService.listarCursos();
+        const tipoFiltro = req.query.tipo;
+        const cursos = await cursoService.listarCursos(tipoFiltro);
         res.status(200).json({ 
             status: 'Éxito', 
             cantidad: cursos.length,

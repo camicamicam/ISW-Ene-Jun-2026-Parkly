@@ -2,6 +2,7 @@ import { navigate } from "../routes/router.js";
 import { cursosService } from "../services/cursosService.js";
 
 export function instructorPage() {
+    const tipoDeCursoActual = localStorage.getItem("seccion_itq") || "Docente";
     setTimeout(() => {
         const btnAdd = document.getElementById("addTema");
         const form = document.getElementById("instructorForm");
@@ -90,6 +91,7 @@ export function instructorPage() {
 
         const payload = {
             curso: {
+                tipo_curso: tipoDeCursoActual,
                 instructor_numero_empleado: Number(data.curso.instructor_numero_empleado),
                 instructor_nombre: normalizarTexto(data.curso.instructor_nombre),
                 instructor_paterno: normalizarTexto(data.curso.instructor_paterno),
@@ -130,6 +132,12 @@ export function instructorPage() {
                 <div class="card summary-card" style="max-width: 500px; margin: auto;">
                     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Confirmar Registro</h2>
                     
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <span style="background: #34495e; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem;">
+                            MODALIDAD: ${tipoDeCursoActual}
+                        </span>
+                    </div>
+
                     <h4 style="color: #34495e; border-bottom: 2px solid #2c3e50; padding-bottom: 5px;">Datos del Instructor</h4>
                     <div class="summary-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding: 10px 0;">
                         <div class="summary-item"><strong>N° Empleado:</strong> ${data.curso.instructor_numero_empleado}</div>
@@ -159,7 +167,12 @@ export function instructorPage() {
     return `
         <div class="instructor-container">
             <div class="card" style="max-width: 600px;">
-                <h1>Información del Curso</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h1 style="margin: 0;">Información del Curso</h1>
+                    <span style="background: #e1f5fe; color: #0288d1; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; border: 1px solid #b3e5fc;">
+                        Sección: ${tipoDeCursoActual}
+                    </span>
+                </div>
                 <form id="instructorForm">
                     
                     <h3 style="margin-bottom: 15px; color: #555;">Datos del Instructor</h3>

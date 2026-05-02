@@ -49,13 +49,31 @@ function setupNavbarEvents() {
     const menu = document.getElementById("main-menu");
     toggle.onclick = () => menu.classList.toggle("active");
 
-    // 3. Manejo de Clics en Links (SPA)
+    // 3. Manejo de Clics en Links (SPA) - BLOQUE UNIFICADO
     document.querySelectorAll(".menu a[data-path]").forEach(link => {
         link.onclick = (e) => {
             e.preventDefault();
             const path = link.getAttribute("data-path");
+
+            // Buscamos si el link pertenece a alguna sección específica
+            const dropdownParent = link.closest('.dropdown');
+            
+            if (dropdownParent) {
+                const content = dropdownParent.innerHTML;
+                if (content.includes('Cursos Profesional')) {
+                    localStorage.setItem("seccion_itq", "Profesional");
+                } else if (content.includes('Cursos Docente')) {
+                    localStorage.setItem("seccion_itq", "Docente");
+                }
+            } else {
+                // Si no está en un dropdown (como Constancias), 
+                // podemos limpiar o ignorar la sección
+                localStorage.removeItem("seccion_itq");
+            }
+
+            // Navegamos y cerramos menú
             navigate(path);
-            menu.classList.remove("active"); // Cerrar menú en móvil tras clic
+            menu.classList.remove("active");
         };
     });
 

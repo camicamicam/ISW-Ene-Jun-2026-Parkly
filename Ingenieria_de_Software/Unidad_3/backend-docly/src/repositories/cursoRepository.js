@@ -86,8 +86,7 @@ async function obtenerCursos(tipoFiltro) {
     try {
         connection = await db.getConnection();
 
-        const query = `SELECT * FROM v_detalle_cursos`;
-
+        let query = `SELECT * FROM v_detalle_cursos`;
         let bindVars = {};
 
         if (tipoFiltro) {

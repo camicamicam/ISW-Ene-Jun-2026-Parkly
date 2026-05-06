@@ -26,5 +26,33 @@ export const cursosService = {
             console.error("Error en cursosService:", error);
             throw error;
         }
+    },
+
+    async obtenerCursosDisponibles(tipo) {
+        try {
+            const token = localStorage.getItem("token");
+            
+            // Esto asegura que ?tipo=Profesional se codifique bien
+            const params = new URLSearchParams({ tipo: tipo });
+            const url = `${BASE_URL}/api/cursos/disponibles?${params.toString()}`;
+            
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                // Si el backend responde 404 aquí, es que la ruta /api/cursos/disponibles no existe
+                throw new Error(`Error ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error("Error en obtenerCursosDisponibles:", error);
+            throw error;
+        }
     }
 };

@@ -83,7 +83,7 @@ async function inscripcionDocente(datos) {
     if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.correo || !datos.id_departamento || !datos.id_plaza || !datos.id_curso) {
         throw new Error("FALTAN_DATOS");
     }
-    await cursoRepository.inscribirDocenteBD(datos);
+    await cursoRepository.inscribirDocente(datos);
     return { mensaje: `El docente ${datos.nombre} fue inscrito con éxito.` };
 }
 
@@ -91,7 +91,7 @@ async function inscripcionAdministrativo(datos) {
     if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.correo || !datos.id_departamento || !datos.id_curso) {
         throw new Error("FALTAN_DATOS");
     }
-    await cursoRepository.inscribirAdministrativoBD(datos);
+    await cursoRepository.inscribirAdministrativo(datos);
     return { mensaje: `El administrativo ${datos.nombre} fue inscrito con éxito.` };
 }
 

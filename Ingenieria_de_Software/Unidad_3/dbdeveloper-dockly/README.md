@@ -1,8 +1,7 @@
 ### Base de Datos  
 
 ### Archivos  
-  squema.sql : estructura  
-  vistas.sql : vistas  
+  squema.sql : estructura y vistas  
   seed.sql : datos de prueba  
 ### Cómo ejecutar (Oracle Cloud)  
 1. Create Autonomous AI Database  
@@ -12,10 +11,8 @@
 5. Database Actions -> SQL  
 6. Abrir (Ctrl+O) -> squema.sql  
 7. Ejecutar script (F5)  
-8. Abrir (Ctrl+O) -> vistas.sql  
-7. Ejecutar script (F5)  
 8. Abrir (Ctrl+O) -> seed.sql  
-7. Ejecutar script (F5)  
+9. Ejecutar script (F5)  
 ## Tablas principales  
 usuario : tabla padre de todos los usuarios  
 docente/administrativo : tablas de especialización vinculadas por id_usuario  

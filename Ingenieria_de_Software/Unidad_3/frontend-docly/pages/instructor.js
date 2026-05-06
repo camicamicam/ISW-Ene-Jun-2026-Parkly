@@ -4,10 +4,13 @@ import { cursosService } from "../services/cursosService.js";
 export function instructorPage() {
     const tipoDeCursoActual = localStorage.getItem("seccion_itq") || "Docente";
     setTimeout(() => {
+
+        //---------LÓGICA FORMULARIO---------------
         const btnAdd = document.getElementById("addTema");
         const form = document.getElementById("instructorForm");
         const containerTemas = document.getElementById("container-temas");
 
+        //--Añadir tema
         if (btnAdd) {
             btnAdd.addEventListener("click", () => {
                 const div = document.createElement("div");
@@ -76,6 +79,49 @@ export function instructorPage() {
                 document.getElementById("main-content").innerHTML = renderConfirmacion();
             });
         }
+
+         // --- LÓGICA PARA CARGAR CURSOS EXISTENTES ---
+        const cargarCursos = async () => {
+            const listaCursosContainer = document.getElementById("lista-cursos-instructor");
+            
+            if (!listaCursosContainer) {
+                setTimeout(cargarCursos, 100);
+                return;
+            }
+
+            try {
+                const respuesta = await cursosService.obtenerCursosDisponibles(tipoDeCursoActual);
+                
+                // Accedemos a respuesta.datos porque ahí es donde vienen los cursos según tu consola
+                const listaFinal = respuesta.datos || [];
+
+                if (listaFinal.length === 0) {
+                    listaCursosContainer.innerHTML = `
+                        <div style="text-align:center; padding: 20px; color: #666; background: #f9f9f9; border-radius: 8px;">
+                            No hay cursos de tipo "${tipoDeCursoActual}" registrados.
+                        </div>`;
+                    return;
+                }
+
+                // Mapeamos usando los nombres de campos en MAYÚSCULAS que manda el servidor
+                listaCursosContainer.innerHTML = listaFinal.map(curso => `
+                    <div class="curso-card-mini" style="background: white; padding: 15px; border-radius: 8px; border-left: 5px solid #2c3e50; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;">
+                        <h4 style="margin: 0 0 5px 0; color: #2c3e50;">${curso.NOMBRE_CURSO}</h4>
+                        <div style="font-size: 0.85rem; color: #666;">
+                            <span><strong>Instructor:</strong> ${curso.INSTRUCTOR}</span><br>
+                            <span><strong>Horas:</strong> ${curso.TOTAL_HORAS}</span> | 
+                            <span><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error("Fallo al cargar:", error);
+                listaCursosContainer.innerHTML = `<p style="color: red; text-align: center;">Error al procesar la lista de cursos.</p>`;
+            }
+        };
+
+        cargarCursos();
     }, 0);
 
     window.enviarDatosBackend = async () => {
@@ -165,8 +211,9 @@ export function instructorPage() {
     }
 
     return `
-        <div class="instructor-container">
-            <div class="card" style="max-width: 600px;">
+        <div class="instructor-container" style="display: flex; flex-direction: column; gap: 20px; align-items: center; padding: 20px;">
+
+            <div class="card" style="max-width: 600px; width: 100%;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h1 style="margin: 0;">Información del Curso</h1>
                     <span style="background: #e1f5fe; color: #0288d1; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; border: 1px solid #b3e5fc;">
@@ -256,11 +303,19 @@ export function instructorPage() {
                                 </button>
                             </div>
                         </div>
-                        <button type="button" id="addTema" class="btn-add" style="margin-top:10px;">+ Añadir módulo</button>
+                        <button type="button" id="addTema" class="btn-add" style="margin-top:10px;">+ Añadir tema</button>
                     </div>
 
                     <button type="submit" style="margin-top: 10px; width: 100%;">Guardar</button>
                 </form>
+            </div>
+
+            <!-- SECCIÓN DE MIS CURSOS -->
+            <div class="card" style="max-width: 600px; width: 100%; background: #fff;">
+                <h2 style="margin-top: 0; color: #34495e;">Mis Cursos Registrados</h2>
+                <div id="lista-cursos-instructor" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                    <p>Cargando cursos...</p>
+                </div>
             </div>
         </div>
     `;

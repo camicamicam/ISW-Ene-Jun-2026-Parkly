@@ -486,3 +486,132 @@ button:hover {
     padding: 40px 20px;
     background-color: rgba(44, 62, 80, 0.452);
 }
+
+/* Estilos para Selects consistentes */
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+/* Badge de Sección */
+.section-badge {
+    background: #e1f5fe;
+    color: #0288d1;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* Grid para nombre completo */
+.name-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+/*================MOSTRAR CURSOS PARA INCRIBIRSE==============*/
+/* Contenedor principal de la lista */
+#grid-cursos-inscripcion {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre cada curso */
+    margin-top: 20px;
+}
+
+/* Tarjeta Horizontal */
+.curso-card-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    cursor: pointer;
+}
+
+.curso-card-horizontal:hover {
+    border-color: #3498db;
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Estilo cuando una tarjeta está seleccionada */
+.curso-card-horizontal.selected {
+    border: 2px solid #27ae60;
+    background-color: #f0fff4;
+}
+
+/* Contenido de la izquierda */
+.card-content {
+    flex: 1;
+}
+
+.badge-horas {
+    display: inline-block;
+    background: #e1f5fe;
+    color: #0288d1;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+}
+
+.curso-titulo {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.curso-detalles p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Botón a la derecha */
+.card-action {
+    margin-left: 20px;
+}
+
+.btn-seleccionar {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.curso-card-horizontal.selected .btn-seleccionar {
+    background-color: #27ae60;
+}
+
+.btn-seleccionar:hover {
+    background-color: #2980b9;
+}
+
+/* Animación de entrada */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.curso-card-horizontal {
+    animation: slideIn 0.3s ease forwards;
+}

@@ -1,0 +1,488 @@
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#main-content {
+    flex: 1; /* Esto empuja el footer hacia abajo */
+    display: flex;
+    flex-direction: column;
+}
+/* RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* BODY */
+body {
+    background-color: #f4f6f9;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    padding: 10px 20px;
+    position: relative;
+    z-index: 10000;
+}
+
+/* LOGO */
+.logo {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* MENU */
+.menu {
+    list-style: none;
+    display: flex;
+}
+
+/* ITEMS */
+.menu li {
+    position: relative;
+    padding-bottom: 5px;
+}
+
+/* LINKS */
+.menu li a {
+    display: block;
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+/* HOVER */
+.menu li a:hover {
+    background-color: #34495e;
+}
+
+/* SUBMENU */
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%; /*para que inicie donde termina el nav*/
+    right: 0;
+    background-color: #2c3e50;
+    list-style: none;
+    min-width: 200px;
+    z-index: 10001; /*Este por encima del contenido y no haya comflictor al elegir*/
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.363); /*Sombras para resaltar*/
+}
+
+.submenu::before {
+    content: "";
+    position: absolute;
+    top: -10px; /* Cubre el hueco de 10px arriba del submenú */
+    left: 0;
+    width: 100%;
+    height: 10px;
+    display: block;
+}
+
+/* ITEMS SUBMENU */
+.submenu li a {
+    padding: 10px;
+}
+
+/* FLECHITA */
+.dropdown > a::after {
+    content: " ▼";
+    font-size: 12px;
+}
+/*MANTENER MENU Y PODER HACER SELECIÓN*/
+.dropdown:hover .submenu,
+.submenu:hover {
+    display: block !important;
+}
+
+/* DESKTOP: mostrar con hover */
+@media (min-width: 769px) {
+    .dropdown:hover .submenu {
+        display: block;
+    }
+}
+
+/* BOTÓN MENU (MÓVIL) */
+.menu-toggle {
+    display: none;
+    font-size: 25px;
+    color: white;
+    cursor: pointer;
+}
+
+/* ================= FOOTER COMPONENT ================= */
+.footer {
+    background-color: #2c3e50; /* Color igual al navbar */
+    color: #ecf0f1;
+    padding: 25px 20px;
+    margin-top: auto; /* Empuja el footer al fondo en layouts flex */
+    width: 100%;
+}
+
+.footer-content {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Texto a la izquierda, links a la derecha */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.footer-info p {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.footer-links {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-links a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.separator {
+    color: #7f8c8d;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .separator {
+        display: none;
+    }
+}
+
+/* ================= LOGIN CARD ================= */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    background-color: rgba(44, 62, 80, 0.452);
+    width: 100%;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.card h1 {
+    margin-bottom: 20px;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* BOTONES */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #34495e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #34495e;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+    .menu {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #2c3e50;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    .menu.active {
+        display: flex;
+    }
+
+    .menu li {
+        text-align: center;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar {
+        position: relative;
+    }
+
+    /* SUBMENU EN MÓVIL */
+    .submenu {
+        position: static;
+        display: none;
+    }
+
+    .dropdown.active .submenu {
+        display: block;
+    }
+
+    /* LOGIN RESPONSIVE */
+    .card {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .container {
+        min-height: 88vh; /* Que mantenga una altura mínima razonable */
+        padding: 20px;
+        display: flex; /* Aseguramos que siga centrando la card */
+        align-items: center; 
+        justify-content: center;
+    }
+}
+
+/* ===================== Contenedor Inicio ==================*/
+.inicio-container {
+    position: relative;
+    height: 87.2vh; /* Ocupa el 80% de la altura de la pantalla */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    
+    /*Cambiar tonalidad y brillo de la imagen */
+    background-color: rgba(44, 62, 80, 0.452);
+    /*background-color: rgba(44, 62, 80, 0.7);*/ /* Color azul oscuro con 70% de opacidad */
+    background-blend-mode: multiply; /* Mezcla el color con la imagen */
+}
+.inicio-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    background-image: url('img/logo-fondo.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* Cambiar color de imagen */
+    filter: hue-rotate(190deg) brightness(0.3) opacity(0.5); 
+    z-index: 1;
+}
+
+/* Contenido (Texto) */
+.inicio-content {
+    position: relative;
+    z-index: 2; /* Asegura que el texto esté por encima de todo */
+    color: white;
+    text-align: center;
+}
+
+.inicio-title {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5); /* Sombra para que resalte más */
+}
+
+.inicio-subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ================= SPINNER DE CARGA ================= */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente */
+    display: none; /* Oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Por encima de todo, incluso del navbar */
+    flex-direction: column;
+    gap: 15px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #34495e; /* Tu azul principal */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-overlay span {
+    color: #2c3e50;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+/* ================= INSTRUCTOR ESTILOS================= */
+.instructor-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    padding: 40px 20px;
+    background-color: rgba(44, 62, 80, 0.452);
+}
+
+.form-group { 
+    margin-bottom: 15px; 
+    text-align: left; 
+}
+
+.form-group label { 
+    display: block; 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+    color: #2c3e50; 
+    font-size: 14px;
+}
+
+.tema-row { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 10px; 
+}
+
+.btn-add { 
+    background-color: #27ae60; 
+    margin: 5px 0 20px 0; 
+    font-size: 13px;
+}
+
+.btn-add:hover { background-color: #219150; }
+
+/* Ficha de Resumen */
+.summary-card {
+    max-width: 550px;
+    text-align: left;
+    border-top: 8px solid #34495e;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #ddd;
+}
+
+.temas-list {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+    margin: 15px 0;
+}
+
+.temas-list ul { list-style: none; }
+
+.temas-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.btn-group-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-confirm { background-color: #27ae60 !important; }
+.btn-cancel { background-color: #e74c3c !important; }
+
+/* ================= DOCENTE/ADMINISTRATIVO ESTILOS ================= */
+.docente-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    padding: 40px 20px;
+    background-color: rgba(44, 62, 80, 0.452);
+}
+
+.course-item {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    border-left: 4px solid #3498db;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    display: block;
+    margin-bottom: 2px;
+}
+.admin-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 87.2vh;
+    padding: 40px 20px;
+    background-color: rgba(44, 62, 80, 0.452);
+}

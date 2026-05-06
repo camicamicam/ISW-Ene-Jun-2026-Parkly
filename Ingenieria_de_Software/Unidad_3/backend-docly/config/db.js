@@ -15,7 +15,7 @@ async function getConnection() {
         });
         return connection;
     } catch (err) {
-        console.error("Error al conectar a la base de datos", err);
+        console.error("Error al conectar a la base de datos (tal vez el becario la borro).", err);
         throw err;
     }
 }

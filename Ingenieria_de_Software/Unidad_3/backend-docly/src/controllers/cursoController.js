@@ -5,7 +5,7 @@ async function registrar(req, res) {
 
     if (!curso || !curso.nombre || !curso.tipo_curso || !curso.duracion || !temas || temas.length === 0 ||
         !curso.fecha_inicio || !curso.fecha_termino || !curso.dias_semana || !curso.horario ||
-        !curso.instructor_numero_empleado || !curso.instructor_nombre || 
+        !curso.instructor_numero_empleado || !curso.instructor_nombre ||
         !curso.instructor_paterno || !curso.instructor_correo) {
         return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso o del instructor.' });
     }
@@ -20,9 +20,9 @@ async function registrar(req, res) {
     try {
         curso.nombre_instructor_final = nombreFinal;
         const resultado = await cursoService.crearCurso(curso, temas);
-        
-        res.status(201).json({ 
-            status: 'Éxito', 
+
+        res.status(201).json({
+            status: 'Éxito',
             mensaje: `Instructor(a) ${nombreFinal}, su curso '${curso.nombre}' fue registrado con éxito.`,
             id_curso: resultado.id_curso
         });
@@ -30,7 +30,7 @@ async function registrar(req, res) {
         console.log(`Curso '${curso.nombre}' registrado exitosamente con ID ${resultado.id_curso} por el instructor ${nombreFinal}.`);
 
     } catch (error) {
-        switch(error.message) {
+        switch (error.message) {
             case "HORAS_INVALIDAS":
                 return res.status(400).json({ mensaje: 'Las horas totales deben estar entre 1 y 40.' });
             case "CUPO_INVALIDO":
@@ -52,8 +52,8 @@ async function obtenerCursos(req, res) {
     try {
         const tipoFiltro = req.query.tipo;
         const cursos = await cursoService.listarCursos(tipoFiltro);
-        res.status(200).json({ 
-            status: 'Éxito', 
+        res.status(200).json({
+            status: 'Éxito',
             cantidad: cursos.length,
             datos: cursos
         });
@@ -63,4 +63,38 @@ async function obtenerCursos(req, res) {
     }
 }
 
-module.exports = { registrar, obtenerCursos };
+async function inscribirDocente(req, res) {
+    try {
+        const resultado = await cursoService.inscripcionDocente(req.body);
+        res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
+    } catch (error) {
+        erroresInscripcion(error, res);
+    }
+}
+
+async function inscribirAdministrativo(req, res) {
+    try {
+        const resultado = await cursoService.inscripcionAdministrativo(req.body);
+        res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
+    } catch (error) {
+        erroresInscripcion(error, res);
+    }
+}
+
+function erroresInscripcion(error, res) {
+    switch (error.message) {
+        case "FALTAN_DATOS":
+            return res.status(400).json({ mensaje: 'Faltan datos obligatorios para la inscripción.' });
+        case "CUPO_LLENO":
+            return res.status(400).json({ mensaje: 'El cupo del curso está lleno.' });
+        case "DUPLICADO":
+            return res.status(400).json({ mensaje: 'El usuario ya está inscrito en este curso.' });
+        case "NO_EXISTE":
+            return res.status(400).json({ mensaje: 'El curso o el usuario no existe.' });
+        default:
+            console.error(error);
+            return res.status(500).json({ mensaje: 'Error al inscribir al usuario en el servidor.' });
+    }
+}
+
+module.exports = { registrar, obtenerCursos, inscribirDocente, inscribirAdministrativo, erroresInscripcion };

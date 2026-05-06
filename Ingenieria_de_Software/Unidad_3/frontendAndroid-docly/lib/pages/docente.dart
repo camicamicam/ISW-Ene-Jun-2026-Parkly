@@ -20,7 +20,7 @@ class _DocentePageState extends State<DocentePage> {
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
+            color: Colors.deepOrange,
           ),
         ),
       ),

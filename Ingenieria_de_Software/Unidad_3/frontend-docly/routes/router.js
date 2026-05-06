@@ -24,6 +24,8 @@ export const navigate = (url) => {
 
 export const handleRoute = async () => {
     const path = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlParams.entries());
     const pageFunction = routes[path] || homePage; 
     
     const mainContent = document.getElementById('main-content');

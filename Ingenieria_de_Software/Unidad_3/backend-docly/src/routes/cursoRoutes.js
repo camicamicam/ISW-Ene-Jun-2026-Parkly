@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const cursoController = require('../controllers/cursoController');
@@ -14,5 +15,7 @@ router.get(
     checkRole(['INSTRUCTOR', 'DOCENTE', 'ADMINISTRATIVO']), 
     cursoController.obtenerCursos
 );
+
+router.get('/catalogo',cursoController.obtenerCursos);
 
 module.exports = router;

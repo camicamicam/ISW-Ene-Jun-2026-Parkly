@@ -20,7 +20,7 @@ class _AdministrativoPageState extends State<AdministrativoPage> {
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
+            color: Colors.deepOrange,
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dockly/routes/routes.dart';
-import 'package:dockly/services/notifier.dart';
+import 'package:docly/routes/routes.dart';
+import 'package:docly/services/notifier.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
 
         // Define the default brightness and colors.
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: Colors.deepOrange,
           brightness: Brightness.light,
         ),
       ),

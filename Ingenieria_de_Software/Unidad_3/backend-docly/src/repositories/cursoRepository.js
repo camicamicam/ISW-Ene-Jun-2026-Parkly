@@ -109,4 +109,75 @@ async function obtenerCursos(tipoFiltro) {
     }
 }
 
-module.exports = { guardarCurso, obtenerCursos };
+async function inscribirDocente(datos) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+                BEGIN
+                    inscribir_docente(
+                        :p_num_empleado, :p_nombre, :p_ap_paterno, :p_ap_materno, :p_correo,
+                        :p_id_depto, :p_id_plaza, :p_id_curso
+                    );
+                END;
+                `;
+        const bindVars = {
+            p_num_empleado: datos.numero_empleado,
+            p_nombre: datos.nombre,
+            p_ap_paterno: datos.apellido_paterno,
+            p_ap_materno: datos.apellido_materno,
+            p_correo: datos.correo,
+            p_id_depto: datos.id_departamento,
+            p_id_plaza: datos.id_plaza,
+            p_id_curso: datos.id_curso
+        };
+        await connection.execute(query, bindVars, { autoCommit: true });
+        return true;
+    } catch (error) {
+        if (error.message.includes('CUPO_LLENO')) throw new Error('CUPO_LLENO');
+        if (error.message.includes('DUPLICADO')) throw new Error('DUPLICADO');
+        if (error.message.includes('NO_EXISTE')) throw new Error('NO_EXISTE');
+        throw new Error("Error al inscribir al usuario: " + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+async function inscribirAdministrativo(datos) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            BEGIN
+                inscribir_administrativo(
+                    :p_num_empleado, :p_nombre, :p_ap_paterno, :p_ap_materno, :p_correo,
+                    :p_id_depto, :p_id_curso
+                );
+            END;
+        `;
+        const bindVars = {
+            p_num_empleado: datos.numero_empleado,
+            p_nombre: datos.nombre,
+            p_ap_paterno: datos.apellido_paterno,
+            p_ap_materno: datos.apellido_materno,
+            p_correo: datos.correo,
+            p_id_depto: datos.id_departamento,
+            p_id_curso: datos.id_curso
+        };
+        await connection.execute(query, bindVars, { autoCommit: true });
+        return true;
+    } catch (error) {
+        if (error.message.includes('CUPO_LLENO')) throw new Error('CUPO_LLENO');
+        if (error.message.includes('DUPLICADO')) throw new Error('DUPLICADO');
+        if (error.message.includes('NO_EXISTE')) throw new Error('NO_EXISTE');
+        throw new Error("Error al inscribir al usuario: " + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+module.exports = { guardarCurso, obtenerCursos, inscribirDocente, inscribirAdministrativo };

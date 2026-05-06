@@ -8,7 +8,7 @@ async function crearCurso(datosCurso, temas) {
     datosCurso.anio = parseInt(fechaActual.getFullYear().toString().slice(-2));
     datosCurso.periodo = mesActual >= 1 && mesActual <= 6 ? 1 : 2;
     datosCurso.cupo_maximo = 35;
-    
+
     let sumaHorasTemas = 0;
     temas.forEach((tema) => {
         sumaHorasTemas += tema.horas_duracion;
@@ -29,7 +29,7 @@ async function crearCurso(datosCurso, temas) {
     datosCurso.fecha_inicio_obj = new Date(datosCurso.fecha_inicio);
     datosCurso.fecha_termino_obj = new Date(datosCurso.fecha_termino);
 
-    if(datosCurso.fecha_termino_obj < datosCurso.fecha_inicio_obj) {
+    if (datosCurso.fecha_termino_obj < datosCurso.fecha_inicio_obj) {
         throw new Error("FECHAS_INVALIDAS");
     }
 
@@ -47,7 +47,7 @@ async function listarCursos(tipoFiltro) {
     const cursosAgrupados = filasCrudas.reduce((acumulador, filaActual) => {
         const cursoExistente = acumulador.find(c => c.ID_CURSO === filaActual.ID_CURSO);
 
-        if(cursoExistente){
+        if (cursoExistente) {
             cursoExistente.TEMAS.push({
                 TITULO_TEMA: filaActual.TITULO_TEMA,
                 HORAS_TEMA: filaActual.HORAS_TEMA
@@ -79,4 +79,20 @@ async function listarCursos(tipoFiltro) {
 
 }
 
-module.exports = { crearCurso, listarCursos };
+async function inscripcionDocente(datos) {
+    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.correo || !datos.id_departamento || !datos.id_plaza || !datos.id_curso) {
+        throw new Error("FALTAN_DATOS");
+    }
+    await cursoRepository.inscribirDocente(datos);
+    return { mensaje: `El docente ${datos.nombre} fue inscrito con éxito.` };
+}
+
+async function inscripcionAdministrativo(datos) {
+    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.correo || !datos.id_departamento || !datos.id_curso) {
+        throw new Error("FALTAN_DATOS");
+    }
+    await cursoRepository.inscribirAdministrativo(datos);
+    return { mensaje: `El administrativo ${datos.nombre} fue inscrito con éxito.` };
+}
+
+module.exports = { crearCurso, listarCursos, inscripcionDocente, inscripcionAdministrativo };

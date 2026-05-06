@@ -108,7 +108,7 @@ class _PingPageState extends State<PingPage> {
                     horizontal: 20,
                     vertical: 12,
                   ),
-                  backgroundColor: Colors.deepPurple, // Color del botón
+                  backgroundColor: Colors.deepOrange, // Color del botón
                   foregroundColor: Colors.white, // Color del texto e ícono
                 ),
               ),
@@ -121,7 +121,7 @@ class _PingPageState extends State<PingPage> {
                     horizontal: 20,
                     vertical: 12,
                   ),
-                  backgroundColor: Colors.deepPurple, // Color del botón
+                  backgroundColor: Colors.deepOrange, // Color del botón
                   foregroundColor: Colors.white, // Color del texto e ícono
                 ),
               ),

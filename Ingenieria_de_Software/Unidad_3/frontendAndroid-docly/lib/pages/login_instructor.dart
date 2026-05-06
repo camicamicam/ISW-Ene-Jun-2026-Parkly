@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:docly/services/apis.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginInstructor extends StatefulWidget {
+  const LoginInstructor({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginInstructor> createState() => _LoginInstructorState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginInstructorState extends State<LoginInstructor> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  Future<void> _iniciarSesion() async {
+  Future<void> _iniciarSesion(String seccion) async {
     String password = _passwordController.text;
+    String tipoPortal = 'instructor';
 
     if (password.isEmpty) {
-      _mostrarMensaje('Por favor, ingresa tu número.');
+      _mostrarMensaje('Por favor, ingresa tu clave.');
       return;
     }
 
@@ -26,33 +26,23 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    try {
-      // Reemplaza con los campos exactos que espera tu API (ej: numero, matricula, etc.)
-      final response = await http.post(
-        Uri.parse('https://api-cursos-itq.onrender.com/api/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'password_acceso': password}),
+    bool loginExitoso = await ApiService.login(password, tipoPortal);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (loginExitoso) {
+      // 1. Limpiamos el campo de texto de la contraseña
+      _passwordController.clear();
+
+      Navigator.pushReplacementNamed(
+        context,
+        'instructorPage',
+        arguments: seccion,
       );
-
-      if (response.statusCode == 200) {
-        // Si el login es exitoso
-        final data = jsonDecode(response.body);
-        print('Login exitoso: $data');
-
-        // Aquí podrías guardar el token o navegar
-        Navigator.pushNamed(context, 'instructorPage');
-      } else {
-        // Si la API responde con error (401, 404, etc)
-        _mostrarMensaje('Credenciales incorrectas.');
-      }
-    } catch (e) {
-      // Error de conexión (internet, servidor caído, etc)
-      _mostrarMensaje('Error de conexión con el servidor.');
-      print(e);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+    } else {
+      _mostrarMensaje('Credenciales incorrectas o error de conexión.');
     }
   }
 
@@ -64,6 +54,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String seccionElegida =
+        ModalRoute.of(context)!.settings.arguments as String? ?? 'Profesional';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -75,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Login',
+                'Acceso Instructor',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 50,
@@ -84,7 +77,48 @@ class _LoginPageState extends State<LoginPage> {
                   fontFamily: 'DancingScript',
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  border: Border(
+                    left: BorderSide(
+                      color: Colors.blueGrey.shade800,
+                      width: 4.0,
+                    ),
+                  ),
+                ),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
+                    children: [
+                      TextSpan(
+                        text: 'Nota: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text:
+                            'En caso de no contar con su contraseña, favor de pasar a ',
+                      ),
+                      TextSpan(
+                        text: 'DDA ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(text: 'para solicitarla.'),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -93,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: TextField(
                   controller: _passwordController,
                   decoration: InputDecoration(
-                    hintText: 'Ingrese Clave:',
+                    hintText: 'Ingrese su clave:',
                     hintStyle: const TextStyle(color: Colors.grey),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -122,9 +156,9 @@ class _LoginPageState extends State<LoginPage> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _iniciarSesion,
+                      onPressed: () => _iniciarSesion(seccionElegida),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Colors.deepOrange,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -134,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       child: const Text(
-                        'INICIAR SESION',
+                        'INGRESAR',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w400,

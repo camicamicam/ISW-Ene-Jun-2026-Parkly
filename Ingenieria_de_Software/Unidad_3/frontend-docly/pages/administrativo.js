@@ -25,17 +25,18 @@ export function administrativoPage() {
         const gridCursos = document.getElementById("grid-cursos-inscripcion");
         const form = document.getElementById("adminForm");
 
-        // 1. CARGAR CURSOS EN FORMATO TARJETA (Igual que en docente.js)
         const cargarTarjetasCursos = async () => {
             if (!gridCursos) return;
 
             try {
-                // Usamos la misma lógica de servicio que docente.js
-                const respuesta = await cursosService.obtenerCursosDisponibles(tipoDeCursoActual);
-                const listaFinal = respuesta.datos || [];
+                // MODIFICACIÓN CLAVE: Usamos el catálogo público con parámetro
+                const respuesta = await inscripcionesService.obtenerCatalogoPublico(tipoDeCursoActual);
+                
+                // El backend filtra, nosotros solo recibimos la lista ya limpia
+                const listaFinal = respuesta.datos || respuesta || [];
 
                 if (listaFinal.length === 0) {
-                    gridCursos.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:20px;">No hay cursos disponibles para ${tipoDeCursoActual}.</p>`;
+                    gridCursos.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:20px;">No hay cursos disponibles para la sección ${tipoDeCursoActual}.</p>`;
                     return;
                 }
 
@@ -76,13 +77,13 @@ export function administrativoPage() {
                 });
 
             } catch (error) {
-                gridCursos.innerHTML = `<p style="color:red;">Error al cargar los cursos.</p>`;
+                console.error("Error visualizando tarjetas:", error);
+                gridCursos.innerHTML = `<p style="color:red; text-align:center;">Error al cargar los cursos públicos.</p>`;
             }
         };
 
         cargarTarjetasCursos();
 
-        // 2. MANEJO DEL FORMULARIO (Sin id_plaza)
         if (form) {
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
@@ -101,7 +102,8 @@ export function administrativoPage() {
                     correo: document.getElementById("correoA").value.trim(),
                     id_departamento: Number(document.getElementById("deptoSelectA").value),
                     id_curso: Number(cursoSeleccionadoId),
-                    nombreCursoVisual: cursoInfo.NOMBRE_CURSO
+                    // Agregamos el nombre para el render de confirmación
+                    nombreCursoVisual: cursoInfo ? cursoInfo.NOMBRE_CURSO : "Curso seleccionado"
                 };
 
                 document.getElementById("main-content").innerHTML = renderConfirmacion();
@@ -114,8 +116,8 @@ export function administrativoPage() {
         try {
             const { nombreCursoVisual, ...payload } = window.tempInscripcionData;
             // Aquí enviamos a la ruta administrativo
-            await inscripcionesService.inscribir(payload, "administrativo");
-            alert("¡Inscripción Exitosa!");
+            const data = await inscripcionesService.inscribir(payload, "administrativo");
+            alert(data.mensaje || "¡Inscripción Exitosa!");
             location.reload();
         } catch (error) {
             alert("Error: " + error.message);

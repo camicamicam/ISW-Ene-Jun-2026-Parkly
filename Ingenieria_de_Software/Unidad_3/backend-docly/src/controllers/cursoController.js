@@ -91,7 +91,7 @@ function erroresInscripcion(error, res) {
             return res.status(400).json({ mensaje: 'El cupo del curso está lleno.' });
         case "DUPLICADO":
             return res.status(400).json({ mensaje: 'El usuario ya está inscrito en este curso.' });
-        case "DEPTO_NO_ACADEMICO": // <-- ¡NUEVO ERROR MANEJADO!
+        case "DEPTO_NO_ACADEMICO":
             return res.status(400).json({ mensaje: 'Los docentes deben pertenecer a un departamento académico válido.' });
         case "NO_EXISTE":
             return res.status(400).json({ mensaje: 'El curso especificado no existe.' });

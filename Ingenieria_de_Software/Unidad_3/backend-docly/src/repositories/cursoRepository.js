@@ -171,10 +171,12 @@ async function inscribirAdministrativo(datos) {
         await connection.execute(query, bindVars, { autoCommit: true });
         return true;
     } catch (error) {
-        if (error.message.includes('CUPO_LLENO')) throw new Error('CUPO_LLENO');
-        if (error.message.includes('DUPLICADO')) throw new Error('DUPLICADO');
-        if (error.message.includes('NO_EXISTE')) throw new Error('NO_EXISTE');
-        throw new Error("Error al inscribir al usuario: " + error.message);
+        if (error.message.includes('-20010')) throw new Error('CUPO_LLENO');
+        if (error.message.includes('-20011')) throw new Error('DUPLICADO');
+        if (error.message.includes('-20012')) throw new Error('NO_EXISTE');
+        if (error.message.includes('-20020')) throw new Error('DEPTO_NO_ACADEMICO');
+        
+        throw new Error("Error al inscribir al docente: " + error.message);
     } finally {
         if (connection) {
             try { await connection.close(); } catch (e) { console.error(e); }

@@ -64,6 +64,7 @@ async function obtenerCursos(req, res) {
 }
 
 async function inscribirDocente(req, res) {
+    console.log("DATOS RECIBIDOS EN EL POST DOCENTE:", req.body);
     try {
         const resultado = await cursoService.inscripcionDocente(req.body);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
@@ -73,6 +74,7 @@ async function inscribirDocente(req, res) {
 }
 
 async function inscribirAdministrativo(req, res) {
+    console.log("DATOS RECIBIDOS EN EL POST ADMINISTRATIVO:", req.body);
     try {
         const resultado = await cursoService.inscripcionAdministrativo(req.body);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });

@@ -64,6 +64,7 @@ async function obtenerCursos(req, res) {
 }
 
 async function inscribirDocente(req, res) {
+    console.log("DATOS RECIBIDOS EN EL POST DOCENTE:", req.body);
     try {
         const resultado = await cursoService.inscripcionDocente(req.body);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
@@ -73,6 +74,7 @@ async function inscribirDocente(req, res) {
 }
 
 async function inscribirAdministrativo(req, res) {
+    console.log("DATOS RECIBIDOS EN EL POST ADMINISTRATIVO:", req.body);
     try {
         const resultado = await cursoService.inscripcionAdministrativo(req.body);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
@@ -89,8 +91,10 @@ function erroresInscripcion(error, res) {
             return res.status(400).json({ mensaje: 'El cupo del curso está lleno.' });
         case "DUPLICADO":
             return res.status(400).json({ mensaje: 'El usuario ya está inscrito en este curso.' });
+        case "DEPTO_NO_ACADEMICO": // <-- ¡NUEVO ERROR MANEJADO!
+            return res.status(400).json({ mensaje: 'Los docentes deben pertenecer a un departamento académico válido.' });
         case "NO_EXISTE":
-            return res.status(400).json({ mensaje: 'El curso o el usuario no existe.' });
+            return res.status(400).json({ mensaje: 'El curso especificado no existe.' });
         default:
             console.error(error);
             return res.status(500).json({ mensaje: 'Error al inscribir al usuario en el servidor.' });

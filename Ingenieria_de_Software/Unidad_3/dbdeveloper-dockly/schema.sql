@@ -40,7 +40,6 @@ CREATE TABLE usuario (
 
     CONSTRAINT pk_usuario PRIMARY KEY (id_usuario),
     CONSTRAINT uq_usuario_numero UNIQUE (numero_empleado),
-    CONSTRAINT uq_usuario_correo UNIQUE (correo),
     CONSTRAINT chk_nivel_acceso CHECK (nivel_acceso IN (0,1))
 );
 
@@ -55,7 +54,7 @@ CREATE TABLE docente (
     CONSTRAINT fk_docente_usuario FOREIGN KEY (id_usuario)
         REFERENCES usuario(id_usuario),
     CONSTRAINT fk_docente_plaza FOREIGN KEY (id_plaza)
-        REFERENCES tipo_plaza(id_plaza)
+        REFERENCES tipo_plaza(id_plaza),
     CONSTRAINT fk_docente_departamento FOREIGN KEY (id_departamento)
         REFERENCES departamento(id_departamento)
 );
@@ -219,3 +218,29 @@ FROM curso c
 JOIN usuario u ON c.id_instructor = u.id_usuario
 JOIN tipo_curso tc_cat ON c.id_tipo_curso = tc_cat.id_tipo_curso -- Unión con el nuevo catálogo
 LEFT JOIN tema_curso tc ON c.id_curso = tc.id_curso;
+
+--CONSULTAR INSCRIPCIONES
+CREATE OR REPLACE VIEW v_inscripciones_detalle AS
+SELECT 
+    i.id_inscripcion,
+    u.numero_empleado,
+    u.nombre || ' ' || u.apellido_paterno || ' ' || NVL(u.apellido_materno, '') AS nombre_completo,
+    -- Identificamos el rol para saber si es Docente o Administrativo
+    CASE 
+        WHEN d.id_usuario IS NOT NULL THEN 'Docente'
+        WHEN a.id_usuario IS NOT NULL THEN 'Administrativo'
+        ELSE 'Otro'
+    END AS rol_usuario,
+    c.nombre AS nombre_curso,
+    c.id_tipo_curso, -- Para saber si es curso Docente o Profesional
+    i.fecha_inscripcion,
+    CASE 
+        WHEN i.estado = 0 THEN 'Pendiente'
+        WHEN i.estado = 1 THEN 'Aprobado'
+        ELSE 'Finalizado'
+    END AS estatus_inscripcion
+FROM inscripcion i
+JOIN usuario u ON i.id_usuario = u.id_usuario
+JOIN curso c ON i.id_curso = c.id_curso
+LEFT JOIN docente d ON u.id_usuario = d.id_usuario
+LEFT JOIN administrativo a ON u.id_usuario = a.id_usuario;

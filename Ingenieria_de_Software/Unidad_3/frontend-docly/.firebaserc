@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "docly-501f5"
-  }
+    "default": "docly-itq",
+    "docly": "docly-itq"
+  },
+  "targets": {},
+  "etags": {}
 }

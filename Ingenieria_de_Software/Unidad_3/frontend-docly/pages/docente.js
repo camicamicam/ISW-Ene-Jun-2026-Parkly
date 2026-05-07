@@ -1,4 +1,3 @@
-import { cursosService } from "../services/cursosService.js";
 import { inscripcionesService } from "../services/inscripcionesService.js";
 import { Loader } from "../components/loader.js";
 
@@ -31,53 +30,49 @@ export function docentePage() {
             if (!gridCursos) return;
 
             try {
-                const respuesta = await cursosService.obtenerCursosDisponibles(tipoDeCursoActual);
-                const listaFinal = respuesta.datos || [];
+                // Llamamos al catálogo público (este NO recibe parámetros según tu service)
+                const respuesta = await inscripcionesService.obtenerCatalogoPublico(tipoDeCursoActual);
+                // 2. Extraemos los datos (usamos el nombre 'listaFiltrada' para no romper el resto del código)
+                const listaFiltrada = respuesta.datos || respuesta || [];
 
-                if (listaFinal.length === 0) {
-                    gridCursos.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:20px;">No hay cursos disponibles actualmente.</p>`;
+                // 3. Validamos si hay cursos
+                if (listaFiltrada.length === 0) {
+                    gridCursos.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:20px;">No hay cursos disponibles para la sección ${tipoDeCursoActual}.</p>`;
                     return;
                 }
 
-                gridCursos.innerHTML = listaFinal.map(curso => `
+                // Renderizamos usando la lista filtrada
+                gridCursos.innerHTML = listaFiltrada.map(curso => `
                     <div class="curso-card-horizontal" data-id="${curso.ID_CURSO}" id="card-${curso.ID_CURSO}">
                         <div class="card-content">
                             <span class="badge-horas">${curso.TOTAL_HORAS} Hrs</span>
                             <h4 class="curso-titulo">${curso.NOMBRE_CURSO}</h4>
-                            
                             <div class="curso-detalles">
                                 <p><strong>Instructor:</strong> ${curso.INSTRUCTOR}</p>
                                 <p><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}</p>
                                 <p><strong>Horario:</strong> ${curso.HORARIO || 'No especificado'}</p>
                             </div>
                         </div>
-                        
                         <div class="card-action">
-                            <button type="button" class="btn-seleccionar">
-                                Seleccionar
-                            </button>
+                            <button type="button" class="btn-seleccionar">Seleccionar</button>
                         </div>
                     </div>
                 `).join('');
 
-                window.cursosCache = listaFinal;
+                // Guardamos en el caché la lista filtrada para el formulario de registro
+                window.cursosCache = listaFiltrada;
 
-                // Evento para seleccionar tarjeta
+                // Re-vinculamos los eventos de click
                 document.querySelectorAll('.curso-card-horizontal').forEach(card => {
                     card.addEventListener('click', () => {
-                        // Quitar selección a todos
                         document.querySelectorAll('.curso-card-horizontal').forEach(c => {
                             c.classList.remove('selected');
                             c.querySelector('.btn-seleccionar').textContent = "Seleccionar";
                         });
-
-                        // Seleccionar esta
                         card.classList.add('selected');
                         card.querySelector('.btn-seleccionar').textContent = "Seleccionado ✓";
-                        
                         cursoSeleccionadoId = card.getAttribute('data-id');
-
-                        // Mostrar formulario
+                        
                         const sectionRegistro = document.getElementById('registro-seccion');
                         sectionRegistro.style.display = 'block';
                         sectionRegistro.scrollIntoView({ behavior: 'smooth' });
@@ -85,7 +80,8 @@ export function docentePage() {
                 });
 
             } catch (error) {
-                gridCursos.innerHTML = `<p style="color:red;">Error al cargar los cursos.</p>`;
+                console.error("Error visualizando tarjetas:", error);
+                gridCursos.innerHTML = `<p style="color:red; text-align:center;">Error al cargar los cursos públicos.</p>`;
             }
         };
 
@@ -114,7 +110,6 @@ export function docentePage() {
                     id_departamento: Number(document.getElementById("deptoSelect").value), 
                     id_plaza: Number(document.getElementById("plazaSelect").value),
                     id_curso: Number(cursoSeleccionadoId),
-                    
                     nombreCursoVisual: cursoInfo.NOMBRE_CURSO
                 };
 
@@ -127,8 +122,8 @@ export function docentePage() {
         Loader.show();
         try {
             const { nombreCursoVisual, ...payload } = window.tempInscripcionData;
-            await inscripcionesService.inscribir(payload);
-            alert("¡Inscripción Exitosa!");
+            const data = await inscripcionesService.inscribir(payload);
+            alert(data.mensaje || "¡Inscripción exitosa!");
             location.reload();
         } catch (error) {
             alert("Error: " + error.message);

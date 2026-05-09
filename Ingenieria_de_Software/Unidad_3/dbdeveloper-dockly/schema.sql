@@ -375,3 +375,17 @@ LEFT JOIN docente d ON u.id_usuario = d.id_usuario
 LEFT JOIN administrativo a ON u.id_usuario = a.id_usuario;
 
 -- CONSTANCIA
+CREATE OR REPLACE VIEW v_reporte_constancias AS
+SELECT 
+    con.folio_numero AS folio,
+    u.nombre || ' ' || u.apellido_paterno AS graduado,
+    c.nombre AS curso_completado,
+    con.fecha_generacion,
+    con.tipo_formato,
+    con.url_descarga,
+    c.anio || '-' || c.periodo AS ciclo_escolar
+FROM constancia con
+JOIN inscripcion ins ON con.id_inscripcion = ins.id_inscripcion
+JOIN usuario u ON ins.id_usuario = u.id_usuario
+JOIN curso c ON ins.id_curso = c.id_curso
+ORDER BY con.fecha_generacion DESC;

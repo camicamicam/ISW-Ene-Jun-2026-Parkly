@@ -85,11 +85,20 @@ class _HomePageState extends State<HomePage> {
                       // Tu lógica de navegación
                       switch (nuevoValor) {
                         case 'Docente':
-                          Navigator.pushNamed(context, 'docentePage');
+                          Navigator.pushNamed(
+                            context,
+                            'docentePage',
+                            arguments:
+                                'Profesional', // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
+                          );
                           _tipo = null;
                           break;
                         case 'Administrativo':
-                          Navigator.pushNamed(context, 'administrativoPage');
+                          Navigator.pushNamed(
+                            context,
+                            'administrativoPage',
+                            arguments: 'Profesional', // <-- AGREGAR ESTO
+                          );
                           _tipo = null;
                           break;
                         case 'Instructor':
@@ -138,11 +147,20 @@ class _HomePageState extends State<HomePage> {
                       // Tu lógica de navegación
                       switch (nuevoValor) {
                         case 'Docente':
-                          Navigator.pushNamed(context, 'docentePage');
+                          Navigator.pushNamed(
+                            context,
+                            'docentePage',
+                            arguments:
+                                'Docente', // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
+                          );
                           _tipo = null;
                           break;
                         case 'Administrativo':
-                          Navigator.pushNamed(context, 'administrativoPage');
+                          Navigator.pushNamed(
+                            context,
+                            'administrativoPage',
+                            arguments: 'Docente', // <-- AGREGAR ESTO
+                          );
                           _tipo = null;
                           break;
                         case 'Instructor':

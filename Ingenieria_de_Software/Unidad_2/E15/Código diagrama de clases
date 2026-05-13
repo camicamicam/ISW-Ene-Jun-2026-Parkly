@@ -14,6 +14,7 @@ abstract class Usuario{
 
 class Docente{
 -idPlaza:int
+-idDepartamento: int
 +consultarCursos()
 +inscribirseCurso()
 }
@@ -43,6 +44,13 @@ class Curso{
 -duracion:String
 -totalHoras:int
 -cupoMaximo:int
+-anio:int
+-periodo:int
+-fechaInicio:date
+-fechaTermino:date
+-diaSemana:String
+-horario:String
+-idTipoCurso:int
 
 +validarHoras()
 +consultarDisponibilidad()
@@ -75,12 +83,18 @@ class Constancia{
 class Departamento{
 -idDepartamento:int
 -nombre:nombreDepartamento
+-esAcademico: int
 }
 
 
 class TipoPlaza{
 -idPlaza:int
 -nombre:nombrePlaza
+}
+
+class TipoCurso{
+-idTipoCurso: int
+-nombre:nombreCurso
 }
 
 class AdministradorDDA{
@@ -103,13 +117,21 @@ honorarios
 
 enum nombreDepartamento{
 Ciencias Básicas
-​Ingeniería Eléctrica Electrónica
-​Ciencias de la Tierra
-​Ciencias Económico Administrativas
-​Sistemas y Computación
-​Ingeniería Industrial
-​Metal Mecánica
+Ciencias Económico Administrativas
+Desarrollo Académico
+​División de Estudios Profesionales
+División Posgrado e Investigación
+Ingeniería Eléctrica y Electrónica
+Ingeniería Industrial
+Metal Mecánica
+Sistemas y Computación
 }
+
+enum nombreCurso{
+Docente
+Profesional
+}
+
 '======================
 ' RELACIONES
 '======================
@@ -121,9 +143,11 @@ Inscripcion "1" *-- "1" Constancia : contiene
 
 Departamento "1" -- "0..*" Administrativo : pertenece
 TipoPlaza "1" -- "0..*" Docente : tiene
+TipoCurso "1" -- "0..*" Curso: pertenece
 
 Usuario <|-- AdministradorDDA
 
 TipoPlaza "1" -- "1" nombrePlaza: tiene
 Departamento "1" -- "1" nombreDepartamento: tiene
+TipoCurso "1" -- "1" nombreCurso: tiene
 @enduml

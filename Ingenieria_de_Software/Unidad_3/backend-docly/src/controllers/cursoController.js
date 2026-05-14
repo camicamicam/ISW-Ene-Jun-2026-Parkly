@@ -140,6 +140,13 @@ async function actualizarHoras(req, res) {
         if (error.message === "HORAS_NEGATIVAS") {
             return res.status(400).json({ mensaje: 'Las horas no pueden ser negativas.' });
         }
+        if (error.message === "HORAS_EXCESIVAS") {
+            return res.status(400).json({ mensaje: 'Las horas no pueden exceder las 40 horas maximas estandar por curso.' });
+        }
+        if (error.message === "HORAS_SUPERAN_TOTAL") {
+            return res.status(400).json({ mensaje: 'Las horas registradas no pueden superar las horas totales del curso.' });
+        }
+        console.error(error);
         res.status(500).json({ mensaje: 'Error al actualizar las horas en el servidor.' });
     }
 }

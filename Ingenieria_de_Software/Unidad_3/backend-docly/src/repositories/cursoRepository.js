@@ -243,6 +243,7 @@ async function actualizarHoras(idInscripcion, nuevasHoras) {
         await connection.execute(query, bindVars, { autoCommit: true });
         return true;
     } catch (error) {
+        if(error.message.includes('-20031')) throw new Error("HORAS_SUPERAN_TOTAL");
         throw new Error("Error al actualizar las horas: " + error.message);
     } finally {
         if (connection) {

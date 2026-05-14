@@ -138,6 +138,7 @@ async function listarAlumnos(idCurso) {
 
 async function registrarProgreso(idInscripcion, horas) {
     if(horas < 0) throw new Error("HORAS_NEGATIVAS");
+    if(horas > 40) throw new Error("HORAS_EXCESIVAS");
     await cursoRepository.actualizarHoras(idInscripcion, horas);
     return {mensaje: "Horas actualizadas correctamente."};
 }

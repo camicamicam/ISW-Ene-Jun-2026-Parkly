@@ -139,7 +139,7 @@ export function docentePage() {
                 <div class="card summary-card" style="border-top: 10px solid #2c3e50; max-width: 500px;">
                     <h2 style="margin-bottom:20px;">Confirmar Registro</h2>
                     <div class="summary-item"><strong>Curso:</strong> <span>${d.nombreCursoVisual}</span></div>
-                    <div class="summary-item"><strong>Docente:</strong> <span>${d.nombre} ${d.apellido_paterno}</span></div>
+                    <div class="summary-item"><strong>Docente:</strong> <span>${d.nombre} ${d.apellido_paterno} ${d.apellido_materno}</span></div>
                     <div class="summary-item"><strong>N° Empleado:</strong> <span>${d.numero_empleado}</span></div>
                     <div class="btn-group-grid" style="margin-top:20px;">
                         <button class="btn-cancel" onclick="location.reload()">Corregir</button>

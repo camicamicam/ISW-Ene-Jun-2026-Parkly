@@ -130,9 +130,10 @@ export function administrativoPage() {
         const d = window.tempInscripcionData;
         return `
             <div class="docente-container">
-                <div class="card summary-card" style="border-top: 10px solid #27ae60; max-width: 500px;">
+                <div class="card summary-card" style="border-top: 10px solid #2c3e50; max-width: 500px;">
                     <h2>Confirmar Registro Administrativo</h2>
                     <div class="summary-item"><strong>Curso:</strong> <span>${d.nombreCursoVisual}</span></div>
+                    <div class="summary-item"><strong>Administrativo:</strong> <span>${d.nombre} ${d.apellido_paterno} ${d.apellido_materno}</span></div>
                     <div class="summary-item"><strong>N° Empleado:</strong> <span>${d.numero_empleado}</span></div>
                     <div class="btn-group-grid" style="margin-top:20px;">
                         <button class="btn-cancel" onclick="location.reload()">Corregir</button>
@@ -145,7 +146,8 @@ export function administrativoPage() {
     return `
         <div class="docente-main-wrapper" style="padding: 40px 20px; background: rgba(39, 174, 96, 0.05); min-height: 100vh;">
             <div style="max-width: 1000px; margin: auto;">
-                <h1 style="text-align: center; color: #27ae60;">Oferta Educativa (${tipoDeCursoActual})</h1>
+                <h1 style="text-align: center; color: #2c3e50;">Oferta Educativa (${tipoDeCursoActual})</h1>
+                <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">Selecciona el curso de tu interés para comenzar tu inscripción.</p>
                 
                 <div id="grid-cursos-inscripcion" class="cursos-grid-inscripcion">
                     <p>Cargando cursos...</p>

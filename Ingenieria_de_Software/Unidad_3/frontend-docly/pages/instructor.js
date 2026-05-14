@@ -1,6 +1,77 @@
 import { navigate } from "../routes/router.js";
 import { cursosService } from "../services/cursosService.js";
 
+ // --- GESTIÓN DE ALUMNOS ---
+window.abrirGestionAlumnos = async (id, nombre) => {
+    const respuesta = await cursosService.obtenerAlumnosPorCurso(id);
+    console.log("Datos del alumno recibidos:", respuesta.datos); // <-- Revisa esto en la consola (F12)
+    const mainContainer = document.getElementById("main-content");
+    
+    // 1. Renderizar estructura inicial (un loader)
+    mainContainer.innerHTML = `
+        <div class="card" style="max-width: 500px; margin: 20px auto;">
+            <h3>Gestión de Alumnos: ${nombre}</h3>
+            <p id="loading-alumnos">Cargando lista de alumnos...</p>
+            <div id="gestion-form-container" style="display:none;">
+                <div class="form-group">
+                    <label>Seleccionar Alumno</label>
+                    <select id="select-alumnos" style="width: 100%; padding: 10px; margin-bottom: 15px;"></select>
+                </div>
+                <div class="form-group">
+                    <label>Horas a registrar</label>
+                    <input type="number" id="horas-alumno" placeholder="Ej. 10" min="1" style="width: 100%; padding: 10px;">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button onclick="location.reload()" style="background: #2c3e50; flex:1;">Volver</button>
+                    <button id="btn-guardar-horas" style="background: #27ae60; flex:1;">Guardar Horas</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    try {
+        // 2. Llamar al servicio para obtener alumnos
+        const respuesta = await cursosService.obtenerAlumnosPorCurso(id);
+        const alumnos = respuesta.datos || [];
+        const select = document.getElementById("select-alumnos");
+        const loader = document.getElementById("loading-alumnos");
+        const formContainer = document.getElementById("gestion-form-container");
+
+        if (alumnos.length === 0) {
+            loader.innerText = "No hay alumnos inscritos en este curso.";
+            return;
+        }
+
+        // 3. Llenar el select con el ID_INSCRIPCION (Como pidió el backend)
+        select.innerHTML = alumnos.map(a => `
+            <option value="${a.ID_INSCRIPCION}">
+                ${a.NOMBRE_COMPLETO}
+            </option>
+        `).join('');
+
+        loader.style.display = "none";
+        formContainer.style.display = "block";
+
+        // 4. Lógica para enviar al backend
+        document.getElementById("btn-guardar-horas").onclick = async () => {
+            const idInscripcion = select.value;
+            const horas = document.getElementById("horas-alumno").value;
+
+            if (!horas) return alert("Ingresa las horas");
+
+            try {
+                await cursosService.registrarHorasAlumno(idInscripcion, horas);
+                alert("¡Horas registradas correctamente!");
+                window.abrirGestionAlumnos(id, nombre); // Recargar la vista
+            } catch (err) {
+                alert("Error al guardar: " + err.message);
+            }
+        };
+
+    } catch (error) {
+        alert("Error al cargar alumnos: " + error.message);
+    }
+};
 export function instructorPage() {
     const tipoDeCursoActual = localStorage.getItem("seccion_itq") || "Docente";
     setTimeout(() => {
@@ -105,15 +176,41 @@ export function instructorPage() {
 
                 // Mapeamos usando los nombres de campos en MAYÚSCULAS que manda el servidor
                 listaCursosContainer.innerHTML = listaFinal.map(curso => `
-                    <div class="curso-card-mini" style="background: white; padding: 15px; border-radius: 8px; border-left: 5px solid #2c3e50; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;">
-                        <h4 style="margin: 0 0 5px 0; color: #2c3e50;">${curso.NOMBRE_CURSO}</h4>
-                        <div style="font-size: 0.85rem; color: #666;">
-                            <span><strong>Instructor:</strong> ${curso.INSTRUCTOR}</span><br>
-                            <span><strong>Horas:</strong> ${curso.TOTAL_HORAS}</span> | 
-                            <span><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}</span>
+                    <div class="curso-card-mini" style="background: white; padding: 9px; border-radius: 8px; border-left: 5px solid #2c3e50; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #2c3e50;">${curso.NOMBRE_CURSO}</h4>
+                            <div style="font-size: 0.85rem; color: #666;">
+                                <span><strong>ID:</strong> ${curso.ID_CURSO}</span> | 
+                                <span><strong>Horas Totales:</strong> ${curso.TOTAL_HORAS}</span>
+                            </div>
                         </div>
+                        <button class="btn-alumnos" 
+                            data-id="${curso.ID_CURSO}" 
+                            data-nombre="${curso.NOMBRE_CURSO}"
+                            style="
+                                background: #2c3e50; 
+                                color: white; 
+                                border: none; 
+                                padding: 6px 12px; 
+                                border-radius: 4px; 
+                                cursor: pointer;
+                                width: auto;      /* <--- Esto evita que crezca demasiado */
+                                min-width: 100px; /* <--- Tamaño base razonable */
+                                font-size: 0.85rem; /* <--- Texto un poco más discreto */
+                                white-space: nowrap; /* <--- Evita que el texto se rompa en dos líneas */
+                            "> Alumnos
+                        </button>
                     </div>
                 `).join('');
+
+                // Delegación de eventos para los botones de alumnos
+                listaCursosContainer.querySelectorAll('.btn-alumnos').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-id');
+                        const nombre = btn.getAttribute('data-nombre');
+                        window.abrirGestionAlumnos(id, nombre);
+                    });
+                });
 
             } catch (error) {
                 console.error("Fallo al cargar:", error);

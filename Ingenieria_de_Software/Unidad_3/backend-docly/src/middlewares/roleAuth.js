@@ -10,7 +10,7 @@ const checkRole = (rolesPermitidos) => {
 
         const token = authHeader.split(' ')[1];
 
-        const tokenData = jwt.verify(token, "Departamento_Desarrollo_Academico");
+        const tokenData = jwt.verify(token, "Mi_llave_secreta");
 
         if (rolesPermitidos.includes(tokenData.rol)) {
             req.usuario = tokenData;

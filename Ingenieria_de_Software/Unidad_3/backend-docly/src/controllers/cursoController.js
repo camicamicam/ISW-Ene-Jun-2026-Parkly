@@ -12,11 +12,11 @@ async function registrar(req, res) {
 
     const nombreFinal = `${curso.instructor_nombre} ${curso.instructor_paterno}`;
 
-    console.log(" ");
+    /*console.log(" ");
     console.log("=== DEBUG DE NOMBRE ===");
     console.log("Instructor a procesar:", nombreFinal);
     console.log("Número de empleado:", curso.instructor_numero_empleado);
-
+    */
     try {
         curso.nombre_instructor_final = nombreFinal;
         const resultado = await cursoService.crearCurso(curso, temas);
@@ -101,4 +101,32 @@ function erroresInscripcion(error, res) {
     }
 }
 
-module.exports = { registrar, obtenerCursos, inscribirDocente, inscribirAdministrativo, erroresInscripcion };
+async function obtenerAlumnos(req, res) {
+    try {
+        const { idCurso } = req.params;
+        const alumnos = await cursoService.listarAlumnos(idCurso);
+        res.status(200).json({
+            status: 'Éxito',
+            cantidad: alumnos.length,
+            datos: alumnos
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al obtener los alumnos en el servidor.' });
+    }
+}
+
+async function actualizarHoras(req, res) {
+    try {
+        const { id_inscripcion, horas_completadas} = req.body;
+        const resultado = await cursoService.registrarProgreso(id_inscripcion, horas_completadas);
+        res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
+    } catch (error) {
+        if (error.message === "HORAS_NEGATIVAS") {
+            return res.status(400).json({ mensaje: 'Las horas no pueden ser negativas.' });
+        }
+        res.status(500).json({ mensaje: 'Error al actualizar las horas en el servidor.' });
+    }
+}
+
+module.exports = { registrar, obtenerCursos, inscribirDocente, inscribirAdministrativo, erroresInscripcion, obtenerAlumnos, actualizarHoras };

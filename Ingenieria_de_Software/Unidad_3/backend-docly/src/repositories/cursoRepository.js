@@ -95,7 +95,7 @@ async function obtenerCursos(tipoFiltro) {
         }
 
         query += `ORDER BY id_curso ASC`;
-        console.log("Query a ejecutar:", query);
+        //console.log("Query a ejecutar:", query);
         const result = await connection.execute(query, bindVars, { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
         return result.rows;
@@ -184,4 +184,50 @@ async function inscribirAdministrativo(datos) {
     }
 }
 
-module.exports = { guardarCurso, obtenerCursos, inscribirDocente, inscribirAdministrativo };
+async function obtenerAlumnosPorCurso(idCurso) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            SELECT * FROM v_inscripciones_detalle
+            WHERE id_curso = :idCurso
+            ORDER BY nombre_completo ASC
+        `;
+        const result = await connection.execute(query, { idCurso }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        return result.rows;
+    } catch (error) {
+        throw new Error("Error al obtener los alumnos del curso: " + error.message);
+    } finally{
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+async function actualizarHoras(idInscripcion, nuevasHoras) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            BEGIN
+                REGISTRAR_HORAS_INSCRIPCION(:p_id_inscripcion, :p_horas_nuevas);
+            END;
+        `;
+        
+        const bindVars = {
+            p_id_inscripcion: idInscripcion,
+            p_horas_nuevas: nuevasHoras
+        };
+
+        await connection.execute(query, bindVars, { autoCommit: true });
+        return true;
+    } catch (error) {
+        throw new Error("Error al actualizar las horas: " + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }    
+}
+
+module.exports = { guardarCurso, obtenerCursos, inscribirDocente, inscribirAdministrativo, obtenerAlumnosPorCurso, actualizarHoras };

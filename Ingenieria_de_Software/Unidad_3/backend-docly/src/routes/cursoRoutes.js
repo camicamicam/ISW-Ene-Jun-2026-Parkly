@@ -18,4 +18,8 @@ router.get(
 
 router.get('/catalogo',cursoController.obtenerCursos);
 
+router.get('/alumnos/:idCurso', checkRole(['INSTRUCTOR']), cursoController.obtenerAlumnos);
+
+router.patch('/alumnos/horas', checkRole(['INSTRUCTOR']), cursoController.actualizarHoras);
+
 module.exports = router;

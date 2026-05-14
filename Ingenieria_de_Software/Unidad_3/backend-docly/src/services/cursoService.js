@@ -95,4 +95,14 @@ async function inscripcionAdministrativo(datos) {
     return { mensaje: `El administrativo ${datos.nombre} fue inscrito con éxito.` };
 }
 
-module.exports = { crearCurso, listarCursos, inscripcionDocente, inscripcionAdministrativo };
+async function listarAlumnos(idCurso) {
+    return await cursoRepository.obtenerAlumnosPorCurso(idCurso);
+}
+
+async function registrarProgreso(idInscripcion, horas) {
+    if(horas < 0) throw new Error("HORAS_NEGATIVAS");
+    await cursoRepository.actualizarProgreso(idInscripcion, horas);
+    return {mensaje: "Horas actualizadas correctamente."};
+}
+
+module.exports = { crearCurso, listarCursos, inscripcionDocente, inscripcionAdministrativo, listarAlumnos, registrarProgreso };

@@ -95,7 +95,7 @@ async function obtenerCursos(tipoFiltro) {
         }
 
         query += `ORDER BY id_curso ASC`;
-        console.log("Query a ejecutar:", query);
+        //console.log("Query a ejecutar:", query);
         const result = await connection.execute(query, bindVars, { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
         return result.rows;
@@ -103,6 +103,27 @@ async function obtenerCursos(tipoFiltro) {
     } catch (error) {
         throw new Error("Error al obtener los cursos: " + error.message);
     } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+async function obtenerCursosPorInstructor(idInstructor) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            SELECT * FROM v_detalle_cursos
+            WHERE id_instructor = :idInstructor
+            ORDER BY id_curso ASC
+        `;
+        const result = await connection.execute(query, { idInstructor }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        return result.rows;
+    } catch (error) {
+        throw new Error("Error al obtener los cursos especificos: " + error.message);
+        
+    }finally {
         if (connection) {
             try { await connection.close(); } catch (e) { console.error(e); }
         }
@@ -171,10 +192,12 @@ async function inscribirAdministrativo(datos) {
         await connection.execute(query, bindVars, { autoCommit: true });
         return true;
     } catch (error) {
-        if (error.message.includes('CUPO_LLENO')) throw new Error('CUPO_LLENO');
-        if (error.message.includes('DUPLICADO')) throw new Error('DUPLICADO');
-        if (error.message.includes('NO_EXISTE')) throw new Error('NO_EXISTE');
-        throw new Error("Error al inscribir al usuario: " + error.message);
+        if (error.message.includes('-20010')) throw new Error('CUPO_LLENO');
+        if (error.message.includes('-20011')) throw new Error('DUPLICADO');
+        if (error.message.includes('-20012')) throw new Error('NO_EXISTE');
+        if (error.message.includes('-20020')) throw new Error('DEPTO_NO_ACADEMICO');
+        
+        throw new Error("Error al inscribir al docente: " + error.message);
     } finally {
         if (connection) {
             try { await connection.close(); } catch (e) { console.error(e); }
@@ -182,4 +205,52 @@ async function inscribirAdministrativo(datos) {
     }
 }
 
-module.exports = { guardarCurso, obtenerCursos, inscribirDocente, inscribirAdministrativo };
+async function obtenerAlumnosPorCurso(idCurso) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            SELECT * FROM v_inscripciones_detalle
+            WHERE id_curso = :idCurso
+            ORDER BY nombre_completo ASC
+        `;
+        const result = await connection.execute(query, { idCurso }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        return result.rows;
+    } catch (error) {
+        throw new Error("Error al obtener los alumnos del curso: " + error.message);
+    } finally{
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+async function actualizarHoras(idInscripcion, nuevasHoras) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            BEGIN
+                registrar_horas_inscripcion(:p_id_inscripcion, :p_horas_nuevas);
+            END;
+        `;
+        
+        const bindVars = {
+            p_id_inscripcion: idInscripcion,
+            p_horas_nuevas: nuevasHoras
+        };
+
+        await connection.execute(query, bindVars, { autoCommit: true });
+        return true;
+    } catch (error) {
+        if(error.message.includes('-20150')) throw new Error("HORAS_SUPERAN_TOTAL");
+        if(error.message.includes('-20151')) throw new Error("INSCRIPCION_NO_ENCONTRADA");
+        throw new Error("Error al actualizar las horas: " + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }    
+}
+
+module.exports = { guardarCurso, obtenerCursos, obtenerCursosPorInstructor, inscribirDocente, inscribirAdministrativo, obtenerAlumnosPorCurso, actualizarHoras };

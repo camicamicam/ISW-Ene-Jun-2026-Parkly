@@ -79,6 +79,43 @@ async function listarCursos(tipoFiltro) {
 
 }
 
+async function listarMisCursos(idInstructor) {
+    const filasCrudas = await cursoRepository.obtenerCursosPorInstructor(idInstructor);
+
+    const cursosAgrupadosIndiv = filasCrudas.reduce((acumulador, filaActual) => {
+        const cursoExistente = acumulador.find(c => c.ID_CURSO === filaActual.ID_CURSO);
+
+        if (cursoExistente) {
+            cursoExistente.TEMAS.push({
+                TITULO_TEMA: filaActual.TITULO_TEMA,
+                HORAS_TEMA: filaActual.HORAS_TEMA
+            });
+        } else {
+            acumulador.push({
+                ID_CURSO: filaActual.ID_CURSO,
+                NOMBRE_CURSO: filaActual.NOMBRE_CURSO,
+                TIPO_CURSO: filaActual.TIPO_CURSO,
+                INSTRUCTOR: filaActual.INSTRUCTOR,
+                TOTAL_HORAS: filaActual.TOTAL_HORAS,
+                CUPO_MAXIMO: filaActual.CUPO_MAXIMO,
+                ANIO: filaActual.ANIO,
+                PERIODO: filaActual.PERIODO,
+                FECHA_INICIO: filaActual.FECHA_INICIO,
+                FECHA_TERMINO: filaActual.FECHA_TERMINO,
+                DIAS_SEMANA: filaActual.DIAS_SEMANA,
+                HORARIO: filaActual.HORARIO,
+                TEMAS: [{
+                    TITULO_TEMA: filaActual.TITULO_TEMA,
+                    HORAS_TEMA: filaActual.HORAS_TEMA
+                }]
+            });
+        }
+        return acumulador;
+    }, []);
+
+    return cursosAgrupadosIndiv;
+}
+
 async function inscripcionDocente(datos) {
     if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.correo || !datos.id_departamento || !datos.id_plaza || !datos.id_curso) {
         throw new Error("FALTAN_DATOS");
@@ -101,8 +138,8 @@ async function listarAlumnos(idCurso) {
 
 async function registrarProgreso(idInscripcion, horas) {
     if(horas < 0) throw new Error("HORAS_NEGATIVAS");
-    await cursoRepository.actualizarProgreso(idInscripcion, horas);
+    await cursoRepository.actualizarHoras(idInscripcion, horas);
     return {mensaje: "Horas actualizadas correctamente."};
 }
 
-module.exports = { crearCurso, listarCursos, inscripcionDocente, inscripcionAdministrativo, listarAlumnos, registrarProgreso };
+module.exports = { crearCurso, listarCursos, listarMisCursos, inscripcionDocente, inscripcionAdministrativo, listarAlumnos, registrarProgreso };

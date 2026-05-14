@@ -109,6 +109,27 @@ async function obtenerCursos(tipoFiltro) {
     }
 }
 
+async function obtenerCursosPorInstructor(idInstructor) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            SELECT * FROM v_detalle_cursos
+            WHERE id_instructor = :idInstructor
+            ORDER BY id_curso ASC
+        `;
+        const result = await connection.execute(query, { idInstructor }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        return result.rows;
+    } catch (error) {
+        throw new Error("Error al obtener los cursos especificos: " + error.message);
+        
+    }finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
 async function inscribirDocente(datos) {
     let connection;
     try {
@@ -230,4 +251,4 @@ async function actualizarHoras(idInscripcion, nuevasHoras) {
     }    
 }
 
-module.exports = { guardarCurso, obtenerCursos, inscribirDocente, inscribirAdministrativo, obtenerAlumnosPorCurso, actualizarHoras };
+module.exports = { guardarCurso, obtenerCursos, obtenerCursosPorInstructor, inscribirDocente, inscribirAdministrativo, obtenerAlumnosPorCurso, actualizarHoras };

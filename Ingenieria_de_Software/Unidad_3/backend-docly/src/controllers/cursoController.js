@@ -63,6 +63,21 @@ async function obtenerCursos(req, res) {
     }
 }
 
+async function obtenerCursosPorInstructor(req, res) {
+    try {
+        const idInstructor = req.usuario.id;
+        const cursos = await cursoService.listarMisCursos(idInstructor);
+        res.status(200).json({
+            status: 'Éxito',
+            cantidad: cursos.length,
+            datos: cursos
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al obtener tus cursos en el servidor.' });
+    }
+}
+
 async function inscribirDocente(req, res) {
     console.log("DATOS RECIBIDOS EN EL POST DOCENTE:", req.body);
     try {
@@ -129,4 +144,4 @@ async function actualizarHoras(req, res) {
     }
 }
 
-module.exports = { registrar, obtenerCursos, inscribirDocente, inscribirAdministrativo, erroresInscripcion, obtenerAlumnos, actualizarHoras };
+module.exports = { registrar, obtenerCursos, obtenerCursosPorInstructor, inscribirDocente, inscribirAdministrativo, erroresInscripcion, obtenerAlumnos, actualizarHoras };

@@ -231,7 +231,7 @@ async function actualizarHoras(idInscripcion, nuevasHoras) {
         connection = await db.getConnection();
         const query = `
             BEGIN
-                REGISTRAR_HORAS_INSCRIPCION(:p_id_inscripcion, :p_horas_nuevas);
+                registrar_horas_inscripcion(:p_id_inscripcion, :p_horas_nuevas);
             END;
         `;
         
@@ -243,7 +243,8 @@ async function actualizarHoras(idInscripcion, nuevasHoras) {
         await connection.execute(query, bindVars, { autoCommit: true });
         return true;
     } catch (error) {
-        if(error.message.includes('-20031')) throw new Error("HORAS_SUPERAN_TOTAL");
+        if(error.message.includes('-20150')) throw new Error("HORAS_SUPERAN_TOTAL");
+        if(error.message.includes('-20151')) throw new Error("INSCRIPCION_NO_ENCONTRADA");
         throw new Error("Error al actualizar las horas: " + error.message);
     } finally {
         if (connection) {

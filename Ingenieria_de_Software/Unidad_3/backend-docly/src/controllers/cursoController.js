@@ -110,6 +110,8 @@ function erroresInscripcion(error, res) {
             return res.status(400).json({ mensaje: 'Los docentes deben pertenecer a un departamento académico válido.' });
         case "NO_EXISTE":
             return res.status(400).json({ mensaje: 'El curso especificado no existe.' });
+        case "EMPLEADO_NO_COINCIDE":
+            return res.status(400).json({ mensaje: 'El número de empleado ingresado ya está registrado a nombre de otra persona. Verifica tus datos.' });
         default:
             console.error(error);
             return res.status(500).json({ mensaje: 'Error al inscribir al usuario en el servidor.' });

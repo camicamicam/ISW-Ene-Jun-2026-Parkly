@@ -159,6 +159,7 @@ async function inscribirDocente(datos) {
         if (error.message.includes('-20011')) throw new Error('DUPLICADO');
         if (error.message.includes('-20012')) throw new Error('NO_EXISTE');
         if (error.message.includes('-20020')) throw new Error('DEPTO_NO_ACADEMICO');
+        if (error.message.includes('-20040')) throw new Error('EMPLEADO_NO_COINCIDE');
         
         throw new Error("Error al inscribir al docente: " + error.message);
     } finally {
@@ -196,6 +197,7 @@ async function inscribirAdministrativo(datos) {
         if (error.message.includes('-20011')) throw new Error('DUPLICADO');
         if (error.message.includes('-20012')) throw new Error('NO_EXISTE');
         if (error.message.includes('-20020')) throw new Error('DEPTO_NO_ACADEMICO');
+        if (error.message.includes('-20030')) throw new Error('EMPLEADO_NO_COINCIDE');
         
         throw new Error("Error al inscribir al docente: " + error.message);
     } finally {

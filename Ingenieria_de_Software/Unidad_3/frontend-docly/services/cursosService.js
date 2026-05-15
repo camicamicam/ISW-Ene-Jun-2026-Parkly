@@ -54,5 +54,52 @@ export const cursosService = {
             console.error("Error en obtenerCursosDisponibles:", error);
             throw error;
         }
+    },
+
+    async obtenerAlumnosPorCurso(idCurso) {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${BASE_URL}/api/cursos/alumnos/${idCurso}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error("Error al obtener alumnos");
+            return await response.json();
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async registrarHorasAlumno(idInscripcion, horas) {
+        try {
+            const token = localStorage.getItem("token");
+            
+            // 1. Asegúrate de que NO haya una diagonal al final de la URL
+            const url = `${BASE_URL}/api/cursos/alumnos/horas`; 
+            
+            console.log("Enviando a:", url);
+            console.log("Cuerpo:", { id_inscripcion: Number(idInscripcion), horas_nuevas: Number(horas) });
+
+            const response = await fetch(url, {
+                method: "PATCH", // <-- Confirma que el backend espera POST y no PUT
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    id_inscripcion: Number(idInscripcion),
+                    horas_completadas: Number(horas) // Cambiado de horas_nuevas a horas_completadas
+                })
+            });
+            const data = await response.json();
+            // 2. Si recibes un error, intenta leerlo como texto primero para evitar el error de JSON
+            if (!response.ok) {
+                throw new Error(data.mensaje || "Error desconocido en el servidor");
+            }
+
+            return data;
+        } catch (error) {
+            console.error("Error en registrarHorasAlumno:", error);
+            throw error;
+        }
     }
 };

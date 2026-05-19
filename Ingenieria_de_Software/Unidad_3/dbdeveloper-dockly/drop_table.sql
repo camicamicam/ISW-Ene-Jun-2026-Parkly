@@ -1,0 +1,26 @@
+-- Borrar tablas
+DROP TABLE bitacora_constancia PURGE;
+DROP TABLE bitacora_inscripcion PURGE;
+DROP TABLE bitacora_tema_curso PURGE;
+DROP TABLE bitacora_curso PURGE;
+DROP TABLE bitacora_administrador PURGE;
+DROP TABLE bitacora_instructor PURGE;
+DROP TABLE bitacora_administrativo PURGE;
+DROP TABLE bitacora_docente PURGE;
+DROP TABLE bitacora_usuario PURGE;
+DROP TABLE bitacora_tipo_curso PURGE;
+DROP TABLE bitacora_departamento PURGE;
+DROP TABLE bitacora_tipo_plaza PURGE;
+
+DROP TABLE constancia CASCADE CONSTRAINTS PURGE;
+DROP TABLE inscripcion CASCADE CONSTRAINTS PURGE;
+DROP TABLE tema_curso CASCADE CONSTRAINTS PURGE;
+DROP TABLE curso CASCADE CONSTRAINTS PURGE;
+DROP TABLE administrador CASCADE CONSTRAINTS PURGE;
+DROP TABLE instructor CASCADE CONSTRAINTS PURGE;
+DROP TABLE administrativo CASCADE CONSTRAINTS PURGE;
+DROP TABLE docente CASCADE CONSTRAINTS PURGE;
+DROP TABLE usuario CASCADE CONSTRAINTS PURGE;
+DROP TABLE departamento CASCADE CONSTRAINTS PURGE;
+DROP TABLE tipo_plaza CASCADE CONSTRAINTS PURGE;
+

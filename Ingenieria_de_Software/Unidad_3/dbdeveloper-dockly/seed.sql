@@ -2,17 +2,23 @@
 INSERT INTO tipo_plaza (nombre) VALUES ('Plaza de Tiempo Completo');
 INSERT INTO tipo_plaza (nombre) VALUES ('Plaza de Medio Tiempo');
 INSERT INTO tipo_plaza (nombre) VALUES ('Plaza por Honorarios');
+INSERT INTO tipo_plaza (nombre) VALUES ('Plaza 3/4');
+INSERT INTO tipo_plaza (nombre) VALUES ('Plaza Asignatura');
 
 ---DEPARTAMENTO---
-INSERT INTO departamento (nombre) VALUES ('Ciencias Básicas');
-INSERT INTO departamento (nombre) VALUES ('Ciencias Económico Administrativas');
-INSERT INTO departamento (nombre) VALUES ('Desarrollo Académico');
-INSERT INTO departamento (nombre) VALUES ('División de Estudios Profesionales');
-INSERT INTO departamento (nombre) VALUES ('División Posgrado e Investigación');
-INSERT INTO departamento (nombre) VALUES ('Ingeniería Eléctrica y Electrónica');
-INSERT INTO departamento (nombre) VALUES ('Ingeniería Industrial');
-INSERT INTO departamento (nombre) VALUES ('Metal Mecánica');
-INSERT INTO departamento (nombre) VALUES ('Sistemas y Computación');
+INSERT INTO departamento (nombre, es_academico) VALUES ('Ciencias Básicas',1);
+INSERT INTO departamento (nombre, es_academico) VALUES ('Ciencias Económico Administrativas',0);
+INSERT INTO departamento (nombre, es_academico) VALUES ('Desarrollo Académico',0);
+INSERT INTO departamento (nombre, es_academico) VALUES ('División de Estudios Profesionales',0);
+INSERT INTO departamento (nombre, es_academico) VALUES ('División Posgrado e Investigación',0);
+INSERT INTO departamento (nombre, es_academico) VALUES ('Ingeniería Eléctrica y Electrónica',1);
+INSERT INTO departamento (nombre, es_academico) VALUES ('Ingeniería Industrial',1);
+INSERT INTO departamento (nombre, es_academico) VALUES ('Metal Mecánica',1);
+INSERT INTO departamento (nombre, es_academico) VALUES ('Sistemas y Computación',1);
+
+--TIPO DE CURSOS--
+INSERT INTO tipo_curso (nombre) VALUES ('Docente');
+INSERT INTO tipo_curso (nombre) VALUES ('Profesional');
 
 ---USUARIOS---
 
@@ -32,7 +38,7 @@ INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno
 VALUES (21140903, 'Roberto', 'Toscano', 'Reyes', 'roberto.toscano@queretaro.tecnm.mx', 0);
 
 INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso)
-VALUES (21140904, 'Lucía', 'Fernández', NULL, 'lucia.fernandez@queretaro.tecnm.mx', 0);
+VALUES (21140904, 'Lucía', 'Fernández', 'Cruz', 'lucia.fernandez@queretaro.tecnm.mx', 0);
 
 INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso) 
 VALUES (21140780, 'Camila', 'Mata', 'Garcia', 'camila.mata@queretaro.tecnm.mx', 0);
@@ -52,15 +58,18 @@ VALUES (21140908, 'Jhoel', 'Hernández', 'Perrusquia', 'jhoel.hernandez@queretar
 INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso)
 VALUES (21140909, 'Adriana', 'Sosa', 'Melo', 'adriana.sosa@queretaro.tecnm.mx', 1);
 
+INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso)
+VALUES (999, 'Admin', 'ISW', 'Julio', 'admin@admin.com', 0);
+
 ---DOCENTE---
-INSERT INTO docente (id_usuario, id_plaza)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001), 1);
+INSERT INTO docente (id_usuario, id_plaza, id_departamento)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001), 1, 9); -- Sistemas y Computación
 
-INSERT INTO docente (id_usuario, id_plaza)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140901), 1);
+INSERT INTO docente (id_usuario, id_plaza, id_departamento)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140901), 1, 1); -- Ciencias Básicas
 
-INSERT INTO docente (id_usuario, id_plaza)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140902), 2);
+INSERT INTO docente (id_usuario, id_plaza, id_departamento)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140902), 2, 6); -- Ing. Eléctrica
 
 ---ADMINISTRATIVO---
 INSERT INTO administrativo (id_usuario, id_departamento)
@@ -82,6 +91,9 @@ VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'Serg
 INSERT INTO instructor (id_usuario, password_acceso)
 VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140906), 'Gaby1234');
 
+INSERT INTO instructor (id_usuario, password_acceso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 999), '1234@abc');
+
 ---ADMINISTRADOR---
 
 INSERT INTO administrador (id_usuario, password_acceso)
@@ -95,17 +107,14 @@ VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140909), 'Admi
 
 ---CURSO---
 
-INSERT INTO curso (id_instructor, nombre, descripcion, duracion, total_horas, cupo_maximo, anio, periodo)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 
-        'IA Aplicada', 'Fundamentos de Redes Neuronales', 4, 30, 25, 26, 1);
+INSERT INTO curso (id_instructor, nombre, cupo_maximo, anio, periodo, id_tipo)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'IA Aplicada', 25, 2026, 1, 1);
 
-INSERT INTO curso (id_instructor, nombre, descripcion, duracion, total_horas, cupo_maximo, anio, periodo)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140906), 
-        'Bases de Datos NoSQL', 'MongoDB y Cassandra para Big Data', 3, 20, 20, 26, 1);
+INSERT INTO curso (id_instructor, nombre, cupo_maximo, anio, periodo, id_tipo)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140906), 'Bases de Datos NoSQL', 20, 2026, 1, 2);
 
-INSERT INTO curso (id_instructor, nombre, descripcion, duracion, total_horas, cupo_maximo, anio, periodo)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 
-        'Cloud Security', 'Seguridad avanzada en OCI y AWS', 5, 40, 15, 26, 2);
+INSERT INTO curso (id_instructor, nombre, cupo_maximo, anio, periodo, id_tipo)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'Cloud Security', 15, 2026, 2, 2);
 
 ---TEMARIO DEL CURSO---
 

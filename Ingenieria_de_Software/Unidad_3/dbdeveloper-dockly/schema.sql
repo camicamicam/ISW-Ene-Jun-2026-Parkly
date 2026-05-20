@@ -115,10 +115,10 @@ CREATE TABLE curso (
         REFERENCES instructor(id_usuario),
     CONSTRAINT chk_curso_horas CHECK (total_horas > 0 AND total_horas <= 40),
     CONSTRAINT chk_curso_cupo CHECK (cupo_maximo > 0 AND cupo_maximo <= 35),
-    CONSTRAINT chk_fechas_curso CHECK (fecha_termino >= fecha_inicio);
+    CONSTRAINT chk_fechas_curso CHECK (fecha_termino >= fecha_inicio),
     CONSTRAINT chk_periodo CHECK (periodo IN (1,2)),
     CONSTRAINT fk_curso_tipo FOREIGN KEY (id_tipo_curso) 
-	REFERENCES tipo_curso(id_tipo_curso);
+	REFERENCES tipo_curso(id_tipo_curso)
 );
 
 ----------- TEMARIO DEL CURSO -----------
@@ -352,25 +352,30 @@ ORDER BY c.nombre ASC, t.id_tema ASC;
 CREATE OR REPLACE VIEW v_inscripciones_detalle AS
 SELECT 
     i.id_inscripcion,
+    u.id_usuario,
     u.numero_empleado,
     u.nombre || ' ' || u.apellido_paterno || ' ' || NVL(u.apellido_materno, '') AS nombre_completo,
-    -- Identificamos el rol para saber si es Docente o Administrativo
+    u.correo AS correo_alumno,
     CASE 
         WHEN d.id_usuario IS NOT NULL THEN 'Docente'
         WHEN a.id_usuario IS NOT NULL THEN 'Administrativo'
-        ELSE 'Otro'
-    END AS rol_usuario,
+        ELSE 'Usuario Sin Rol?'
+    END AS rol,
+    c.id_curso,
     c.nombre AS nombre_curso,
-    c.id_tipo_curso, -- Para saber si es curso Docente o Profesional
+    tc.nombre AS tipo_curso,
+    c.id_instructor,
     i.fecha_inscripcion,
+    i.horas_completadas,
     CASE 
         WHEN i.estado = 0 THEN 'Pendiente'
         WHEN i.estado = 1 THEN 'Aprobado'
-        ELSE 'Finalizado'
-    END AS estatus_inscripcion
+        ELSE 'Desconocido'
+    END AS estatus
 FROM inscripcion i
 JOIN usuario u ON i.id_usuario = u.id_usuario
 JOIN curso c ON i.id_curso = c.id_curso
+JOIN tipo_curso tc ON c.id_tipo_curso = tc.id_tipo_curso
 LEFT JOIN docente d ON u.id_usuario = d.id_usuario
 LEFT JOIN administrativo a ON u.id_usuario = a.id_usuario;
 

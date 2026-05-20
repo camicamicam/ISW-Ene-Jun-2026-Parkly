@@ -107,14 +107,23 @@ VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140909), 'Admi
 
 ---CURSO---
 
-INSERT INTO curso (id_instructor, nombre, cupo_maximo, anio, periodo, id_tipo)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'IA Aplicada', 25, 2026, 1, 1);
+INSERT INTO curso (id_instructor, nombre, duracion, total_horas, cupo_maximo, anio, periodo, fecha_inicio, fecha_termino, dias_semana, horario, id_tipo_curso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'IA Aplicada', 30, 30, 25, 26, 1, TO_DATE('15/08/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), TO_DATE('15/12/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Lunes', '16:00 - 18:00', 1);
 
-INSERT INTO curso (id_instructor, nombre, cupo_maximo, anio, periodo, id_tipo)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140906), 'Bases de Datos NoSQL', 20, 2026, 1, 2);
+INSERT INTO curso (id_instructor, nombre, duracion, total_horas, cupo_maximo, anio, periodo, fecha_inicio, fecha_termino, dias_semana, horario, id_tipo_curso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140906), 'Bases de Datos NoSQL', 20, 20, 20, 26, 1, TO_DATE('15/08/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), TO_DATE('15/11/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Lunes y Miércoles', '10:00 - 12:00', 2);
 
-INSERT INTO curso (id_instructor, nombre, cupo_maximo, anio, periodo, id_tipo)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'Cloud Security', 15, 2026, 2, 2);
+INSERT INTO curso (id_instructor, nombre, duracion, total_horas, cupo_maximo, anio, periodo, fecha_inicio, fecha_termino, dias_semana, horario, id_tipo_curso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140905), 'Cloud Security', 40, 40, 15, 26, 2, TO_DATE('01/02/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), TO_DATE('30/06/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Lunes y Viernes', '10:00 - 13:00', 2);
+
+INSERT INTO curso (id_instructor, nombre, duracion, total_horas, cupo_maximo, anio, periodo, fecha_inicio, fecha_termino, dias_semana, horario, id_tipo_curso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140780), 'Comida Mexicana 1', 40, 40, 35, 26, 1, TO_DATE('15/08/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), TO_DATE('10/12/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Viernes y Sabado', '16:00 - 18:00', 1);
+
+INSERT INTO curso (id_instructor, nombre, duracion, total_horas, cupo_maximo, anio, periodo, fecha_inicio, fecha_termino, dias_semana, horario, id_tipo_curso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140780), 'Redes computacionales', 2, 2, 25, 26, 2, TO_DATE('05/04/2026, 0:00:00', 'DD/MM/YYYY HH24:MI:SS'), TO_DATE('10/05/2026 00:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Lunes y Viernes', '10:00 - 13:00', 1);
+
+INSERT INTO curso (id_instructor, nombre, duracion, total_horas, cupo_maximo, anio, periodo, fecha_inicio, fecha_termino, dias_semana, horario, id_tipo_curso)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140780), 'Sistemas programables', 5, 5, 30, 26, 2, TO_DATE('04/05/2026, 0:00:00', 'DD/MM/YYYY HH24:MI:SS'), TO_DATE('16/05/2026, 0:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Lunes y Viernes', '09:00 - 10:00', 2);
 
 ---TEMARIO DEL CURSO---
 
@@ -128,24 +137,88 @@ INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (2, 'Model
 INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (3, 'Políticas de IAM', 20);
 INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (3, 'Cifrado en tránsito y reposo', 20);
 
+INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (4, 'Tacos', 20);
+INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (4, 'Tamales', 20);
+
+INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (5, 'Seguridad', 2);
+
+INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (6, 'PIC18F4550', 3);
+INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion) VALUES (6, 'ATMEGA', 2);
+
 ---INSCRIPCION---
 
 INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
 VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001), 1, SYSDATE, 0);
 
 INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140002), 2, SYSDATE, 0);
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001), 2, SYSDATE, 0);
 
 INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
-VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140903), 1, SYSDATE, 0);
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001), 4, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140901), 1, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140901), 3, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140901), 4, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140901), 5, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140902), 1, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140902), 2, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140902), 6, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140903), 2, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140903), 3, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140903), 4, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140904), 3, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140904), 5, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140904), 6, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140002), 4, SYSDATE, 0);
+
+INSERT INTO inscripcion (id_usuario, id_curso, fecha_inscripcion, estado)
+VALUES ((SELECT id_usuario FROM usuario WHERE numero_empleado = 21140002), 6, SYSDATE, 0);
 
 ---CONSTANCIA---
 
 INSERT INTO constancia (id_inscripcion, fecha_generacion, tipo_formato, url_descarga)
-VALUES (1, SYSDATE, 'PDF_OFICIAL', 'https://itq.cloud/constancias/folio_001.pdf');
+VALUES (
+    (SELECT id_inscripcion FROM inscripcion WHERE id_usuario = (SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001) AND id_curso = 1),
+    SYSDATE, 'PDF_OFICIAL', 'https://itq.cloud/constancias/folio_001.pdf'
+);
 
 INSERT INTO constancia (id_inscripcion, fecha_generacion, tipo_formato, url_descarga)
-VALUES (2, SYSDATE, 'PDF_OFICIAL', 'https://itq.cloud/constancias/folio_002.pdf');
+VALUES (
+    (SELECT id_inscripcion FROM inscripcion WHERE id_usuario = (SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001) AND id_curso = 2),
+    SYSDATE, 'PDF_OFICIAL', 'https://itq.cloud/constancias/folio_002.pdf'
+);
 
 INSERT INTO constancia (id_inscripcion, fecha_generacion, tipo_formato, url_descarga)
-VALUES (3, SYSDATE, 'PDF_OFICIAL', 'https://itq.cloud/constancias/folio_003.pdf');
+VALUES (
+    (SELECT id_inscripcion FROM inscripcion WHERE id_usuario = (SELECT id_usuario FROM usuario WHERE numero_empleado = 21140001) AND id_curso = 4),
+    SYSDATE, 'PDF_OFICIAL', 'https://itq.cloud/constancias/folio_003.pdf'
+);
+
+COMMIT;

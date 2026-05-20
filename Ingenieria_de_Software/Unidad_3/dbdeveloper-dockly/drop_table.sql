@@ -1,3 +1,61 @@
+-- Borrar vistas
+DROP VIEW v_reporte_constancias;
+DROP VIEW v_inscripciones_detalle;
+DROP VIEW v_tema_curso;
+DROP VIEW v_cursos_resumen;
+DROP VIEW v_detalle_cursos;
+DROP VIEW v_administradores;
+DROP VIEW v_instructores;
+DROP VIEW v_administrativos;
+DROP VIEW v_docentes;
+DROP VIEW v_usuarios_roles;
+DROP VIEW v_solo_usuarios;
+DROP VIEW v_lista_tipos_cursos;
+DROP VIEW v_deptos_academicos;
+DROP VIEW v_lista_departamentos;
+DROP VIEW v_lista_tipos_curso;
+DROP VIEW v_lista_plazas;
+
+-- Borrar procedimientos
+DROP PROCEDURE eliminar_constancia;
+DROP PROCEDURE actualizar_constancia;
+DROP PROCEDURE generar_constancia;
+DROP PROCEDURE eliminar_inscripcion;
+DROP PROCEDURE registrar_horas_inscripcion;
+DROP PROCEDURE actualizar_estado_inscripcion;
+DROP PROCEDURE inscribir_administrativo;
+DROP PROCEDURE inscribir_docente;
+DROP PROCEDURE eliminar_tema_curso;
+DROP PROCEDURE actualizar_tema_curso;
+DROP PROCEDURE alta_tema_curso;
+DROP PROCEDURE eliminar_curso;
+DROP PROCEDURE actualizar_curso;
+DROP PROCEDURE alta_curso;
+DROP PROCEDURE eliminar_administrador;
+DROP PROCEDURE actualizar_administrador;
+DROP PROCEDURE insertar_administrador;
+DROP PROCEDURE eliminar_instructor;
+DROP PROCEDURE actualizar_instructor;
+DROP PROCEDURE insertar_instructor;
+DROP PROCEDURE eliminar_administrativo;
+DROP PROCEDURE actualizar_administrativo;
+DROP PROCEDURE insertar_administrativo;
+DROP PROCEDURE eliminar_docente;
+DROP PROCEDURE actualizar_docente;
+DROP PROCEDURE insertar_docente;
+DROP PROCEDURE eliminar_usuario;
+DROP PROCEDURE actualizar_usuario;
+DROP PROCEDURE insertar_usuario;
+DROP PROCEDURE eliminar_tipo_curso;
+DROP PROCEDURE actualizar_tipo_curso;
+DROP PROCEDURE insertar_tipo_curso;
+DROP PROCEDURE eliminar_departamento;
+DROP PROCEDURE actualizar_departamento;
+DROP PROCEDURE insertar_departamento;
+DROP PROCEDURE eliminar_plaza;
+DROP PROCEDURE actualizar_plaza;
+DROP PROCEDURE insertar_plaza;
+
 -- Borrar tablas
 DROP TABLE bitacora_constancia PURGE;
 DROP TABLE bitacora_inscripcion PURGE;
@@ -21,6 +79,8 @@ DROP TABLE instructor CASCADE CONSTRAINTS PURGE;
 DROP TABLE administrativo CASCADE CONSTRAINTS PURGE;
 DROP TABLE docente CASCADE CONSTRAINTS PURGE;
 DROP TABLE usuario CASCADE CONSTRAINTS PURGE;
+DROP TABLE tipo_curso CASCADE CONSTRAINTS PURGE;
 DROP TABLE departamento CASCADE CONSTRAINTS PURGE;
 DROP TABLE tipo_plaza CASCADE CONSTRAINTS PURGE;
 
+DROP TABLE DBTOOLS$EXECUTION_HISTORY PURGE;

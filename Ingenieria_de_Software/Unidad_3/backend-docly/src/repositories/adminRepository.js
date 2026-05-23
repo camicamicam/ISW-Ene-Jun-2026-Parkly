@@ -36,8 +36,8 @@ async function editarCurso(idCurso, curso, temas) {
     let connection;
     try {
         connection = await db.getConnection();
-        const TipoListaTemas = await connection.getDbObjectClass('T_LISTA_TEMAS');
-        const TipoTema = await connection.getDbObjectClass('T_TEMA');
+        const TipoListaTemas = await connection.getDbObjectClass('ADMIN.T_LISTA_TEMAS');
+        const TipoTema = await connection.getDbObjectClass('ADMIN.T_TEMA');
         const temasOracle = temas.map(tema => {
             const objTema = new TipoTema();
             objTema.TITULO_TEMA = tema.titulo_tema;
@@ -68,6 +68,7 @@ async function editarCurso(idCurso, curso, temas) {
             p_id_instructor: curso.id_instructor,
             p_nuevos_temas: {
                 type: oracledb.DB_TYPE_OBJECT,
+                dir:  oracledb.BIND_IN,
                 val:  listaNuevosTemas,
                 typeClass: TipoListaTemas 
             }

@@ -4,10 +4,10 @@ const router = express.Router();
 const { checkRole } = require('../middlewares/roleAuth');
 const adminController = require('../controllers/adminController');
 
-router.post('/instructores', checkRole(['admin']), adminController.registrarInstructor);
+router.post('/instructores', checkRole(['ADMINISTRADOR']), adminController.registrarInstructor);
 
-router.put('/cursos/:idCurso', checkRole(['admin']), adminController.actualizarCurso);
+router.put('/cursos/:idCurso', checkRole(['ADMINISTRADOR']), adminController.actualizarCurso);
 
-router.delete('/cursos/:idCurso', checkRole(['admin']), adminController.eliminarCurso);
+router.delete('/cursos/:idCurso', checkRole(['ADMINISTRADOR']), adminController.eliminarCurso);
 
 module.exports = router;

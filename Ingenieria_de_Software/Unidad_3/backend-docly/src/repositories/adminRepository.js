@@ -54,7 +54,16 @@ async function editarCurso(idCurso, curso, temas) {
                 );
             END;
         `;
+        /*console.log("idCurso (URL):", idCurso, "->", parseInt(idCurso));
+        console.log("cupo_maximo:", curso.cupo_maximo, "->", parseInt(curso.cupo_maximo));
+        console.log("anio:", curso.anio, "->", parseInt(curso.anio));
+        console.log("periodo:", curso.periodo, "->", parseInt(curso.periodo));
+        console.log("id_tipo_curso:", curso.id_tipo_curso, "->", parseInt(curso.id_tipo_curso));
+        console.log("id_instructor:", curso.id_instructor, "->", parseInt(curso.id_instructor));
         
+        temas.forEach((t, i) => {
+            console.log(`Tema ${i+1} horas:`, t.horas_duracion, "->", parseInt(t.horas_duracion));
+        });*/
         const bindVars = {
             p_id_curso: parseInt(idCurso),
             p_nombre: curso.nombre,

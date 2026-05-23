@@ -14,13 +14,13 @@ async function procesarLogin(password_acceso, rol_esperado) {
     const rol = usuarioEncontrado.ROL;
     const portal = rol_esperado.toLowerCase();
 
-    if (portal === 'instructor') {
-        if (rol !== 'INSTRUCTOR') {
+    if (portal === 'instructor' || portal === 'administrador') {
+        if (rol !== 'INSTRUCTOR' && rol !== 'ADMINISTRADOR') {
             throw new Error("ROL_INCORRECTO");
         }
     } 
-    else if (portal === 'constancia' || portal === 'docente') {
-        if (rol !== 'DOCENTE' && rol !== 'ADMINISTRATIVO') {
+    else if (portal === 'constancia' || portal === 'docente' || portal === 'administrador') {
+        if (rol !== 'DOCENTE' && rol !== 'ADMINISTRATIVO' && rol !== 'ADMINISTRADOR') {
             throw new Error("ROL_INCORRECTO");
         }
     }

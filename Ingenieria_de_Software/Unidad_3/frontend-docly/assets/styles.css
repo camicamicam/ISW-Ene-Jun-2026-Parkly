@@ -104,15 +104,17 @@ body {
     content: " ▼";
     font-size: 12px;
 }
-/*MANTENER MENU Y PODER HACER SELECIÓN*/
+/* MANTENER MENU Y PODER HACER SELECCIÓN (Tanto por Hover como por la clase .active de JS) */
 .dropdown:hover .submenu,
+.dropdown.active .submenu,
 .submenu:hover {
     display: block !important;
 }
 
-/* DESKTOP: mostrar con hover */
+/* DESKTOP: mostrar con hover y con clase activa */
 @media (min-width: 769px) {
-    .dropdown:hover .submenu {
+    .dropdown:hover .submenu,
+    .dropdown.active .submenu {
         display: block;
     }
 }

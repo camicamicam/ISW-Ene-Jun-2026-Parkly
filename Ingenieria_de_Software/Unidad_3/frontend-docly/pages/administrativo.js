@@ -10,15 +10,15 @@ export function administrativoPage() {
 
     // Departamentos específicos para administrativos
     const departamentos = [
-        { id: 22, nombre: "Ciencias Económico Administrativas" },
-        { id: 23, nombre: "Desarrollo Académico" },
-        { id: 24, nombre: "División de Estudios Profesionales" },
-        { id: 35, nombre: "División Posgrado e Investigación" },
-        { id: 26, nombre: "Ingeniería Eléctrica y Electrónica" },
-        { id: 27, nombre: "Ingeniería Industrial" },
-        { id: 28, nombre: "Metal Mecánica" },
-        { id: 29, nombre: "Sistemas y Computación" },
-        { id: 21, nombre: "Ciencias Básicas" }
+        { id: 2, nombre: "Ciencias Económico Administrativas" },
+        { id: 3, nombre: "Desarrollo Académico" },
+        { id: 4, nombre: "División de Estudios Profesionales" },
+        { id: 5, nombre: "División Posgrado e Investigación" },
+        { id: 6, nombre: "Ingeniería Eléctrica y Electrónica" },
+        { id: 7, nombre: "Ingeniería Industrial" },
+        { id: 8, nombre: "Metal Mecánica" },
+        { id: 9, nombre: "Sistemas y Computación" },
+        { id: 1, nombre: "Ciencias Básicas" }
     ];
 
     setTimeout(() => {

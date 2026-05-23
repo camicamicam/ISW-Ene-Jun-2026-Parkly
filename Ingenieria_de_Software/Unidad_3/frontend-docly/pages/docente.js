@@ -7,18 +7,18 @@ export function docentePage() {
 
     const plazas = [
         { id: 1, nombre: "TC (Tiempo Completo)" },
-        { id: 21, nombre: "3/4 de Tiempo" },
+        { id: 4, nombre: "3/4 de Tiempo" },
         { id: 2, nombre: "1/2 Tiempo" },
-        { id: 22, nombre: "Asignatura" },
+        { id: 5, nombre: "Asignatura" },
         { id: 3, nombre: "Honorarios" }
     ];
 
     const departamentos = [
-        { id: 26, nombre: "Ingeniería Eléctrica y Electrónica"},
-        { id: 27, nombre: "Ingeniería Industrial"},
-        { id: 28, nombre: "Metal Mecánica"},
-        { id: 29, nombre: "Sistemas y Computación"},
-        { id: 21, nombre: "Ciencias Básicas"}
+        { id: 6, nombre: "Ingeniería Eléctrica y Electrónica"},
+        { id: 7, nombre: "Ingeniería Industrial"},
+        { id: 8, nombre: "Metal Mecánica"},
+        { id: 9, nombre: "Sistemas y Computación"},
+        { id: 1, nombre: "Ciencias Básicas"}
     ];
 
     setTimeout(() => {

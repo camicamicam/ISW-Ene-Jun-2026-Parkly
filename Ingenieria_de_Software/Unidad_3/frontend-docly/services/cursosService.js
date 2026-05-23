@@ -101,5 +101,72 @@ export const cursosService = {
             console.error("Error en registrarHorasAlumno:", error);
             throw error;
         }
+    },
+
+    async actualizarCurso(idCurso, cursoYTemasData) {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${BASE_URL}/api/admin/cursos/${idCurso}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(cursoYTemasData)
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.mensaje || "Error al actualizar el curso");
+            return data;
+        } catch (error) {
+            console.error("Error en actualizarCurso:", error);
+            throw error;
+        }
+    },
+
+    async eliminarCurso(idCurso) {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${BASE_URL}/api/admin/cursos/${idCurso}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            // Si el servidor responde con JSON lo leemos, si no, manejamos el estado
+            const data = response.status !== 204 ? await response.json() : { mensaje: "Curso eliminado con éxito" };
+            if (!response.ok) throw new Error(data.mensaje || "Error al eliminar el curso");
+            return data;
+        } catch (error) {
+            console.error("Error en eliminarCurso:", error);
+            throw error;
+        }
+    },
+
+    async registrarInstructor(datosInstructor) {
+        try {
+            const token = localStorage.getItem("token"); 
+
+            const respuesta = await fetch("https://api-cursos-itq.onrender.com/api/admin/instructores", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // 2. Le pegamos el token de seguridad para que diga "¡Ah, eres un admin válido!"
+                    "Authorization": `Bearer ${token}` 
+                },
+                body: JSON.stringify(datosInstructor)
+            });
+
+            if (!respuesta.ok) {
+                const errorData = await respuesta.json().catch(() => ({}));
+                throw new Error(errorData.mensaje || "Error al registrar el instructor.");
+            }
+
+            return await respuesta.json();
+        } catch (err) {
+            console.error("Error en registrarInstructor:", err);
+            throw err;
+        }
     }
 };

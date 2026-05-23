@@ -78,12 +78,25 @@ function setupNavbarEvents() {
     });
 
     // 4. Dropdowns en Móvil
-    document.querySelectorAll(".dropdown-link").forEach(link => {
+    document.querySelectorAll(".dropdown").forEach(dropdown => {
+        const link = dropdown.querySelector(".dropdown-link");
+
+        // Soporte para Clic (Tanto en móvil como para el robot de pruebas en Desktop)
         link.onclick = (e) => {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                link.parentElement.classList.toggle("active");
-            }
+            e.preventDefault();
+            // Cerramos los otros dropdowns abiertos primero
+            document.querySelectorAll(".dropdown").forEach(d => {
+                if (d !== dropdown) d.classList.remove("active");
+            });
+            dropdown.classList.toggle("active");
+        };
+
+        // Soporte para Hover en Desktop (Para que el usuario común tenga una experiencia fluida)
+        dropdown.onmouseenter = () => {
+            if (window.innerWidth > 768) dropdown.classList.add("active");
+        };
+        dropdown.onmouseleave = () => {
+            if (window.innerWidth > 768) dropdown.classList.remove("active");
         };
     });
 }

@@ -3,7 +3,7 @@ const adminService = require('../services/adminService');
 async function registrarInstructor(req, res) {
     try {
         const resultado = await adminService.crearInstructor(req.body);
-        console.log(`Instructor ${req.body.nombre} registrado exitosamente.`);
+        console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre}.`);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         if (error.message === "FALTAN_DATOS") {
@@ -25,7 +25,7 @@ async function actualizarCurso(req, res) {
         const { idCurso } = req.params;
         const { curso, temas } = req.body;
         const resultado = await adminService.modificarCurso(idCurso, curso, temas);
-        console.log(`Curso ID ${idCurso} actualizado exitosamente.`);
+        console.log(`Curso ID ${idCurso} actualizado exitosamente por el administrador ${req.usuario.nombre}.`);
         res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         if (error.message === "FECHAS_INVALIDAS") return res.status(400).json({ mensaje: 'La fecha de término no puede ser anterior a la de inicio.' });
@@ -39,7 +39,7 @@ async function eliminarCurso(req, res) {
     try {
         const { idCurso } = req.params;
         const resultado = await adminService.removerCurso(idCurso);
-        console.log(`Curso ID ${idCurso} eliminado exitosamente.`);
+        console.log(`Curso ID ${idCurso} eliminado exitosamente por el administrador ${req.usuario.nombre}.`);
         res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         if (error.message === "CURSO_CON_INSCRITOS") {

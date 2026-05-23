@@ -51,9 +51,10 @@ async function editarCurso(idCurso, curso, temas) {
                 :p_id_curso, :p_nombre, :p_cupo_maximo, :p_anio,
                 :p_periodo, :p_id_tipo_curso, :p_fecha_inicio, :p_fecha_termino,
                 :p_dias_semana, :p_horario, :p_id_instructor, :p_nuevos_temas
-                )
-            END
+                );
+            END;
         `;
+        
         const bindVars = {
             p_id_curso: idCurso,
             p_nombre: curso.nombre,

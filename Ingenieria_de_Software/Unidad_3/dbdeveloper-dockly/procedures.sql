@@ -706,6 +706,9 @@ CREATE OR REPLACE PROCEDURE inscribir_docente (
     p_id_curso       IN curso.id_curso%TYPE
 ) IS
     v_id_usuario   usuario.id_usuario%TYPE;
+    v_nombre_exist usuario.nombre%TYPE;
+    v_ap_p_exist   usuario.apellido_paterno%TYPE;
+    v_ap_m_exist   usuario.apellido_materno%TYPE;
     v_es_academico NUMBER;
     v_cupo_max     NUMBER;
     v_inscritos    NUMBER;
@@ -717,7 +720,15 @@ BEGIN
         RETURNING id_usuario INTO v_id_usuario;
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
-            SELECT id_usuario INTO v_id_usuario FROM usuario WHERE numero_empleado = p_num_empleado;
+            SELECT id_usuario, nombre, apellido_paterno, apellido_materno 
+            INTO v_id_usuario, v_nombre_exist, v_ap_p_exist, v_ap_m_exist
+            FROM usuario WHERE numero_empleado = p_num_empleado;
+
+            -- Validación de coherencia
+            IF v_nombre_exist <> p_nombre OR v_ap_p_exist <> p_ap_paterno OR 
+               NVL(v_ap_m_exist, ' ') <> NVL(p_ap_materno, ' ') THEN
+               RAISE_APPLICATION_ERROR(-20030, 'Error: Datos incoherentes para el número de empleado ' || p_num_empleado);
+            END IF;
     END;
 
     -- 2. Validar que el departamento sea académico para el docente
@@ -785,6 +796,9 @@ CREATE OR REPLACE PROCEDURE inscribir_administrativo (
     p_id_curso       IN curso.id_curso%TYPE
 ) IS
     v_id_usuario   usuario.id_usuario%TYPE;
+    v_nombre_exist usuario.nombre%TYPE;
+    v_ap_p_exist   usuario.apellido_paterno%TYPE;
+    v_ap_m_exist   usuario.apellido_materno%TYPE;
     v_cupo_max     NUMBER;
     v_inscritos    NUMBER;
 BEGIN
@@ -795,7 +809,14 @@ BEGIN
         RETURNING id_usuario INTO v_id_usuario;
     EXCEPTION
         WHEN DUP_VAL_ON_INDEX THEN
-            SELECT id_usuario INTO v_id_usuario FROM usuario WHERE numero_empleado = p_num_empleado;
+            SELECT id_usuario, nombre, apellido_paterno, apellido_materno 
+            INTO v_id_usuario, v_nombre_exist, v_ap_p_exist, v_ap_m_exist
+            FROM usuario WHERE numero_empleado = p_num_empleado;
+
+            IF v_nombre_exist <> p_nombre OR v_ap_p_exist <> p_ap_paterno OR 
+               NVL(v_ap_m_exist, ' ') <> NVL(p_ap_materno, ' ') THEN
+                RAISE_APPLICATION_ERROR(-20030, 'Error: Datos incoherentes para el número de empleado ' || p_num_empleado);
+            END IF;
     END;
 
     -- 2. Validación de administrativo o su registro en la tabla
@@ -867,6 +888,45 @@ EXCEPTION
     WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20131, 'Error al actualizar el estado: ' || SQLERRM);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE registrar_horas_inscripcion (
+    p_id_inscripcion IN inscripcion.id_inscripcion%TYPE,
+    p_horas_nuevas   IN inscripcion.horas_completadas%TYPE
+) IS
+    v_horas_totales_curso NUMBER;
+    v_id_curso            inscripcion.id_curso%TYPE;
+BEGIN
+    -- 1. Obtenemos el ID del curso vinculado a esa inscripción
+    SELECT id_curso INTO v_id_curso 
+    FROM inscripcion 
+    WHERE id_inscripcion = p_id_inscripcion;
+
+    -- 2. Calculamos la duración total del curso sumando sus temas
+    SELECT SUM(horas_duracion) INTO v_horas_totales_curso
+    FROM tema_curso
+    WHERE id_curso = v_id_curso;
+
+    -- 3. Validación, horas ingresadas nos superan a horas totales del curso
+    IF p_horas_nuevas > v_horas_totales_curso THEN
+        RAISE_APPLICATION_ERROR(-20150, 'Error: No puedes registrar ' || p_horas_nuevas || 
+                                ' horas porque el curso solo dura ' || v_horas_totales_curso || ' horas.');
+    END IF;
+
+    -- 4. Si todo está bien, actualizamos las horas completadas
+    UPDATE inscripcion 
+    SET horas_completadas = p_horas_nuevas
+    WHERE id_inscripcion = p_id_inscripcion;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20151, 'Error: No se encontró la inscripción proporcionada.');
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20152, 'Error al registrar progreso: ' || SQLERRM);
 END;
 /
 -- DELETE

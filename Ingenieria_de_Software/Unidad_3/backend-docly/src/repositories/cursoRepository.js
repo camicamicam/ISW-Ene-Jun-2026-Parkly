@@ -12,9 +12,9 @@ async function guardarCurso(datosCurso, temas) {
                 BEGIN
                     alta_curso(
                         :p_num_empleado, :p_nombre_inst, :p_ap_paterno, :p_ap_materno, :p_correo,
-                        :p_nombre_curso, :p_nombre_tipo, :p_duracion, :p_total_horas, :p_cupo_maximo, :p_anio, 
-                        :p_periodo, :p_fecha_inicio, :p_fecha_termino, :p_dias_semana, :p_horario,
-                        :p_id_curso_gen
+                        :p_nombre_curso, :p_nombre_tipo, :p_duracion, :p_total_horas, :p_cupo_maximo,
+                        :p_anio, :p_periodo, :p_fecha_inicio, :p_fecha_termino, :p_dias_semana,
+                        :p_horario, :p_id_curso_gen
                     );
                 END;
             `;
@@ -159,6 +159,7 @@ async function inscribirDocente(datos) {
         if (error.message.includes('-20011')) throw new Error('DUPLICADO');
         if (error.message.includes('-20012')) throw new Error('NO_EXISTE');
         if (error.message.includes('-20020')) throw new Error('DEPTO_NO_ACADEMICO');
+        if (error.message.includes('-20040')) throw new Error('EMPLEADO_NO_COINCIDE');
         
         throw new Error("Error al inscribir al docente: " + error.message);
     } finally {
@@ -196,6 +197,7 @@ async function inscribirAdministrativo(datos) {
         if (error.message.includes('-20011')) throw new Error('DUPLICADO');
         if (error.message.includes('-20012')) throw new Error('NO_EXISTE');
         if (error.message.includes('-20020')) throw new Error('DEPTO_NO_ACADEMICO');
+        if (error.message.includes('-20030')) throw new Error('EMPLEADO_NO_COINCIDE');
         
         throw new Error("Error al inscribir al docente: " + error.message);
     } finally {

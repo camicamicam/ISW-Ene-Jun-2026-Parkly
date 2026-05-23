@@ -8,20 +8,20 @@ const { checkRole } = require('../middlewares/roleAuth');
 router.post('/inscribir/docente',cursoController.inscribirDocente);
 router.post('/inscribir/administrativo', cursoController.inscribirAdministrativo);
 
-router.post('/registrar', checkRole(['INSTRUCTOR']), cursoController.registrar);
+router.post('/registrar', checkRole(['INSTRUCTOR', 'ADMINISTRADOR']), cursoController.registrar);
 
 router.get(
     '/disponibles', 
-    checkRole(['INSTRUCTOR', 'DOCENTE', 'ADMINISTRATIVO']), 
+    checkRole(['INSTRUCTOR', 'DOCENTE', 'ADMINISTRATIVO', 'ADMINISTRADOR']), 
     cursoController.obtenerCursos
 );
 
 router.get('/catalogo',cursoController.obtenerCursos);
 
-router.get('/mis-cursos', checkRole(['INSTRUCTOR']), cursoController.obtenerCursosPorInstructor);
+router.get('/mis-cursos', checkRole(['INSTRUCTOR', 'ADMINISTRADOR']), cursoController.obtenerCursosPorInstructor);
 
-router.get('/alumnos/:idCurso', checkRole(['INSTRUCTOR']), cursoController.obtenerAlumnos);
+router.get('/alumnos/:idCurso', checkRole(['INSTRUCTOR', 'ADMINISTRADOR']), cursoController.obtenerAlumnos);
 
-router.patch('/alumnos/horas', checkRole(['INSTRUCTOR']), cursoController.actualizarHoras);
+router.patch('/alumnos/horas', checkRole(['INSTRUCTOR', 'ADMINISTRADOR']), cursoController.actualizarHoras);
 
 module.exports = router;

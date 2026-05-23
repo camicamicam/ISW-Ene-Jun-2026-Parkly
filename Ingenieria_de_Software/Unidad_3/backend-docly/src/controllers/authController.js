@@ -12,10 +12,8 @@ async function login(req, res/*, rol_esperado */) {
     }
 
     try {
-        // Le pasamos la bronca al Service
         const resultado = await authService.procesarLogin(password_acceso, rol_esperado);
-
-        // Si todo sale bien, respondemos
+        //console.log(`Usuario ${resultado.nombre} autenticado exitosamente con rol ${resultado.rol}.`);
         res.status(200).json({
             status: 'Éxito',
             mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre}`,
@@ -25,7 +23,6 @@ async function login(req, res/*, rol_esperado */) {
         });
 
     } catch (error) {
-        // Manejamos los errores que nos aviente el Service
         if (error.message === "CREDENCIAL_INVALIDA") {
             res.status(401).json({ mensaje: 'Credencial incorrecta, revisa si esta bien o acude a DDA.' });
         } else if (error.message === "ROL_INCORRECTO") {

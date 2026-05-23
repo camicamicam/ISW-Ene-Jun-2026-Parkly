@@ -180,8 +180,9 @@ export function instructorPage() {
                         <div>
                             <h4 style="margin: 0 0 5px 0; color: #2c3e50;">${curso.NOMBRE_CURSO}</h4>
                             <div style="font-size: 0.85rem; color: #666;">
-                                <span><strong>ID:</strong> ${curso.ID_CURSO}</span> | 
-                                <span><strong>Horas Totales:</strong> ${curso.TOTAL_HORAS}</span>
+                                <span><strong>Instructor:</strong> ${curso.INSTRUCTOR}</span><br>
+                                <span><strong>Horas Totales:</strong> ${curso.TOTAL_HORAS}</span> |
+                                <span><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}
                             </div>
                         </div>
                         <button class="btn-alumnos" 

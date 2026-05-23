@@ -18,6 +18,12 @@ export function loginPage() {
             title: "Acceso a Constancias", 
             redirect: "/constancias",
             nota: "La clave fue proporcionada en su correo de confirmación." 
+        },
+
+        admin: {
+            title: "Panel de Administración",
+            redirect: "/admin-cursos",
+            nota: "Área restringida. Solo personal autorizado de control y diseño curricular."
         }
     };
 
@@ -54,12 +60,21 @@ export function loginPage() {
 
                         // Validación para Instructores
                         if (tipoEnClick === "instructor") {
+                            // Si el rol devuelto contiene la palabra 'admin', es el administrador
+                            if (userRole.includes("administrador")) {
+                                mostrarMensaje("¡Éxito! Bienvenido al Panel de Administrador.", false);
+                                navigate("/admin-cursos"); // Nueva ruta para el admin
+                                return;
+                            }
+
+                            // Si no es admin y tampoco es instructor, entonces sí denegamos el acceso
                             if (userRole !== "instructor") {
                                 mostrarMensaje(data.mensaje, true);
                                 //alert(data.mensaje);
                                 //alert("Acceso denegado: Esta clave no pertenece a un Instructor.");
                                 return;
                             }
+                            
                             mostrarMensaje(data.mensaje, false);
                             //alert(data.mensaje);
                             //alert("¡Éxito! Bienvenido al Panel de Instructor.");

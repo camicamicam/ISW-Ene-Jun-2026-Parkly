@@ -12,9 +12,9 @@ async function guardarCurso(datosCurso, temas) {
                 BEGIN
                     alta_curso(
                         :p_num_empleado, :p_nombre_inst, :p_ap_paterno, :p_ap_materno, :p_correo,
-                        :p_nombre_curso, :p_nombre_tipo, :p_duracion, :p_total_horas, :p_cupo_maximo, :p_anio, 
-                        :p_periodo, :p_fecha_inicio, :p_fecha_termino, :p_dias_semana, :p_horario,
-                        :p_id_curso_gen
+                        :p_nombre_curso, :p_nombre_tipo, :p_duracion, :p_total_horas, :p_cupo_maximo,
+                        :p_anio, :p_periodo, :p_fecha_inicio, :p_fecha_termino, :p_dias_semana,
+                        :p_horario, :p_id_curso_gen
                     );
                 END;
             `;

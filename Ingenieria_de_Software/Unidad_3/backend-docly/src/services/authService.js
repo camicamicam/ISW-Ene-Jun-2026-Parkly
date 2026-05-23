@@ -23,7 +23,12 @@ async function procesarLogin(password_acceso, rol_esperado) {
         if (rol !== 'DOCENTE' && rol !== 'ADMINISTRATIVO') {
             throw new Error("ROL_INCORRECTO");
         }
-    } 
+    }
+    else if (portal === 'admin' || portal === 'administrador') {
+        if (rol !== 'ADMINISTRADOR') { 
+            throw new Error("ROL_INCORRECTO");
+        }
+    }
     else {
         throw new Error("ROL_INCORRECTO");
     }

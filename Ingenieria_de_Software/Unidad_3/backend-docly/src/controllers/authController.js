@@ -13,7 +13,7 @@ async function login(req, res/*, rol_esperado */) {
 
     try {
         const resultado = await authService.procesarLogin(password_acceso, rol_esperado);
-
+        console.log(`Usuario ${resultado.nombre} autenticado exitosamente con rol ${resultado.rol}.`);
         res.status(200).json({
             status: 'Éxito',
             mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre}`,

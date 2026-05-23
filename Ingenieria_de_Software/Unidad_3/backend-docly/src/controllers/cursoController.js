@@ -20,7 +20,7 @@ async function registrar(req, res) {
     try {
         curso.nombre_instructor_final = nombreFinal;
         const resultado = await cursoService.crearCurso(curso, temas);
-
+        console.log(`Curso '${curso.nombre}' registrado exitosamente con ID ${resultado.id_curso} por el instructor ${nombreFinal}.`);
         res.status(201).json({
             status: 'Éxito',
             mensaje: `Instructor(a) ${nombreFinal}, su curso '${curso.nombre}' fue registrado con éxito.`,
@@ -82,6 +82,7 @@ async function inscribirDocente(req, res) {
     console.log("DATOS RECIBIDOS EN EL POST DOCENTE:", req.body);
     try {
         const resultado = await cursoService.inscripcionDocente(req.body);
+        console.log(`Docente ${req.body.nombre} inscrito exitosamente en el curso ID ${req.body.id_curso}.`);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         erroresInscripcion(error, res);
@@ -92,6 +93,7 @@ async function inscribirAdministrativo(req, res) {
     console.log("DATOS RECIBIDOS EN EL POST ADMINISTRATIVO:", req.body);
     try {
         const resultado = await cursoService.inscripcionAdministrativo(req.body);
+        console.log(`Administrativo ${req.body.nombre} inscrito exitosamente en el curso ID ${req.body.id_curso}.`);
         res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         erroresInscripcion(error, res);
@@ -137,6 +139,7 @@ async function actualizarHoras(req, res) {
     try {
         const { id_inscripcion, horas_completadas} = req.body;
         const resultado = await cursoService.registrarProgreso(id_inscripcion, horas_completadas);
+        console.log(`Horas actualizadas exitosamente para la inscripción ID ${id_inscripcion}. Horas completadas: ${horas_completadas}.`);
         res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         if (error.message === "HORAS_NEGATIVAS") {

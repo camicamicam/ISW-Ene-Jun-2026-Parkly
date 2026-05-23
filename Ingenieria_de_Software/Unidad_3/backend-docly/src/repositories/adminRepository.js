@@ -41,7 +41,7 @@ async function editarCurso(idCurso, curso, temas) {
         const temasOracle = temas.map(tema => {
             const objTema = new TipoTema();
             objTema.TITULO_TEMA = tema.titulo_tema;
-            objTema.HORAS_DURACION = tema.horas_duracion;
+            objTema.HORAS_DURACION = parseInt(tema.horas_duracion);
             return objTema;
         });
         const listaNuevosTemas = new TipoListaTemas(temasOracle);
@@ -56,17 +56,17 @@ async function editarCurso(idCurso, curso, temas) {
         `;
         
         const bindVars = {
-            p_id_curso: idCurso,
+            p_id_curso: parseInt(idCurso),
             p_nombre: curso.nombre,
-            p_cupo_maximo: curso.cupo_maximo,
-            p_anio: curso.anio,
-            p_periodo: curso.periodo,
-            p_id_tipo_curso: curso.id_tipo_curso,
-            p_fecha_inicio: curso.fecha_inicio,
-            p_fecha_termino: curso.fecha_termino,
+            p_cupo_maximo: parseInt(curso.cupo_maximo),
+            p_anio: parseInt(curso.anio),
+            p_periodo: parseInt(curso.periodo),
+            p_id_tipo_curso: parseInt(curso.id_tipo_curso),
+            p_fecha_inicio: new Date(curso.fecha_inicio),
+            p_fecha_termino: new Date(curso.fecha_termino),
             p_dias_semana: curso.dias_semana,
             p_horario: curso.horario,
-            p_id_instructor: curso.id_instructor,
+            p_id_instructor: parseInt(curso.id_instructor),
             p_nuevos_temas: {
                 type: oracledb.DB_TYPE_OBJECT,
                 dir:  oracledb.BIND_IN,

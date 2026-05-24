@@ -43,7 +43,7 @@ async function eliminarCurso(req, res) {
         res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
     } catch (error) {
         if (error.message === "CURSO_CON_INSCRITOS") {
-            console.log(`Intento de borrar curso ID ${idCurso} denegado (tiene alumnos).`);
+            console.log(`Intento de borrar curso ID ${req.params.idCurso} denegado (tiene alumnos).`);
             return res.status(400).json({ mensaje: 'No se puede eliminar el curso porque ya tiene alumnos inscritos.' });
         }
         if (error.message === "NO_EXISTE") return res.status(404).json({ mensaje: 'El curso no existe.' });

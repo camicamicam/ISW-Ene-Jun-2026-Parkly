@@ -54,7 +54,7 @@ async function editarCurso(idCurso, curso, temas) {
                 );
             END;
         `;
-        /*console.log("idCurso (URL):", idCurso, "->", parseInt(idCurso));
+        /*console.log("idCurso:", idCurso, "->", parseInt(idCurso));
         console.log("cupo_maximo:", curso.cupo_maximo, "->", parseInt(curso.cupo_maximo));
         console.log("anio:", curso.anio, "->", parseInt(curso.anio));
         console.log("periodo:", curso.periodo, "->", parseInt(curso.periodo));

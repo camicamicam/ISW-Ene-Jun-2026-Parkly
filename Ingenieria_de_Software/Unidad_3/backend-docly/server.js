@@ -1,9 +1,11 @@
 // 1. Importar las librerías
 const express = require('express');
 const cors = require('cors');
+
 const authRoutes = require('./src/routes/authRoutes');
 const cursoRoutes = require('./src/routes/cursoRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
+const constanciaRoutes = require('./src/routes/constanciaRoutes');
 
 // 2. Inicializar la aplicación
 const app = express();
@@ -32,6 +34,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/cursos', cursoRoutes);
 
 app.use('/api/admin', adminRoutes);
+
+app.use('/api/constancias', constanciaRoutes);
+
+module.exports = app;
 
 const PORT = process.env.PORT || 1000;
 app.listen(PORT, () => {

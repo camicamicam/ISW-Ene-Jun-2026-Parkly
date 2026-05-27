@@ -1,10 +1,10 @@
-const db = require('../../config/db');
 const oracledb = require('oracledb');
+const db = require('../../config/db');
 
 async function obtenerConstancia(idUsuario) {
     let connection;
     try {
-        connection = await oracledb.getConnection(db);
+        connection = await db.getConnection();
         const query = `
             SELECT 
                 id_inscripcion, 

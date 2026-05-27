@@ -37,7 +37,7 @@ app.use('/api/admin', adminRoutes);
 
 app.use('/api/constancias', constanciaRoutes);
 
-module.exports = app;
+//module.exports = app;
 
 const PORT = process.env.PORT || 1000;
 app.listen(PORT, () => {

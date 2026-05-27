@@ -94,7 +94,7 @@ function renderizarSeccionCursos() {
                                 </div>
                             </div>
                             <div class="card-action" style="display: flex; flex-direction: column; gap: 8px;">
-                                <!--<button class="btn-seleccionar btn-editar-trigger" data-id="${c.ID_CURSO}" style="padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Editar</button>-->
+                                <button class="btn-seleccionar btn-editar-trigger" data-id="${c.ID_CURSO}" style="padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Editar</button>
                                 <button class="btn-cancel btn-eliminar-trigger" data-id="${c.ID_CURSO}" style="padding: 8px 15px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Eliminar</button>
                             </div>
                         </div>
@@ -177,7 +177,7 @@ function renderizarSeccionCursos() {
     `;
 }
 
-// VISTA B: REGISTRO DE INSTRUCTORES (NUEVA)
+// VISTA B: REGISTRO DE INSTRUCTORES
 function renderizarSeccionInstructores() {
     return `
         <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 8px solid #2c3e50; width: 100%; box-sizing: border-box;">
@@ -187,7 +187,6 @@ function renderizarSeccionInstructores() {
             </div>
 
             <form id="form-registrar-instructor" style="display: flex; flex-direction: column; gap: 18px;">
-                
                 <div style="display: flex; gap: 15px;">
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Número de Empleado</label>
@@ -312,6 +311,10 @@ function setupAdminEvents() {
                 };
             });
 
+            // 2. EXTRAEMOS DINÁMICAMENTE EL ID DEL INSTRUCTOR DESDE EL CURSO SELECCIONADO
+            // Usamos cortocircuito para jalarlo ya sea en mayúsculas o minúsculas del JSON
+            const instructorIdReal = cursoSeleccionado.ID_INSTRUCTOR || cursoSeleccionado.id_instructor;
+
             const jsonUpdate = {
                 curso: {
                     id_curso: cursoSeleccionado.ID_CURSO,
@@ -324,8 +327,9 @@ function setupAdminEvents() {
                     dias_semana: document.getElementById("edit-dias").value.trim(),
                     horario: document.getElementById("edit-horario").value.trim(),
                     id_tipo_curso: idTipoCursoCorrecto,
-                    id_instructor: cursoSeleccionado.ID_INSTRUCTOR || 2, // Respaldo temporal acordado
-                    ID_INSTRUCTOR: cursoSeleccionado.ID_INSTRUCTOR || 2
+                    // 3. Reemplazamos el "|| 2" hardcodeado por el ID real recuperado
+                    id_instructor: Number(instructorIdReal), 
+                    ID_INSTRUCTOR: Number(instructorIdReal)
                 },
                 temas: temasProcesados
             };
@@ -340,7 +344,7 @@ function setupAdminEvents() {
             finally { Loader.hide(); }
         }
 
-        // SUBMIT 2: REGISTRO DE NUEVO INSTRUCTOR (NUEVO)
+        // SUBMIT 2: REGISTRO DE NUEVO INSTRUCTOR
         if (e.target.id === "form-registrar-instructor") {
             const bodyInstructor = {
                 numero_empleado: Number(document.getElementById("inst-numero").value),
@@ -357,8 +361,6 @@ function setupAdminEvents() {
                 Loader.show();
                 await cursosService.registrarInstructor(bodyInstructor);
                 alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema!`);
-                
-                // Limpiamos el formulario tras el éxito
                 e.target.reset();
             } catch (err) {
                 alert("Error al registrar instructor: " + err.message);

@@ -5,6 +5,7 @@ import { instructorPage } from '../pages/instructor.js';
 import { docentePage } from '../pages/docente.js';
 import { administrativoPage } from '../pages/administrativo.js';
 import { adminCursosPage } from '../pages/adminCursos.js';
+import {constanciasPage} from '../pages/constancias.js';
 
 const Placeholder = (title) => () => `<h1>${title}</h1><p>Próximamente...</p>`;
 
@@ -16,7 +17,7 @@ const routes = {
     '/administrativo': administrativoPage,
     '/instructor': instructorPage,
     '/admin-cursos': adminCursosPage,
-    '/constancias': Placeholder("Constancias de Cursos")
+    '/constancias': constanciasPage
 };
 
 export const navigate = (url) => {

@@ -42,7 +42,7 @@ window.abrirGestionAlumnos = async (id, nombre) => {
             return;
         }
 
-        // 3. Llenar el select con el ID_INSCRIPCION (Como pidió el backend)
+        // 3. Llenar el select con el ID_INSCRIPCION
         select.innerHTML = alumnos.map(a => `
             <option value="${a.ID_INSCRIPCION}">
                 ${a.NOMBRE_COMPLETO}
@@ -161,7 +161,7 @@ export function instructorPage() {
             }
 
             try {
-                const respuesta = await cursosService.obtenerCursosDisponibles(tipoDeCursoActual);
+                const respuesta = await cursosService.obtenerMisCursos();
                 
                 // Accedemos a respuesta.datos porque ahí es donde vienen los cursos según tu consola
                 const listaFinal = respuesta.datos || [];
@@ -169,7 +169,7 @@ export function instructorPage() {
                 if (listaFinal.length === 0) {
                     listaCursosContainer.innerHTML = `
                         <div style="text-align:center; padding: 20px; color: #666; background: #f9f9f9; border-radius: 8px;">
-                            No hay cursos de tipo "${tipoDeCursoActual}" registrados.
+                            No hay cursos asignados o registrados aún.
                         </div>`;
                     return;
                 }
@@ -180,6 +180,7 @@ export function instructorPage() {
                         <div>
                             <h4 style="margin: 0 0 5px 0; color: #2c3e50;">${curso.NOMBRE_CURSO}</h4>
                             <div style="font-size: 0.85rem; color: #666;">
+                                <span><strong>Modalidad:</strong> ${curso.TIPO_CURSO || 'General'}</span><br>
                                 <span><strong>Instructor:</strong> ${curso.INSTRUCTOR}</span><br>
                                 <span><strong>Horas Totales:</strong> ${curso.TOTAL_HORAS}</span> |
                                 <span><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}

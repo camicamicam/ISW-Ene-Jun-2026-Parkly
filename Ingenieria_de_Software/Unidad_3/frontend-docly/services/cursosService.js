@@ -56,6 +56,30 @@ export const cursosService = {
         }
     },
 
+    async obtenerMisCursos() {
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch("https://api-cursos-itq.onrender.com/api/cursos/mis-cursos", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.mensaje || "Error al obtener los cursos del instructor.");
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error en obtenerMisCursos:", error);
+            throw error;
+        }
+    },
+
     async obtenerAlumnosPorCurso(idCurso) {
         try {
             const token = localStorage.getItem("token");

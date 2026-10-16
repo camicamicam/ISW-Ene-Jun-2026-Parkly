@@ -20,6 +20,17 @@ const routes = {
     '/constancias': constanciasPage
 };
 
+const titles = {
+    '/': 'Docly - Inicio',
+    '/index.html': 'Docly - Inicio',
+    '/login': 'Docly - Iniciar Sesión',
+    '/docente': 'Docly - Panel Docente',
+    '/administrativo': 'Docly - Panel Administrativo',
+    '/instructor': 'Docly - Panel Instructor',
+    '/admin-cursos': 'Docly - Administrador',
+    '/constancias': 'Docly - Mis Constancias'
+};
+
 export const navigate = (url) => {
     window.history.pushState(null, null, url);
     handleRoute();
@@ -30,7 +41,21 @@ export const handleRoute = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlParams.entries());
     const pageFunction = routes[path] || homePage; 
-    
+
+    //Cambiar el titulo en login
+    if (path === '/login') {
+        const tipo = urlParams.get('tipo');
+        if (tipo === 'constancia') {
+            document.title = 'Docly - Acceso a Constancias';
+        } else if (tipo === 'admin') {
+            document.title = 'Docly - Acceso Administrador';
+        } else {
+            document.title = 'Docly - Acceso Instructor';
+        }
+    } else { //Cambiar en otras pestañas
+        document.title = titles[path] || 'Docly';
+    }
+
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
         mainContent.innerHTML = await pageFunction();

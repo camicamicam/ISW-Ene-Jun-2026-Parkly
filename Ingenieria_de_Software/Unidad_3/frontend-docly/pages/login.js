@@ -4,7 +4,7 @@ import { navigate } from "../routes/router.js";
 import { Loader } from "../components/loader.js";
 
 export function loginPage() {
-    // 1. Configuración de títulos (esto se ejecuta cada vez que se renderiza la página)
+    //Configuración de títulos (esto se ejecuta cada vez que se renderiza la página)
     const params = new URLSearchParams(window.location.search);
     const tipoActual = params.get("tipo") || "instructor";
 
@@ -29,10 +29,9 @@ export function loginPage() {
 
     const currentConfig = config[tipoActual] || config.instructor;
 
-    // 2. Escuchador de eventos corregido
+    //Escuchador de eventos corregido
     if (!window.loginInitialized) {
-        document.addEventListener("click", async (e) => {
-            if (e.target && e.target.id === "btnLogin") {
+        const ejecutarLogin = async () => {
                 Loader.show();
                 // IMPORTANTE: Volvemos a leer el 'tipo' justo en el momento del click
                 const urlParams = new URLSearchParams(window.location.search);
@@ -56,6 +55,8 @@ export function loginPage() {
                     const data = await apiService.login(pass, tipoEnClick);
 
                     if (data.token) {
+                        // Guardamos el token en la sesión
+                        localStorage.setItem("token", data.token);
                         const userRole = data.rol ? data.rol.toLowerCase() : "";
 
                         // Validación para Instructores
@@ -102,19 +103,29 @@ export function loginPage() {
                 }finally{
                     Loader.hide();
                 }
-            }
-        });
-        window.loginInitialized = true;
+        };
+
+            //Escuchador delegado del evento submit en el formulario
+            if (!window.loginInitialized) {
+            document.addEventListener("submit", async (e) => {
+                if (e.target && e.target.id === "loginForm") {
+                    e.preventDefault(); // Previene la recarga automática de la página al dar Enter o submit
+                    await ejecutarLogin();
+                }
+            });
+            
+            window.loginInitialized = true;
+        }
     }
 
     return `
         <div class="container">
-            <div class="card">
+            <form id="loginForm" class="card">
                 <h1>${currentConfig.title}</h1>
                 <p style="font-size: 13px; color: #666; margin-bottom: 15px; background: #e9ecef; padding: 8px; border-radius: 4px; border-left: 4px solid #34495e;">
                     <strong>Nota:</strong> ${currentConfig.nota}
                 </p>
-                <input type="password" id="password" placeholder="Ingrese su clave">
+                <input type="password" id="password" placeholder="Ingrese su clave" required>
                 <div id="mensaje-login" style="
                     display: none; 
                     padding: 10px; 
@@ -123,8 +134,8 @@ export function loginPage() {
                     font-size: 14px;
                     text-align: left;
                 "></div>
-                <button id="btnLogin">Ingresar</button>
-            </div>
+                <button type="submit" id="btnLogin">Ingresar</button>
+            </form>
         </div>
     `;
 }

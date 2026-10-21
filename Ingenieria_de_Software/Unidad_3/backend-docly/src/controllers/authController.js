@@ -16,20 +16,27 @@ async function login(req, res/*, rol_esperado */) {
         //console.log(`Usuario ${resultado.nombre} autenticado exitosamente con rol ${resultado.rol}.`);
         res.status(200).json({
             status: 'Éxito',
-            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre}`,
-            usuario_id: resultado.id,
-            rol: resultado.rol,
-            token: resultado.token
+            token: resultado.token,
+            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre_usuario}`,
+            datosUsuario: {
+                usuario_id: resultado.id,
+                rol: resultado.rol,
+                numero_empleado: resultado.numero_empleado,
+                correo: resultado.correo,
+                nombre: resultado.nombre_usuario,
+                apellido_paterno: resultado.apellido_p_usuario,
+                apellido_materno: resultado.apellido_m_usuario || ""
+            }
         });
 
     } catch (error) {
         if (error.message === "CREDENCIAL_INVALIDA") {
             res.status(401).json({ mensaje: 'Credencial incorrecta, revisa si esta bien o acude a DDA.' });
         } else if (error.message === "ROL_INCORRECTO") {
-            res.status(403).json({ mensaje: 'Acceso denegado, esta no es tu familia Dewey.' });
+            res.status(403).json({ mensaje: 'Acceso denegado, credenciales erroneas.' });
         }else {
             console.error(error);
-            res.status(500).json({ mensaje: 'Error interno del servidor (una disculpirijilla).' });
+            res.status(500).json({ mensaje: 'Error interno del servidor.' });
         }
     }
 }

@@ -6,12 +6,19 @@ async function verificarCredenciales(password_acceso) {
         connection = await db.getConnection();
 
         const query = `
-            SELECT id_usuario AS id, rol, nombre_completo 
+            SELECT 
+                id_usuario AS id, 
+                rol, 
+                numero_empleado,
+                correo,
+                nombre_usuario, 
+                apellido_p_usuario, 
+                apellido_m_usuario
             FROM v_usuarios_roles
             WHERE password_acceso = :pass OR TO_CHAR(numero_empleado) = :pass
         `;
 
-        const result = await connection.execute(query, {
+        const result = await connection.execute(query, { 
             pass: password_acceso
         });
 

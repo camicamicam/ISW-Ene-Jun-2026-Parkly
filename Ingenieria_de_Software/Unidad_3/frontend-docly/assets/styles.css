@@ -617,3 +617,24 @@ select {
 .curso-card-horizontal {
     animation: slideIn 0.3s ease forwards;
 }
+
+/*=============GENERADOR DE CONTRASEÑAS========================*/
+
+.input-container{
+    display: flex;
+    align-items: center;
+    padding: 0px 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#inst-password{
+    border: none;
+    background-color: transparent;
+    outline: none;
+    letter-spacing: 2px;
+    padding: 3px 1px;
+    width: 100%;
+}

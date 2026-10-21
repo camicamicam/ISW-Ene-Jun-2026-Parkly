@@ -8,6 +8,17 @@ let temasEditados = [];
 let tipoCursoActual = "Profesional"; 
 let vistaActualAdmin = "cursos"; // <-- "cursos" o "instructores"
 
+function generarPassword(longitud = 12){
+    const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+    let password = "";
+
+    for(let i = 0; i < longitud; i++){
+        const randomIndex = Math.floor(Math.random() * caracteres.length);
+        password += caracteres[randomIndex];
+    }
+
+    return password;
+}
 export async function adminCursosPage(tipoCurso = null) {
     if (!tipoCurso) {
         tipoCurso = localStorage.getItem("seccion_itq") || "Profesional";
@@ -216,9 +227,15 @@ function renderizarSeccionInstructores() {
 
                 <div>
                     <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Contraseña de Acceso</label>
-                    <input type="password" id="inst-password" placeholder="Mínimo 6 caracteres" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" minlength="6" required>
+                    <div class="input-container">
+                        <input type="password" id="inst-password" placeholder="Haz clic en Generar" style="flex: 1; border: none; padding: 10px 0; outline: none; background: transparent;" required>
+                        <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar contraseña"></i>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="btnGenerar" style="flex: 1; padding: 10px 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Generar</button>
+                        <button type="button" id="btnCopiar" style="flex: 1; padding: 10px 15px; background: #95a5a6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Copiar</button>
+                    </div>
                 </div>
-
                 <div style="margin-top: 10px; display: flex; justify-content: center;">
                     <button type="submit" style="padding: 12px 40px; background: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; width: 100%; max-width: 300px;">
                      Registrar Instructor
@@ -241,6 +258,38 @@ function setupAdminEvents() {
         if (e.target.id === "tab-vistas-instructores" && vistaActualAdmin !== "instructores") {
             vistaActualAdmin = "instructores";
             mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
+        }
+
+        // GENERAR CONTRASEÑA
+        if (e.target.id === "btnGenerar") {
+            const nuevaPassword = generarPassword(12);
+            const inputPass = document.getElementById("inst-password");
+            if (inputPass) {
+                inputPass.value = nuevaPassword;
+            }
+        }
+
+        //CAMBIAR ICONO VISUALIZAR CONTRASEÑA
+
+        if (e.target.id === "toggle-pass") {
+            const inputPass = document.getElementById("inst-password");
+            if (inputPass) {
+                const esPassword = inputPass.type === "password";
+                inputPass.type = esPassword ? "text" : "password";
+                e.target.classList.toggle("fa-eye", !esPassword);
+                e.target.classList.toggle("fa-eye-slash", esPassword);
+            }
+        }
+
+        //COPIAR CONTRASEÑA
+        if (e.target.id === "btnCopiar") {
+            const inputPass = document.getElementById("inst-password");
+            if (inputPass && inputPass.value) {
+                navigator.clipboard.writeText(inputPass.value);
+                alert("¡Contraseña copiada al portapapeles!");
+            } else {
+                alert("Primero genera una contraseña para poder copiarla.");
+            }
         }
 
         // CONTROL DE CURSOS (EDITAR / ELIMINAR / TEMAS)

@@ -29,13 +29,10 @@ app.get('/health', (req, res) => res.json({
 
 app.get('/hooligan', (req, res) => res.send('HA HA HA HA HA ¡Hooligan!'));
 
-app.use('/api/auth', authRoutes);
-
-app.use('/api/cursos', cursoRoutes);
-
-app.use('/api/admin', adminRoutes);
-
-app.use('/api/constancias', constanciaRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/cursos', cursoRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/constancias', constanciaRoutes);
 
 //module.exports = app;
 

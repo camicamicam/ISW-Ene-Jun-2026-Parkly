@@ -46,7 +46,11 @@ async function procesarLogin(password_acceso, rol_esperado) {
     return {
         id: usuarioEncontrado.ID,
         rol: usuarioEncontrado.ROL,
-        nombre: usuarioEncontrado.NOMBRE_COMPLETO,
+        nombre_usuario: usuarioEncontrado.NOMBRE_USUARIO,
+        apellido_p_usuario: usuarioEncontrado.APELLIDO_P_USUARIO,
+        apellido_m_usuario: usuarioEncontrado.APELLIDO_M_USUARIO,
+        numero_empleado: usuarioEncontrado.NUMERO_EMPLEADO,
+        correo: usuarioEncontrado.CORREO,
         token: token
     };
 }

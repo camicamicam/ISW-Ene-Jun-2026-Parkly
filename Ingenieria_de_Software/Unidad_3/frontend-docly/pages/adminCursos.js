@@ -1,4 +1,5 @@
 import { cursosService } from "../services/cursosService.js";
+import { instructoresService } from "../services/instructoresService.js";
 import { Loader } from "../components/loader.js";
 
 // VARIABLES DE ESTADO LOCAL
@@ -69,10 +70,19 @@ function renderizarInterfazGlobal() {
                 <button id="tab-vistas-instructores" style="flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; background: ${vistaActualAdmin === 'instructores' ? '#2c3e50' : 'transparent'}; color: ${vistaActualAdmin === 'instructores' ? 'white' : '#7f8c8d'};">
                     Registrar Instructor
                 </button>
+                <button id="tab-consultar-instructores" style="flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; background: ${vistaActualAdmin === 'consultar' ? '#2c3e50' : 'transparent'}; color: ${vistaActualAdmin === 'consultar' ? 'white' : '#7f8c8d'};">
+                    Consultar Instructor
+                </button>
             </div>
 
             <div style="width: 100%; max-width: 900px;">
-                ${vistaActualAdmin === "cursos" ? renderizarSeccionCursos() : renderizarSeccionInstructores()}
+                ${
+                    {
+                        "cursos": renderizarSeccionCursos(),
+                        "instructores": renderizarSeccionInstructores(),
+                        "consultar": renderizarSeccionConsulta()
+                    }[vistaActualAdmin] || "<div>Vista no válida</div>"
+                }
             </div>
         </div>
     `;
@@ -246,6 +256,87 @@ function renderizarSeccionInstructores() {
     `;
 }
 
+function renderizarSeccionConsulta(){
+    return `
+        <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 8px solid #2c3e50; width: 100%; box-sizing: border-box;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 24px;">Directorio de Instructores</h2>
+                <p style="color: #7f8c8d; margin: 0; font-size: 14px;">Consulta y gestiona los instructores registrados en la plataforma.</p>
+            </div>
+
+            <!--BARRA DE BÚSQUEDA-->
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="flex: 3; min-width: 250px; position: relative;">
+                    <input type="text" id="input-buscar-instructor" placeholder="Buscar por nombre o apellidos" 
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none;">
+                </div>
+
+                <div style="flex: 1; min-width: 160px;">
+                    <select id="select-filtro-estado" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
+                        <option value="todos">Todos los estados</option>
+                        <option value="activo">Activos</option>
+                        <option value="inactivo">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--TABLA DE DATOS-->
+            <div style="overflow-x: auto; border: 1px solid #eee; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #2c3e50; color: white;">
+                            <th style="padding: 12px 15px;">N° Empleado</th>
+                            <th style="padding: 12px 15px;">Nombre Completo</th>
+                            <th style="padding: 12px 15px;">Correo Electrónico</th>
+                            <th style="padding: 12px 15px; text-align: center;">Estado</th>
+                            <th style="padding: 12px 15px; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabla-instructores-body">
+                        <!-- Fila de ejemplo 1 -->
+                        <tr style="border-bottom: 1px solid #eee; transition: 0.2s;">
+                            <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">21140780</td>
+                            <td style="padding: 12px 15px;">Camila Mata García</td>
+                            <td style="padding: 12px 15px; color: #555;">camila.mata@queretaro.tecnm.mx</td>
+                            <td style="padding: 12px 15px; text-align: center;">
+                                <span style="background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Activo</span>
+                            </td>
+                            <td style="padding: 12px 15px; text-align: center;">
+                                <button type="button" class="btn-ver-instructor" data-id="21140780" style="padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📄 Detalle</button>
+                            </td>
+                        </tr>
+
+                        <!-- Fila de ejemplo 2 -->
+                        <tr style="border-bottom: 1px solid #eee; transition: 0.2s; background-color: #f9f9f9;">
+                            <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">55551234</td>
+                            <td style="padding: 12px 15px;">Roberto Méndez Ruiz</td>
+                            <td style="padding: 12px 15px; color: #555;">roberto.mendez@queretaro.tecnm.mx</td>
+                            <td style="padding: 12px 15px; text-align: center;">
+                                <span style="background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Activo</span>
+                            </td>
+                            <td style="padding: 12px 15px; text-align: center;">
+                                <button type="button" class="btn-ver-instructor" data-id="55551234" style="padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📄 Detalle</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; font-size: 13px; color: #7f8c8d;">
+                <span>Mostrando 2 de 2 instructores registrados</span>
+                
+                <div style="display: flex; gap: 5px;">
+                    <button type="button" style="padding: 5px 10px; border: 1px solid #ccc; background: #f8f9fa; border-radius: 6px; cursor: pointer; color: #555;" disabled>Anterior</button>
+                    <button type="button" style="padding: 5px 10px; border: 1px solid #ccc; background: #2c3e50; color: white; border-radius: 4px; cursor: pointer;">1</button>
+                    <button type="button" style="padding: 5px 10px; border: 1px solid #ccc; background: #f8f9fa; border-radius: 6px; cursor: pointer; color: #555;" disabled>Siguiente</button>
+                </div>
+            </div>
+
+        </div>  
+    `
+}
+
 function setupAdminEvents() {
     const mainContent = document.getElementById("main-content");
 
@@ -257,6 +348,11 @@ function setupAdminEvents() {
         }
         if (e.target.id === "tab-vistas-instructores" && vistaActualAdmin !== "instructores") {
             vistaActualAdmin = "instructores";
+            mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
+        }
+
+        if (e.target.id === "tab-consultar-instructores" && vistaActualAdmin !== "consultar") {
+            vistaActualAdmin = "consultar";
             mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
         }
 
@@ -408,7 +504,7 @@ function setupAdminEvents() {
 
             try {
                 Loader.show();
-                await cursosService.registrarInstructor(bodyInstructor);
+                await instructoresService.registrarInstructor(bodyInstructor);
                 alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema!`);
                 e.target.reset();
             } catch (err) {

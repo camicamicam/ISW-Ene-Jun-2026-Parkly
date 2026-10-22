@@ -1,7 +1,7 @@
 // services/constanciasService.js
 const { jsPDF } = window.jspdf;
 
-const BASE_URL = "https://api-cursos-itq.onrender.com";
+const BASE_URL = "https://api-cursos-itq.onrender.com/api/v1";
 
 export const constanciasService = {
     async obtenerConstanciasDelUsuario() {
@@ -9,7 +9,7 @@ export const constanciasService = {
             const token = localStorage.getItem("token");
             console.log("🔑 Token enviado al backend de constancias:", token);
 
-            const response = await fetch(`${BASE_URL}/api/constancias/mis-constancias`, {
+            const response = await fetch(`${BASE_URL}/constancias/mis-constancias`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -39,7 +39,7 @@ export const constanciasService = {
             format: "letter" 
         });
 
-        // --- Todo tu diseño limpio del PDF se queda exactamente igual ---
+        // --- diseño del PDF---
         doc.setLineWidth(0.08); 
         doc.setDrawColor(20, 52, 100); 
         doc.rect(1, 1, 25.9, 19.6);
@@ -79,7 +79,7 @@ export const constanciasService = {
         doc.text("Documento digital verificado mediante el sistema de control curricular.", 13.9, 18.5, { align: "center" });
         // -----------------------------------------------------------------
 
-        // 🌟 CAMBIO CLAVE AQUÍ: En lugar de doc.save(), generamos un Blob URL
+        //En lugar de doc.save(), generamos un Blob URL
         const blobUrl = doc.output("bloburl");
         
         // Abrimos la pestaña nueva con el visor de PDF nativo del navegador

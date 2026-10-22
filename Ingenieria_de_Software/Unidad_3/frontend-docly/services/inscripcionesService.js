@@ -1,4 +1,4 @@
-const BASE_URL = "https://api-cursos-itq.onrender.com";
+const BASE_URL = "https://api-cursos-itq.onrender.com/api/v1";
 
 export const inscripcionesService = {
     async obtenerCatalogoPublico(tipo) { // <-- Ahora recibe 'tipo'
@@ -6,8 +6,8 @@ export const inscripcionesService = {
         try {
             // Construimos la URL con el parámetro de filtro
             const url = tipo 
-                ? `${BASE_URL}/api/cursos/catalogo?tipo=${encodeURIComponent(tipo)}` 
-                : `${BASE_URL}/api/cursos/catalogo`;
+                ? `${BASE_URL}/cursos/catalogo?tipo=${encodeURIComponent(tipo)}` 
+                : `${BASE_URL}/cursos/catalogo`;
 
             const response = await fetch(url, {
                 method: "GET",
@@ -33,7 +33,7 @@ export const inscripcionesService = {
         console.log(`Service: Enviando POST a /inscribir/${tipo.toLowerCase()}`); // <--- AGREGAR ESTO
         console.log("Datos del payload:", datos);
         try {
-            const url = `${BASE_URL}/api/cursos/inscribir/${tipo.toLowerCase()}`;
+            const url = `${BASE_URL}/cursos/inscribir/${tipo.toLowerCase()}`;
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

@@ -153,6 +153,23 @@ export function instructorPage() {
         if (form) {
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
+
+                // Obtener los días seleccionados
+                const diasCheckboxes = document.querySelectorAll('.chk-dia:checked');
+                if (diasCheckboxes.length === 0) {
+                    alert("Por favor selecciona al menos un día de la semana.");
+                    return;
+                }
+                const diasSeleccionados = Array.from(diasCheckboxes).map(cb => cb.value).join(", ");
+
+                // Concatenar horario desde los relojes
+                const horaInicio = document.getElementById("horaInicio").value;
+                const horaFin = document.getElementById("horaFin").value;
+                if (!horaInicio || !horaFin) {
+                    alert("Por favor ingresa el horario de inicio y término.");
+                    return;
+                }
+                const horarioFormateado = `${horaInicio} - ${horaFin}`;
                 
                 const temasRaw = Array.from(document.querySelectorAll(".tema-row")).map(row => ({
                     titulo_tema: row.querySelector(".tema-input").value.trim(),

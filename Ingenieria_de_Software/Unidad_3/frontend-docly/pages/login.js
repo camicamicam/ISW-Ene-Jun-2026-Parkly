@@ -54,10 +54,22 @@ export function loginPage() {
                 try {
                     const data = await apiService.login(pass, tipoEnClick);
 
+                    console.log("=== RESPUESTA LOGIN BACKEND ===", data);
+
                     if (data.token) {
                         // Guardamos el token en la sesión
                         localStorage.setItem("token", data.token);
                         const userRole = data.rol ? data.rol.toLowerCase() : "";
+
+                        const usuarioParaGuardar = {
+                            numero_empleado: data.numero_empleado,
+                            nombre: data.nombre,
+                            paterno: data.apellido_paterno,
+                            materno: data.apellido_materno,
+                            correo: data.correo,
+                            rol: data.rol
+                        };
+                        localStorage.setItem("usuario", JSON.stringify(usuarioParaGuardar));
 
                         // Validación para Instructores
                         if (tipoEnClick === "instructor") {

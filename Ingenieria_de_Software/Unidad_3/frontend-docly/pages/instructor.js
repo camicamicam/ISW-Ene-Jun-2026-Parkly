@@ -72,8 +72,40 @@ window.abrirGestionAlumnos = async (id, nombre) => {
         alert("Error al cargar alumnos: " + error.message);
     }
 };
+
+//Obtener los datos de la sesión
+const obtenerDatosInstructor = () => {
+    try {
+
+        //Primero se intenta leer los datos guardados en el login
+        const usuarioGuardado = localStorage.getItem("usuario");
+        if (usuarioGuardado) {
+            return JSON.parse(usuarioGuardado);
+        }
+
+        //Si no hay datos, entonces se deocdifica el token
+        const token = localStorage.getItem("token");
+        if (!token) return {};
+        const payloadBase64 = token.split(".")[1];
+        const payloadDecodificado = JSON.parse(atob(payloadBase64));
+        return payloadDecodificado; // Devuelve las propiedades del JWT
+    } catch (e) {
+        console.error("Error al decodificar token:", e);
+        return {};
+    }
+};
+
+
 export function instructorPage() {
     const tipoDeCursoActual = localStorage.getItem("seccion_itq") || "Docente";
+    const usuarioSesion = obtenerDatosInstructor();
+
+    const numEmpleado = usuarioSesion.id || usuarioSesion.numero_empleado || "";
+    const nombre = usuarioSesion.nombre || "";
+    const paterno = usuarioSesion.paterno || usuarioSesion.apellido_paterno || "";
+    const materno = usuarioSesion.materno || usuarioSesion.apellido_materno || "";
+    const correo = usuarioSesion.correo || usuarioSesion.email || "";
+
     setTimeout(() => {
 
         //---------LÓGICA FORMULARIO---------------
@@ -324,22 +356,22 @@ export function instructorPage() {
                     <h3 style="margin-bottom: 15px; color: #555;">Datos del Instructor</h3>
                     <div class="form-group">
                         <label>Número de Empleado</label>
-                        <input type="number" id="numEmpI" placeholder="Ej. 21140780" required>
+                        <input type="number" id="numEmpI" value="${numEmpleado}" placeholder="Ej. 21140780" required>
                     </div>
 
                     <div class="form-group">
                         <label>Nombre del Instructor</label>
-                        <input type="text" id="nombreI" placeholder="Nombre" required>
+                        <input type="text" id="nombreI" value="${nombre}" placeholder="Nombre" required>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div class="form-group">
                             <label>Apellido Paterno</label>
-                            <input type="text" id="paternoI" placeholder="Apellido Paterno" required>
+                            <input type="text" id="paternoI" value="${paterno}" placeholder="Apellido Paterno" required>
                         </div>
                         <div class="form-group">
                             <label>Apellido Materno</label>
-                            <input type="text" id="maternoI" placeholder="Apellido Materno" required>
+                            <input type="text" id="maternoI" placeholder="Apellido Materno" value="${materno}" required>
                         </div>
                     </div>
 
@@ -348,8 +380,8 @@ export function instructorPage() {
                         <input 
                             type="email" 
                             id="correoI" 
+                            value="${correo}"
                             placeholder="ejemplo@correo.com" 
-                            required 
                             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
                             title="Por favor, introduce un correo válido con dominio (ejemplo@correo.com)"
                             required"

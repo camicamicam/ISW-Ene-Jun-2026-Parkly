@@ -18,4 +18,21 @@ async function removerCurso(idCurso) {
     return await adminRepository.eliminarCurso(idCurso);
 }
 
-module.exports = { crearInstructor, modificarCurso, removerCurso };
+async function listarInstructores() {
+    return await adminRepository.obtenerInstructores();
+}
+
+async function actualizarEstadoInstructor(idInstructor, estado) {
+    if(estado === undefined || estado === null || (parseInt(estado) !== 0 && parseInt(estado) !== 1 )) {
+        throw new Error("ESTADO_INVALIDO");
+    }
+    return await adminRepository.cambiarEstadoInstructor(idInstructor, estado);
+}
+
+module.exports = { 
+    crearInstructor, 
+    modificarCurso, 
+    removerCurso, 
+    listarInstructores, 
+    actualizarEstadoInstructor 
+};

@@ -26,7 +26,7 @@ async function login(req, res/*, rol_esperado */) {
                 apellido_paterno: resultado.apellido_p_usuario,
                 apellido_materno: resultado.apellido_m_usuario || "",
                 //}
-            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre}`,
+            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre_usuario}`,
         });
 
     } catch (error) {

@@ -120,4 +120,53 @@ async function eliminarCurso(idCurso) {
     }
 }
 
-module.exports = { guardarInstructor, editarCurso, eliminarCurso };
+async function obtenerInstructores() {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            SELECT * FROM v_instructores
+            ORDER BY id_usuario ASC
+        `;
+        const result = await connection.execute(query, {}, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        return result.rows;
+    } catch (error) {
+        throw new Error("Error al obtener los instructores" + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+async function cambiarEstadoInstructor(idInstructor, nuevoEstado) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            BEGIN
+                actualizar_u_estado(:p_id_usuario, :p_estado_usuario);
+            END;
+        `;
+        const bindVars = {
+            p_id_usuario: idInstructor,
+            p_estado_usuario: nuevoEstado
+        };
+        await connection.execute(query, bindVars, { autoCommit: true });
+        return { mensaje: 'Estado del instructor actualizado correctamente.' };
+    } catch (error) {
+        throw new Error("Error al actualizar el estado" + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+module.exports = { 
+    guardarInstructor, 
+    editarCurso, 
+    eliminarCurso,
+    obtenerInstructores,
+    cambiarEstadoInstructor
+};

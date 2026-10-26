@@ -1,100 +1,117 @@
 import { navigate } from "../routes/router.js";
 import { cursosService } from "../services/cursosService.js";
 
- // --- GESTIÓN DE ALUMNOS ---
-window.abrirGestionAlumnos = async (id, nombre) => {
-    const respuesta = await cursosService.obtenerAlumnosPorCurso(id);
-    console.log("Datos del alumno recibidos:", respuesta.datos); // <-- Revisa esto en la consola (F12)
+// --- GESTIÓN DE ALUMNOS EN TABLA ---
+window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
     const mainContainer = document.getElementById("main-content");
     
-    // 1. Renderizar estructura inicial (un loader)
+    // 1. Renderizar estructura inicial con contenedor de tabla
     mainContainer.innerHTML = `
-        <div class="card" style="max-width: 500px; margin: 20px auto;">
-            <h3>Gestión de Alumnos: ${nombre}</h3>
-            <p id="loading-alumnos">Cargando lista de alumnos...</p>
-            <div id="gestion-form-container" style="display:none;">
-                <div class="form-group">
-                    <label>Seleccionar Alumno</label>
-                    <select id="select-alumnos" style="width: 100%; padding: 10px; margin-bottom: 15px;"></select>
-                </div>
-                <div class="form-group">
-                    <label>Horas a registrar</label>
-                    <input type="number" id="horas-alumno" placeholder="Ej. 10" min="1" style="width: 100%; padding: 10px;">
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button onclick="location.reload()" style="background: #2c3e50; flex:1;">Volver</button>
-                    <button id="btn-guardar-horas" style="background: #27ae60; flex:1;">Guardar Horas</button>
-                </div>
+        <div class="card" style="max-width: 800px; margin: 20px auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #2c3e50;">Gestión de Alumnos: ${nombreCurso}</h3>
+            </div>
+            
+            <p id="loading-alumnos" style="color: #7f8c8d; text-align: center; padding: 20px;">Cargando lista de alumnos...</p>
+            
+            <div id="tabla-alumnos-container" style="display:none; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #2c3e50; color: white;">
+                            <th style="padding: 12px 15px; text-align: center; width: 130px;">#Emp.</th>
+                            <th style="padding: 12px 15px;">Nombre del Alumno</th>
+                            <th style="padding: 12px 15px; text-align: center; width: 160px;">Horas Registradas</th>
+                            <th style="padding: 12px 15px; text-align: center; width: 130px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-alumnos">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
             </div>
         </div>
     `;
 
     try {
-        // 2. Llamar al servicio para obtener alumnos
-        const respuesta = await cursosService.obtenerAlumnosPorCurso(id);
+        const respuesta = await cursosService.obtenerAlumnosPorCurso(idCurso);
         const alumnos = respuesta.datos || [];
-        const select = document.getElementById("select-alumnos");
         const loader = document.getElementById("loading-alumnos");
-        const formContainer = document.getElementById("gestion-form-container");
+        const tablaContainer = document.getElementById("tabla-alumnos-container");
+        const tbody = document.getElementById("tbody-alumnos");
 
         if (alumnos.length === 0) {
             loader.innerText = "No hay alumnos inscritos en este curso.";
             return;
         }
 
-        // 3. Llenar el select con el ID_INSCRIPCION
-        select.innerHTML = alumnos.map(a => `
-            <option value="${a.ID_INSCRIPCION}">
-                ${a.NOMBRE_COMPLETO}
-            </option>
+        // 2. Llenar la tabla con los alumnos
+        tbody.innerHTML = alumnos.map(a => `
+            <tr style="border-bottom: 1px solid #eee; transition: background 0.2s;">
+                <td style="padding: 12px 15px; font-weight: 500; color: #34495e;">${a.NUMERO_EMPLEADO}</td>
+                <td style="padding: 12px 15px; font-weight: 500; color: #34495e;">${a.NOMBRE_COMPLETO}</td>
+                <td style="padding: 10px 15px; text-align: center;">
+                    <input type="number" id="horas-${a.ID_INSCRIPCION}" value="${a.HORAS_COMPLETADAS || 0}" min="0" 
+                           style="width: 80px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                </td>
+                <td style="padding: 10px 15px; text-align: center;">
+                    <button class="btn-actualizar-horas" data-inscripcion="${a.ID_INSCRIPCION}" 
+                            style="background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;">
+                        Actualizar
+                    </button>
+                </td>
+            </tr>
         `).join('');
 
         loader.style.display = "none";
-        formContainer.style.display = "block";
+        tablaContainer.style.display = "block";
 
-        // 4. Lógica para enviar al backend
-        document.getElementById("btn-guardar-horas").onclick = async () => {
-            const idInscripcion = select.value;
-            const horas = document.getElementById("horas-alumno").value;
+        // 3. Delegación de eventos para actualizar horas por cada alumno
+        tbody.addEventListener("click", async (e) => {
+            if (e.target.classList.contains("btn-actualizar-horas")) {
+                const idInscripcion = e.target.getAttribute("data-inscripcion");
+                const inputHoras = document.getElementById(`horas-${idInscripcion}`);
+                const horasNuevas = inputHoras.value;
 
-            if (!horas) return alert("Ingresa las horas");
+                if (!horasNuevas || horasNuevas < 0) {
+                    return alert("Ingresa un número válido de horas.");
+                }
 
-            try {
-                await cursosService.registrarHorasAlumno(idInscripcion, horas);
-                alert("¡Horas registradas correctamente!");
-                window.abrirGestionAlumnos(id, nombre); // Recargar la vista
-            } catch (err) {
-                alert("Error al guardar: " + err.message);
+                try {
+                    e.target.innerText = "Guardando...";
+                    e.target.disabled = true;
+
+                    await cursosService.registrarHorasAlumno(idInscripcion, horasNuevas);
+                    alert("¡Horas actualizadas correctamente!");
+                } catch (err) {
+                    alert("Error al guardar: " + err.message);
+                } finally {
+                    e.target.innerText = "Actualizar";
+                    e.target.disabled = false;
+                }
             }
-        };
+        });
 
     } catch (error) {
         alert("Error al cargar alumnos: " + error.message);
     }
 };
 
-//Obtener los datos de la sesión
 const obtenerDatosInstructor = () => {
     try {
-
-        //Primero se intenta leer los datos guardados en el login
         const usuarioGuardado = localStorage.getItem("usuario");
         if (usuarioGuardado) {
             return JSON.parse(usuarioGuardado);
         }
 
-        //Si no hay datos, entonces se deocdifica el token
         const token = localStorage.getItem("token");
         if (!token) return {};
         const payloadBase64 = token.split(".")[1];
-        const payloadDecodificado = JSON.parse(atob(payloadBase64));
-        return payloadDecodificado; // Devuelve las propiedades del JWT
+        return JSON.parse(atob(payloadBase64));
     } catch (e) {
         console.error("Error al decodificar token:", e);
         return {};
     }
 };
-
 
 export function instructorPage() {
     const tipoDeCursoActual = localStorage.getItem("seccion_itq") || "Docente";
@@ -108,17 +125,15 @@ export function instructorPage() {
 
     setTimeout(() => {
 
-        //---------LÓGICA FORMULARIO---------------
+        // --- LÓGICA FORMULARIO DE CURSOS ---
         const btnAdd = document.getElementById("addTema");
         const form = document.getElementById("instructorForm");
         const containerTemas = document.getElementById("container-temas");
 
-        //--Añadir tema
         if (btnAdd) {
             btnAdd.addEventListener("click", () => {
                 const div = document.createElement("div");
                 div.className = "tema-row";
-                // Ajuste de estilos para mayor amplitud
                 div.style = "display: flex; gap: 10px; margin-bottom: 12px; align-items: center; width: 100%;";
                 div.innerHTML = `
                     <input type="text" placeholder="Nombre del tema" class="tema-input" required 
@@ -136,7 +151,6 @@ export function instructorPage() {
             });
         }
 
-        // Delegación de eventos para eliminar temas
         if (containerTemas) {
             containerTemas.addEventListener("click", (e) => {
                 if (e.target.classList.contains("btn-remove-tema")) {
@@ -153,8 +167,8 @@ export function instructorPage() {
         if (form) {
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
-
-                // Obtener los días seleccionados
+                
+                // Obtener los días seleccionados por checkboxes
                 const diasCheckboxes = document.querySelectorAll('.chk-dia:checked');
                 if (diasCheckboxes.length === 0) {
                     alert("Por favor selecciona al menos un día de la semana.");
@@ -162,7 +176,7 @@ export function instructorPage() {
                 }
                 const diasSeleccionados = Array.from(diasCheckboxes).map(cb => cb.value).join(", ");
 
-                // Concatenar horario desde los relojes
+                // Concatenar horario desde los inputs de reloj (time)
                 const horaInicio = document.getElementById("horaInicio").value;
                 const horaFin = document.getElementById("horaFin").value;
                 if (!horaInicio || !horaFin) {
@@ -170,7 +184,7 @@ export function instructorPage() {
                     return;
                 }
                 const horarioFormateado = `${horaInicio} - ${horaFin}`;
-                
+
                 const temasRaw = Array.from(document.querySelectorAll(".tema-row")).map(row => ({
                     titulo_tema: row.querySelector(".tema-input").value.trim(),
                     horas_duracion: parseInt(row.querySelector(".horas-input").value, 10)
@@ -190,8 +204,8 @@ export function instructorPage() {
                         duracion: totalHoras,
                         fecha_inicio: document.getElementById("fechaI").value,
                         fecha_termino: document.getElementById("fechaT").value,
-                        dias_semana: document.getElementById("diasS").value.trim(),
-                        horario: document.getElementById("horarioC").value.trim()
+                        dias_semana: diasSeleccionados,
+                        horario: horarioFormateado
                     },
                     temas: temasRaw
                 };
@@ -200,7 +214,7 @@ export function instructorPage() {
             });
         }
 
-         // --- LÓGICA PARA CARGAR CURSOS EXISTENTES ---
+        // Cargar cursos existentes
         const cargarCursos = async () => {
             const listaCursosContainer = document.getElementById("lista-cursos-instructor");
             
@@ -211,8 +225,6 @@ export function instructorPage() {
 
             try {
                 const respuesta = await cursosService.obtenerMisCursos();
-                
-                // Accedemos a respuesta.datos porque ahí es donde vienen los cursos según tu consola
                 const listaFinal = respuesta.datos || [];
 
                 if (listaFinal.length === 0) {
@@ -223,7 +235,6 @@ export function instructorPage() {
                     return;
                 }
 
-                // Mapeamos usando los nombres de campos en MAYÚSCULAS que manda el servidor
                 listaCursosContainer.innerHTML = listaFinal.map(curso => `
                     <div class="curso-card-mini" style="background: white; padding: 9px; border-radius: 8px; border-left: 5px solid #2c3e50; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
                         <div>
@@ -232,29 +243,18 @@ export function instructorPage() {
                                 <span><strong>Modalidad:</strong> ${curso.TIPO_CURSO || 'General'}</span><br>
                                 <span><strong>Instructor:</strong> ${curso.INSTRUCTOR}</span><br>
                                 <span><strong>Horas Totales:</strong> ${curso.TOTAL_HORAS}</span> |
-                                <span><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}
+                                <span><strong>Días:</strong> ${curso.DIAS_SEMANA || 'No especificado'}</span>
                             </div>
                         </div>
                         <button class="btn-alumnos" 
                             data-id="${curso.ID_CURSO}" 
                             data-nombre="${curso.NOMBRE_CURSO}"
-                            style="
-                                background: #2c3e50; 
-                                color: white; 
-                                border: none; 
-                                padding: 6px 12px; 
-                                border-radius: 4px; 
-                                cursor: pointer;
-                                width: auto;      /* <--- Esto evita que crezca demasiado */
-                                min-width: 100px; /* <--- Tamaño base razonable */
-                                font-size: 0.85rem; /* <--- Texto un poco más discreto */
-                                white-space: nowrap; /* <--- Evita que el texto se rompa en dos líneas */
-                            "> Alumnos
+                            style="background: #2c3e50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: auto; min-width: 100px; font-size: 0.85rem; white-space: nowrap;">
+                            Alumnos
                         </button>
                     </div>
                 `).join('');
 
-                // Delegación de eventos para los botones de alumnos
                 listaCursosContainer.querySelectorAll('.btn-alumnos').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const id = btn.getAttribute('data-id');
@@ -309,7 +309,7 @@ export function instructorPage() {
             const resultado = await cursosService.registrarCurso(payload);
             if (resultado) {
                 alert('¡Curso registrado con éxito!');
-                location.reload()
+                location.reload();
             }
         } catch (error) {
             alert(`Error: ${error.message}`);
@@ -318,7 +318,6 @@ export function instructorPage() {
 
     function renderConfirmacion() {
         const data = window.tempInstructorData;
-        // Concatenación del nombre completo
         const nombreCompleto = `${data.curso.instructor_nombre} ${data.curso.instructor_paterno} ${data.curso.instructor_materno}`;
 
         return `
@@ -401,7 +400,7 @@ export function instructorPage() {
                             placeholder="ejemplo@correo.com" 
                             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
                             title="Por favor, introduce un correo válido con dominio (ejemplo@correo.com)"
-                            required"
+                            required
                         >
                     </div>
 
@@ -424,18 +423,40 @@ export function instructorPage() {
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div class="form-group">
-                            <label>Días de la semana</label>
-                            <input type="text" id="diasS" placeholder="Ej. Lunes y Miércoles" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Horario</label>
-                            <input type="text" id="horarioC" placeholder="Ej. 10:00 - 12:00" required>
+                    <!-- DÍAS DE LA SEMANA CON CHECKBOXES TIPO BOTÓN -->
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom: 8px;">Días de Impartición</label>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            ${[
+                                { label: "L", value: "Lunes" },
+                                { label: "M", value: "Martes" },
+                                { label: "Mi", value: "Miércoles" },
+                                { label: "J", value: "Jueves" },
+                                { label: "V", value: "Viernes" },
+                                { label: "S", value: "Sábado" },
+                                { label: "D", value: "Domingo" }
+                            ].map(d => `
+                                <label style="display: flex; align-items: center; justify-content: center; background: #f0f3f6; border: 1px solid #ccc; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; color: #34495e; user-select: none;">
+                                    <input type="checkbox" class="chk-dia" value="${d.value}" style="margin-right: 5px; cursor: pointer;">
+                                    ${d.label}
+                                </label>
+                            `).join('')}
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <!-- HORARIO CON RELOJES (input type="time") -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Hora de Inicio</label>
+                            <input type="time" id="horaInicio" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Hora de Término</label>
+                            <input type="time" id="horaFin" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 15px;">
                         <label>Temas</label>
                         <div id="container-temas">
                             <div class="tema-row" style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center; width: 100%;">
@@ -444,7 +465,7 @@ export function instructorPage() {
                                 <input type="number" placeholder="Hrs" class="horas-input" min="1" required 
                                     style="flex: 1; min-width: 60px; padding: 10px; text-align: center;">
                                 <button type="button" class="btn-remove-tema" 
-                                        style="flex: 0.2; background: #fee2e2; border: 1px; color: #dc2626; 
+                                        style="flex: 0.2; background: #fee2e2; border: 1px solid #f87171; color: #dc2626; 
                                             border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem; 
                                             height: 38px; display: flex; align-items: center; justify-content: center;">
                                     &times;

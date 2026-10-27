@@ -3,7 +3,7 @@ const BASE_URL = "https://api-cursos-itq.onrender.com/api/v1";
 export const cursosService = {
     async registrarCurso(cursoData) {
         try {
-            const token = localStorage.getItem("token"); 
+            const token = localStorage.getItem("token_instructor"); 
 
             const response = await fetch(`${BASE_URL}/cursos/registrar`, {
                 method: "POST",
@@ -30,9 +30,11 @@ export const cursosService = {
 
     async obtenerCursosDisponibles(tipo) {
         try {
-            const token = localStorage.getItem("token");
+            // RESPALDO SEGURO: Si no existe token_admin, busca el token general
+            const token = localStorage.getItem("token_admin") || localStorage.getItem("token");
+            // 🔎 DIAGNOSTICO: Mira qué valor imprime esto en la consola F12
+            console.log("🔍 Token recuperado para cursos admin:", token);
             
-            // Esto asegura que ?tipo=Profesional se codifique bien
             const params = new URLSearchParams({ tipo: tipo });
             const url = `${BASE_URL}/cursos/disponibles?${params.toString()}`;
             
@@ -45,7 +47,6 @@ export const cursosService = {
             });
 
             if (!response.ok) {
-                // Si el backend responde 404 aquí, es que la ruta /api/cursos/disponibles no existe
                 throw new Error(`Error ${response.status}`);
             }
             
@@ -58,7 +59,7 @@ export const cursosService = {
 
     async obtenerMisCursos() {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token_instructor");
 
             const response = await fetch(`${BASE_URL}/cursos/mis-cursos`, {
                 method: "GET",
@@ -82,7 +83,7 @@ export const cursosService = {
 
     async obtenerAlumnosPorCurso(idCurso) {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token_instructor");
             const response = await fetch(`${BASE_URL}/cursos/alumnos/${idCurso}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -95,7 +96,7 @@ export const cursosService = {
 
     async registrarHorasAlumno(idInscripcion, horas) {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token_instructor");
             
             const url = `${BASE_URL}/cursos/alumnos/horas`; 
             
@@ -128,7 +129,7 @@ export const cursosService = {
 
     async actualizarCurso(idCurso, cursoYTemasData) {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token_admin") || localStorage.getItem("token");
             const response = await fetch(`${BASE_URL}/admin/cursos/${idCurso}`, {
                 method: "PUT",
                 headers: {
@@ -149,7 +150,7 @@ export const cursosService = {
 
     async eliminarCurso(idCurso) {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token_admin") || localStorage.getItem("token");
             const response = await fetch(`${BASE_URL}/admin/cursos/${idCurso}`, {
                 method: "DELETE",
                 headers: {

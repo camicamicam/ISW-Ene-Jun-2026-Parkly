@@ -1,5 +1,6 @@
 import { navigate } from "../routes/router.js";
 import { cursosService } from "../services/cursosService.js";
+import { logoutButton } from "../components/logout.js";
 
 // --- GESTIÓN DE ALUMNOS EN TABLA ---
 window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
@@ -98,12 +99,12 @@ window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
 
 const obtenerDatosInstructor = () => {
     try {
-        const usuarioGuardado = localStorage.getItem("usuario");
+        const usuarioGuardado = localStorage.getItem("usuario_instructor");
         if (usuarioGuardado) {
             return JSON.parse(usuarioGuardado);
         }
 
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token_instructor");
         if (!token) return {};
         const payloadBase64 = token.split(".")[1];
         return JSON.parse(atob(payloadBase64));
@@ -360,6 +361,13 @@ export function instructorPage() {
     return `
         <div class="instructor-container" style="display: flex; flex-direction: column; gap: 20px; align-items: center; padding: 20px;">
 
+            <!-- Cabecera con título y el componente de Logout -->
+            <div style="max-width: 600px; width: 100%; display: flex; align-items: center; padding: 8px 15px; box-sizing: border-box; margin-bottom: -10px;">
+                <div style="margin-left: auto;">
+                    ${logoutButton("instructor")}
+                </div>
+            </div>
+
             <div class="card" style="max-width: 600px; width: 100%;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h1 style="margin: 0;">Información del Curso</h1>
@@ -372,22 +380,22 @@ export function instructorPage() {
                     <h3 style="margin-bottom: 15px; color: #555;">Datos del Instructor</h3>
                     <div class="form-group">
                         <label>Número de Empleado</label>
-                        <input type="number" id="numEmpI" value="${numEmpleado}" placeholder="Ej. 21140780" required>
+                        <input type="number" id="numEmpI" value="${numEmpleado}" placeholder="Ej. 21140780" required disabled>
                     </div>
 
                     <div class="form-group">
                         <label>Nombre del Instructor</label>
-                        <input type="text" id="nombreI" value="${nombre}" placeholder="Nombre" required>
+                        <input type="text" id="nombreI" value="${nombre}" placeholder="Nombre" required disabled>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div class="form-group">
                             <label>Apellido Paterno</label>
-                            <input type="text" id="paternoI" value="${paterno}" placeholder="Apellido Paterno" required>
+                            <input type="text" id="paternoI" value="${paterno}" placeholder="Apellido Paterno" required disabled>
                         </div>
                         <div class="form-group">
                             <label>Apellido Materno</label>
-                            <input type="text" id="maternoI" placeholder="Apellido Materno" value="${materno}" required>
+                            <input type="text" id="maternoI" placeholder="Apellido Materno" value="${materno}" required disabled>
                         </div>
                     </div>
 
@@ -401,6 +409,7 @@ export function instructorPage() {
                             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
                             title="Por favor, introduce un correo válido con dominio (ejemplo@correo.com)"
                             required
+                            disabled
                         >
                     </div>
 

@@ -1,9 +1,11 @@
 import { cursosService } from "../services/cursosService.js";
 import { instructoresService } from "../services/instructoresService.js";
 import { Loader } from "../components/loader.js";
+import { logoutButton } from "../components/logout.js";
 
 // VARIABLES DE ESTADO LOCAL
 let cursosLocales = []; 
+let instructoresLocales = [];
 let cursoSeleccionado = null; 
 let temasEditados = []; 
 let tipoCursoActual = "Profesional"; 
@@ -21,6 +23,12 @@ function generarPassword(longitud = 12){
     return password;
 }
 export async function adminCursosPage(tipoCurso = null) {
+    const tokenAdmin = localStorage.getItem("token_admin") || localStorage.getItem("token_admin");
+    if (!tokenAdmin) {
+        navigate("/login?tipo=admin");
+        return "";
+    }
+
     if (!tipoCurso) {
         tipoCurso = localStorage.getItem("seccion_itq") || "Profesional";
     }
@@ -54,6 +62,17 @@ export async function adminCursosPage(tipoCurso = null) {
         } finally {
             Loader.hide();
         }
+    }else if (vistaActualAdmin === "consultar") {
+        try {
+            Loader.show();
+            const respuesta = await instructoresService.listarInstructores();
+            instructoresLocales = respuesta.datos || respuesta || [];
+        } catch (err) {
+            console.error("No se pudieron cargar los instructores", err);
+            instructoresLocales = [];
+        } finally {
+            Loader.hide();
+        }
     }
 
     return renderizarInterfazGlobal();
@@ -62,7 +81,13 @@ export async function adminCursosPage(tipoCurso = null) {
 function renderizarInterfazGlobal() {
     return `
         <div class="admin-container" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 30px 20px; gap: 20px; background: rgba(44, 62, 80, 0.05); font-family: 'Segoe UI', Roboto, sans-serif;">
-            
+            <!-- Cabecera con título y el componente de Logout -->
+            <div style="max-width: 600px; width: 100%; display: flex; align-items: center; padding: 8px 15px; box-sizing: border-box; margin-bottom: -10px;">
+                <div style="margin-left: auto;">
+                    ${logoutButton("admin")}
+                </div>
+            </div>
+
             <div style="width: 100%; max-width: 900px; display: flex; background: white; border-radius: 8px; padding: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); gap: 10px;">
                 <button id="tab-vistas-cursos" style="flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; background: ${vistaActualAdmin === 'cursos' ? '#2c3e50' : 'transparent'}; color: ${vistaActualAdmin === 'cursos' ? 'white' : '#7f8c8d'};">
                     Gestionar Cursos (${tipoCursoActual}es)
@@ -238,7 +263,7 @@ function renderizarSeccionInstructores() {
                 <div>
                     <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Contraseña de Acceso</label>
                     <div class="input-container">
-                        <input type="password" id="inst-password" placeholder="Haz clic en Generar" style="flex: 1; border: none; padding: 10px 0; outline: none; background: transparent;" required>
+                        <input type="password" id="inst-password" placeholder="Haz clic en Generar" style="flex: 1; border: none; padding: 10px 0; outline: none; background: transparent;" required disabled>
                         <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar contraseña"></i>
                     </div>
                     <div style="display: flex; gap: 10px;">
@@ -259,20 +284,21 @@ function renderizarSeccionInstructores() {
 function renderizarSeccionConsulta(){
     return `
         <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 8px solid #2c3e50; width: 100%; box-sizing: border-box;">
+
             <div style="text-align: center; margin-bottom: 25px;">
                 <h2 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 24px;">Directorio de Instructores</h2>
                 <p style="color: #7f8c8d; margin: 0; font-size: 14px;">Consulta y gestiona los instructores registrados en la plataforma.</p>
             </div>
 
-            <!--BARRA DE BÚSQUEDA-->
+            <!-- BARRA DE BÚSQUEDA Y FILTROS -->
             <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
                 <div style="flex: 3; min-width: 250px; position: relative;">
-                    <input type="text" id="input-buscar-instructor" placeholder="Buscar por nombre o apellidos" 
+                    <input type="text" id="input-buscar-instructor" placeholder="Buscar por nombre o apellidos..." 
                             style="width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none;">
                 </div>
 
                 <div style="flex: 1; min-width: 160px;">
-                    <select id="select-filtro-estado" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
+                    <select id="select-filtro-estado" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333; outline: none;">
                         <option value="todos">Todos los estados</option>
                         <option value="activo">Activos</option>
                         <option value="inactivo">Inactivos</option>
@@ -280,7 +306,7 @@ function renderizarSeccionConsulta(){
                 </div>
             </div>
 
-            <!--TABLA DE DATOS-->
+            <!-- TABLA DE DATOS -->
             <div style="overflow-x: auto; border: 1px solid #eee; border-radius: 8px;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
                     <thead>
@@ -289,52 +315,49 @@ function renderizarSeccionConsulta(){
                             <th style="padding: 12px 15px;">Nombre Completo</th>
                             <th style="padding: 12px 15px;">Correo Electrónico</th>
                             <th style="padding: 12px 15px; text-align: center;">Estado</th>
-                            <th style="padding: 12px 15px; text-align: center;">Acciones</th>
+                            <th style="padding: 12px 15px; text-align: center;">Acción</th>
                         </tr>
                     </thead>
 
                     <tbody id="tabla-instructores-body">
-                        <!-- Fila de ejemplo 1 -->
-                        <tr style="border-bottom: 1px solid #eee; transition: 0.2s;">
-                            <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">21140780</td>
-                            <td style="padding: 12px 15px;">Camila Mata García</td>
-                            <td style="padding: 12px 15px; color: #555;">camila.mata@queretaro.tecnm.mx</td>
-                            <td style="padding: 12px 15px; text-align: center;">
-                                <span style="background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Activo</span>
-                            </td>
-                            <td style="padding: 12px 15px; text-align: center;">
-                                <button type="button" class="btn-ver-instructor" data-id="21140780" style="padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📄 Detalle</button>
-                            </td>
-                        </tr>
-
-                        <!-- Fila de ejemplo 2 -->
-                        <tr style="border-bottom: 1px solid #eee; transition: 0.2s; background-color: #f9f9f9;">
-                            <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">55551234</td>
-                            <td style="padding: 12px 15px;">Roberto Méndez Ruiz</td>
-                            <td style="padding: 12px 15px; color: #555;">roberto.mendez@queretaro.tecnm.mx</td>
-                            <td style="padding: 12px 15px; text-align: center;">
-                                <span style="background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Activo</span>
-                            </td>
-                            <td style="padding: 12px 15px; text-align: center;">
-                                <button type="button" class="btn-ver-instructor" data-id="55551234" style="padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📄 Detalle</button>
-                            </td>
-                        </tr>
+                        ${instructoresLocales.length === 0 ? `
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 25px; color: #7f8c8d;">No hay instructores registrados.</td>
+                            </tr>
+                        ` : instructoresLocales.map(inst => {
+                            const activo = inst.ESTADO === 1 || inst.estado === 1 || inst.ESTADO === true || inst.estado === true;
+                            const nombreCompleto = inst.NOMBRE_COMPLETO || `${inst.NOMBRE || inst.nombre || ''} ${inst.APELLIDO_PATERNO || inst.apellido_paterno || ''} ${inst.APELLIDO_MATERNO || inst.apellido_materno || ''}`.trim();
+                            
+                            return `
+                                <tr class="fila-instructor" data-nombre="${nombreCompleto.toLowerCase()}" data-estado="${activo ? 'activo' : 'inactivo'}" style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">${inst.NUMERO_EMPLEADO || inst.numero_empleado}</td>
+                                    <td style="padding: 12px 15px;">${nombreCompleto}</td>
+                                    <td style="padding: 12px 15px; color: #555;">${inst.CORREO || inst.correo}</td>
+                                    <td style="padding: 12px 15px; text-align: center;">
+                                        <span style="background: ${activo ? '#d4edda' : '#f8d7da'}; color: ${activo ? '#155724' : '#721c24'}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                            ${activo ? 'Activo' : 'Inactivo'}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 12px 15px; text-align: center;">
+                                        <button type="button" class="btn-cambiar-estado" 
+                                            data-id="${inst.ID_INSTRUCTOR || inst.id_instructor || inst.ID || inst.id}" 
+                                            data-estado="${activo ? 0 : 1}"
+                                            style="padding: 6px 12px; background: ${activo ? '#e74c3c' : '#27ae60'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                                            ${activo ? 'Desactivar' : 'Activar'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
                     </tbody>
                 </table>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; font-size: 13px; color: #7f8c8d;">
-                <span>Mostrando 2 de 2 instructores registrados</span>
-                
-                <div style="display: flex; gap: 5px;">
-                    <button type="button" style="padding: 5px 10px; border: 1px solid #ccc; background: #f8f9fa; border-radius: 6px; cursor: pointer; color: #555;" disabled>Anterior</button>
-                    <button type="button" style="padding: 5px 10px; border: 1px solid #ccc; background: #2c3e50; color: white; border-radius: 4px; cursor: pointer;">1</button>
-                    <button type="button" style="padding: 5px 10px; border: 1px solid #ccc; background: #f8f9fa; border-radius: 6px; cursor: pointer; color: #555;" disabled>Siguiente</button>
-                </div>
+                <span id="contador-instructores">Mostrando ${instructoresLocales.length} de ${instructoresLocales.length} instructores</span>
             </div>
-
         </div>  
-    `
+    `;
 }
 
 function setupAdminEvents() {
@@ -385,6 +408,24 @@ function setupAdminEvents() {
                 alert("¡Contraseña copiada al portapapeles!");
             } else {
                 alert("Primero genera una contraseña para poder copiarla.");
+            }
+        }
+
+        //CAMBIAR ESTADO DE INSTRUCTORES
+
+        if (e.target.classList.contains("btn-cambiar-estado")) {
+            const idInstructor = e.target.getAttribute("data-id");
+            const nuevoEstado = Number(e.target.getAttribute("data-estado"));
+
+            try {
+                Loader.show();
+                await instructoresService.actualizarEstadoInstructor(idInstructor, nuevoEstado);
+                alert("¡Estado del instructor actualizado con éxito!");
+                mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
+            } catch (err) {
+                alert("Error al actualizar estado: " + err.message);
+            } finally {
+                Loader.hide();
             }
         }
 
@@ -511,6 +552,47 @@ function setupAdminEvents() {
                 alert("Error al registrar instructor: " + err.message);
             } finally {
                 Loader.hide();
+            }
+        }
+    });
+
+    // FILTRAR INSTRUCTORES EN TIEMPO REAL (BÚSQUEDA Y SELECTOR)
+    mainContent.addEventListener("input", (e) => {
+        if (e.target.id === "input-buscar-instructor" || e.target.id === "select-filtro-estado") {
+            const textoBusqueda = document.getElementById("input-buscar-instructor")?.value.toLowerCase().trim() || "";
+            const filtroEstado = document.getElementById("select-filtro-estado")?.value || "todos";
+
+            const filas = document.querySelectorAll(".fila-instructor");
+            let visibles = 0;
+
+            filas.forEach(fila => {
+                const nombre = fila.getAttribute("data-nombre");
+                const estado = fila.getAttribute("data-estado");
+
+                const coincideTexto = nombre.includes(textoBusqueda);
+                const coincideEstado = (filtroEstado === "todos" || estado === filtroEstado);
+
+                if (coincideTexto && coincideEstado) {
+                    fila.style.display = "";
+                    visibles++;
+                } else {
+                    fila.style.display = "none";
+                }
+            });
+
+            const contador = document.getElementById("contador-instructores");
+            if (contador) {
+                contador.innerText = `Mostrando ${visibles} de ${filas.length} instructores`;
+            }
+        }
+    });
+
+    mainContent.addEventListener("change", (e) => {
+        if (e.target.id === "select-filtro-estado") {
+            // Dispara la misma lógica de filtrado al cambiar la opción del select
+            const inputBusqueda = document.getElementById("input-buscar-instructor");
+            if (inputBusqueda) {
+                inputBusqueda.dispatchEvent(new Event("input", { bubbles: true }));
             }
         }
     });

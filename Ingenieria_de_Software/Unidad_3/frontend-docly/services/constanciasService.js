@@ -6,7 +6,7 @@ const BASE_URL = "https://api-cursos-itq.onrender.com/api/v1";
 export const constanciasService = {
     async obtenerConstanciasDelUsuario() {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token_constancia");
             console.log("🔑 Token enviado al backend de constancias:", token);
 
             const response = await fetch(`${BASE_URL}/constancias/mis-constancias`, {

@@ -1,5 +1,6 @@
 // pages/constancias.js
 import { constanciasService } from '../services/constanciasService.js';
+import { logoutButton } from "../components/logout.js";
 
 export const constanciasPage = async () => {
     
@@ -82,6 +83,12 @@ export const constanciasPage = async () => {
 
     return `
         <div style="max-width: 1000px; margin: 0 auto; padding: 30px; font-family: system-ui, -apple-system, sans-serif;">
+            <!-- Cabecera con título y el componente de Logout -->
+            <div style="max-width: 600px; width: 100%; display: flex; align-items: center; padding: 8px 15px; box-sizing: border-box; margin-bottom: -10px;">
+                <div style="margin-left: auto;">
+                    ${logoutButton("constancia")}
+                </div>
+            </div>
             <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
                 <h1 style="color: #143464; margin: 0 0 5px 0; font-size: 28px;">Mis Constancias</h1>
                 <p style="color: #718096; margin: 0; font-size: 15px;">Aquí encontrará las constancias de los cursos que ha acreditado en su totalidad.</p>

@@ -16,11 +16,11 @@ export const apiService = {
 
             // === CAMBIO CLAVE AQUÍ ===
             // Si el login es exitoso y la API nos da un token, lo guardamos
-            if (response.ok && data.token) {
+            /*if (response.ok && data.token) {
                 localStorage.setItem("token", data.token);
                 // Opcional: Guardar el rol para validaciones rápidas en el frontend
                 localStorage.setItem("rol", tipoPortal);
-            }
+            }*/
             
             return data;
         } catch (error) {
@@ -35,8 +35,13 @@ export const apiService = {
     },
 
     // Es buena práctica tener un método para limpiar la sesión
-    logout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("rol");
+    logout(tipoPortal) {
+        // Limpieza específica o total de sesión
+        if (tipoPortal) {
+            localStorage.removeItem(`token_${tipoPortal}`);
+            localStorage.removeItem(`usuario_${tipoPortal}`);
+        } else {
+            localStorage.clear();
+        }
     }
 };

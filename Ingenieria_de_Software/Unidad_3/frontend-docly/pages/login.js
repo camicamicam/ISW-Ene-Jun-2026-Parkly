@@ -4,9 +4,56 @@ import { navigate } from "../routes/router.js";
 import { Loader } from "../components/loader.js";
 
 export function loginPage() {
-    //Configuración de títulos (esto se ejecuta cada vez que se renderiza la página)
     const params = new URLSearchParams(window.location.search);
-    const tipoActual = params.get("tipo") || "instructor";
+    const tipoActual = params.get("tipo") || "instructor"; // instructor, constancia o admin
+
+    const tokenAdminGlobal = localStorage.getItem("token_admin");
+    const usuarioAdminGlobal = localStorage.getItem("usuario_admin");
+
+    if (tokenAdminGlobal && usuarioAdminGlobal) {
+        try {
+            const usuarioAdmin = JSON.parse(usuarioAdminGlobal);
+            const rolAdmin = usuarioAdmin.rol ? usuarioAdmin.rol.toLowerCase() : "";
+            if (rolAdmin.includes("administrador")) {
+                setTimeout(() => navigate("/admin-cursos"), 0);
+                return `<div class="container"><p style="text-align:center; padding:50px;">Redirigiendo al panel de administración...</p></div>`;
+            }
+        } catch (e) {
+            localStorage.removeItem("token_admin");
+            localStorage.removeItem("usuario_admin");
+        }
+    }
+
+    // 1. MANEJO DE SESIÓN AISLADA SEGÚN EL MÓDULO ACTUAL
+    const tokenModulo = localStorage.getItem(`token_${tipoActual}`);
+    const usuarioModulo = localStorage.getItem(`usuario_${tipoActual}`);
+
+    if (tokenModulo && usuarioModulo) {
+        try {
+            const usuario = JSON.parse(usuarioModulo);
+            const userRole = usuario.rol ? usuario.rol.toLowerCase() : "";
+
+            const esAdmin = userRole.includes("administrador");
+            const esInstructor = userRole.includes("instructor") || userRole.includes("docente");
+
+            // Redirección automática si ya hay sesión válida en ESTE módulo
+            if (tipoActual === "admin" && esAdmin) {
+                setTimeout(() => navigate("/admin-cursos"), 0);
+                return `<div class="container"><p style="text-align:center; padding:50px;">Redirigiendo al panel de administración...</p></div>`;
+            }
+            if (tipoActual === "instructor" && esInstructor) {
+                setTimeout(() => navigate("/instructor"), 0);
+                return `<div class="container"><p style="text-align:center; padding:50px;">Redirigiendo al panel de instructor...</p></div>`;
+            }
+            if (tipoActual === "constancia" && (esInstructor || esAdmin || userRole.includes("administrativo") || userRole.includes("docente"))) {
+                setTimeout(() => navigate("/constancias"), 0);
+                return `<div class="container"><p style="text-align:center; padding:50px;">Redirigiendo al módulo de constancias...</p></div>`;
+            }
+        } catch (e) {
+            localStorage.removeItem(`token_${tipoActual}`);
+            localStorage.removeItem(`usuario_${tipoActual}`);
+        }
+    }
 
     const config = {
         instructor: { 
@@ -19,115 +66,133 @@ export function loginPage() {
             redirect: "/constancias",
             nota: "La clave fue proporcionada en su correo de confirmación." 
         },
-
         admin: {
-            title: "Panel de Administración",
+            title: "Acceso Instructor", 
             redirect: "/admin-cursos",
-            nota: "Área restringida. Solo personal autorizado de control y diseño curricular."
+            nota: "En caso de no contar con su contraseña, favor de pasar a <b>DDA</b> para solicitarla."
         }
     };
 
     const currentConfig = config[tipoActual] || config.instructor;
 
-    //Escuchador de eventos corregido
+    // Inicialización única de eventos del formulario
     if (!window.loginInitialized) {
         const ejecutarLogin = async () => {
-                Loader.show();
-                // IMPORTANTE: Volvemos a leer el 'tipo' justo en el momento del click
-                const urlParams = new URLSearchParams(window.location.search);
-                const tipoEnClick = urlParams.get("tipo") || "instructor";
-                const pass = document.getElementById("password").value.trim();
-                const errorElement = document.getElementById("mensaje-login");
+            Loader.show();
+            const urlParams = new URLSearchParams(window.location.search);
+            const tipoEnClick = urlParams.get("tipo") || "instructor";
+            const pass = document.getElementById("password").value.trim();
+            const errorElement = document.getElementById("mensaje-login");
 
-                // Función interna para manejar la interfaz de mensajes
-                const mostrarMensaje = (texto, esError = true) => {
-                    errorElement.innerText = texto;
-                    errorElement.style.display = "block";
-                    errorElement.style.color = esError ? "#721c24" : "#155724";
-                    errorElement.style.backgroundColor = esError ? "#f8d7da" : "#d4edda";
-                    errorElement.style.borderColor = esError ? "#f5c6cb" : "#c3e6cb";
-                };
+            const mostrarMensaje = (texto, esError = true) => {
+                errorElement.innerText = texto;
+                errorElement.style.display = "block";
+                errorElement.style.color = esError ? "#721c24" : "#155724";
+                errorElement.style.backgroundColor = esError ? "#f8d7da" : "#d4edda";
+                errorElement.style.borderColor = esError ? "#f5c6cb" : "#c3e6cb";
+            };
 
-                // Resetear estado
-                errorElement.style.display = "none";
-                
-                try {
-                    const data = await apiService.login(pass, tipoEnClick);
+            errorElement.style.display = "none";
+            
+            try {
+                const data = await apiService.login(pass, tipoEnClick);
 
-                    console.log("=== RESPUESTA LOGIN BACKEND ===", data);
+                console.log("=== RESPUESTA LOGIN BACKEND ===", data);
 
-                    if (data.token) {
-                        // Guardamos el token en la sesión
-                        localStorage.setItem("token", data.token);
-                        const userRole = data.rol ? data.rol.toLowerCase() : "";
+                if (data.token) {
+                    const userRole = data.rol ? data.rol.toLowerCase() : "";
 
-                        const usuarioParaGuardar = {
+                    if (userRole.includes("administrador")) {
+                        localStorage.setItem("token_admin", data.token);
+                        localStorage.setItem("usuario_admin", JSON.stringify({
                             numero_empleado: data.numero_empleado,
                             nombre: data.nombre,
                             paterno: data.apellido_paterno,
                             materno: data.apellido_materno,
                             correo: data.correo,
-                            rol: data.rol
-                        };
-                        localStorage.setItem("usuario", JSON.stringify(usuarioParaGuardar));
-
-                        // Validación para Instructores
-                        if (tipoEnClick === "instructor") {
-                            // Si el rol devuelto contiene la palabra 'admin', es el administrador
-                            if (userRole.includes("administrador")) {
-                                mostrarMensaje("¡Éxito! Bienvenido al Panel de Administrador.", false);
-                                navigate("/admin-cursos"); // Nueva ruta para el admin
-                                return;
-                            }
-
-                            // Si no es admin y tampoco es instructor, entonces sí denegamos el acceso
-                            if (userRole !== "instructor") {
-                                mostrarMensaje(data.mensaje, true);
-                                //alert(data.mensaje);
-                                //alert("Acceso denegado: Esta clave no pertenece a un Instructor.");
-                                return;
-                            }
-                            
-                            mostrarMensaje(data.mensaje, false);
-                            //alert(data.mensaje);
-                            //alert("¡Éxito! Bienvenido al Panel de Instructor.");
-                            navigate("/instructor");
-                        } 
-                        // Validación para Constancias (Cualquier rol puede entrar)
-                        else if (tipoEnClick === "constancia") {
-                            const rolesPermitidos = ["docente", "administrativo"];
-
-                            if (!rolesPermitidos.includes(userRole)) {
-                                mostrarMensaje(data.mensaje, true);
-                                //alert(data.mensaje);
-                                return;
-                            }
-                            mostrarMensaje(data.mensaje, false);
-                            //alert(data.mensaje);
-                            //alert("¡Éxito! Cargando sistema de constancias.");
-                            navigate("/constancias");
-                        }
-                    } else {
-                        mostrarMensaje(data.mensaje, true);
+                            rol: data.rol,
+                            tipoAcceso: "admin"
+                        }));
                     }
-                } catch (err) {
-                    mostrarMensaje("Error de conexión con el servidor.", true);
-                }finally{
-                    Loader.hide();
+
+                    // Validaciones estrictas por tipo de acceso antes de guardar
+                    if (tipoEnClick === "admin" && !userRole.includes("administrador")) {
+                        mostrarMensaje("Acceso denegado: Esta clave no corresponde a un Administrador.", true);
+                        return;
+                    }
+                    if (tipoEnClick === "instructor" && !userRole.includes("instructor") && !userRole.includes("docente") && !userRole.includes("administrador")) {
+                        mostrarMensaje("Acceso denegado: Esta clave no pertenece a un Instructor.", true);
+                        return;
+                    }
+                    if (tipoEnClick === "constancia") {
+                        const rolesPermitidos = ["docente", "administrativo"];
+                        if (!rolesPermitidos.some(rol => userRole.includes(rol))) {
+                            mostrarMensaje("Acceso denegado para este módulo de constancias.", true);
+                            return;
+                        }
+                    }
+
+                    // GUARDADO 100% AISLADO (Ya no pisa los demás módulos)
+                    localStorage.setItem(`token_${tipoEnClick}`, data.token);
+                    localStorage.setItem("token_admin", data.token); // Respaldo global permanente para el admin
+
+                    const usuarioParaGuardar = {
+                        numero_empleado: data.numero_empleado,
+                        nombre: data.nombre,
+                        paterno: data.apellido_paterno,
+                        materno: data.apellido_materno,
+                        correo: data.correo,
+                        rol: data.rol,
+                        tipoAcceso: tipoEnClick
+                    };
+                    localStorage.setItem(`usuario_${tipoEnClick}`, JSON.stringify(usuarioParaGuardar));
+                    localStorage.setItem("usuario_admin", JSON.stringify(usuarioParaGuardar)); // Respaldo global de usuario admin
+
+                    mostrarMensaje("¡Éxito! Redirigiendo...", false);
+
+                    // Redirección final al panel correspondiente
+                    if (tipoEnClick === "admin" || userRole.includes("administrador")) {
+                        navigate("/admin-cursos");
+                    } else if (tipoEnClick === "instructor") {
+                        navigate("/instructor");
+                    } else if (tipoEnClick === "constancia") {
+                        navigate("/constancias");
+                    } else {
+                        navigate(currentConfig.redirect);
+                    }
+
+                } else {
+                    mostrarMensaje(data.mensaje || "Credenciales incorrectas.", true);
                 }
+            } catch (err) {
+                mostrarMensaje("Error de conexión con el servidor.", true);
+            } finally {
+                Loader.hide();
+            }
         };
 
-            //Escuchador delegado del evento submit en el formulario
-            if (!window.loginInitialized) {
-            document.addEventListener("submit", async (e) => {
-                if (e.target && e.target.id === "loginForm") {
-                    e.preventDefault(); // Previene la recarga automática de la página al dar Enter o submit
-                    await ejecutarLogin();
+        // Evento para ver/ocultar contraseña
+        document.addEventListener("click", (e) => {
+            if (e.target && e.target.id === "toggle-pass") {
+                const inputPass = document.getElementById("password");
+                if (inputPass) {
+                    const esPassword = inputPass.type === "password";
+                    inputPass.type = esPassword ? "text" : "password";
+                    e.target.classList.toggle("fa-eye", !esPassword);
+                    e.target.classList.toggle("fa-eye-slash", esPassword);
                 }
-            });
+            }
+        });
+
+        // Evento de envío del formulario de login
+        document.addEventListener("submit", async (e) => {
+            if (e.target && e.target.id === "loginForm") {
+                e.preventDefault();
+                await ejecutarLogin();
+            }
+        });
             
-            window.loginInitialized = true;
-        }
+        window.loginInitialized = true;
     }
 
     return `
@@ -137,7 +202,10 @@ export function loginPage() {
                 <p style="font-size: 13px; color: #666; margin-bottom: 15px; background: #e9ecef; padding: 8px; border-radius: 4px; border-left: 4px solid #34495e;">
                     <strong>Nota:</strong> ${currentConfig.nota}
                 </p>
-                <input type="password" id="password" placeholder="Ingrese su clave" required>
+                <div class="input-password">
+                    <input type="password" id="password" placeholder="Ingrese su clave" required>
+                    <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar contraseña"></i>
+                </div>
                 <div id="mensaje-login" style="
                     display: none; 
                     padding: 10px; 

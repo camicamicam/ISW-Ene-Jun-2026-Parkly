@@ -17,6 +17,7 @@ async function login(req, res/*, rol_esperado */) {
         res.status(200).json({
             status: 'Éxito',
             token: resultado.token,
+            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre_usuario}`,
             //datosUsuario: {
                 usuario_id: resultado.id,
                 rol: resultado.rol,
@@ -24,9 +25,8 @@ async function login(req, res/*, rol_esperado */) {
                 correo: resultado.correo,
                 nombre: resultado.nombre_usuario,
                 apellido_paterno: resultado.apellido_p_usuario,
-                apellido_materno: resultado.apellido_m_usuario || "",
+                apellido_materno: resultado.apellido_m_usuario || ""
                 //}
-            mensaje: `Bienvenido al sistema, ${resultado.rol.toLowerCase()} ${resultado.nombre_usuario}`,
         });
 
     } catch (error) {

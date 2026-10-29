@@ -4,7 +4,10 @@ async function registrarInstructor(req, res) {
     try {
         const resultado = await adminService.crearInstructor(req.body);
         console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre}.`);
-        res.status(201).json({ status: 'Éxito', mensaje: resultado.mensaje });
+        res.status(201).json({ 
+            status: 'Éxito', 
+            mensaje: resultado.mensaje 
+        });
     } catch (error) {
         if (error.message === "FALTAN_DATOS") {
             return res.status(400).json({ mensaje: 'Todos los campos del instructor son obligatorios.' });
@@ -26,7 +29,10 @@ async function actualizarCurso(req, res) {
         const { curso, temas } = req.body;
         const resultado = await adminService.modificarCurso(idCurso, curso, temas);
         console.log(`Curso ID ${idCurso} actualizado exitosamente por el administrador ${req.usuario.nombre}.`);
-        res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
+        res.status(200).json({ 
+            status: 'Éxito', 
+            mensaje: resultado.mensaje 
+        });
     } catch (error) {
         if (error.message === "FECHAS_INVALIDAS") return res.status(400).json({ mensaje: 'La fecha de término no puede ser anterior a la de inicio.' });
         if (error.message === "NO_EXISTE") return res.status(404).json({ mensaje: 'El curso especificado no existe.' });
@@ -40,7 +46,10 @@ async function eliminarCurso(req, res) {
         const { idCurso } = req.params;
         const resultado = await adminService.removerCurso(idCurso);
         console.log(`Curso ID ${idCurso} eliminado exitosamente por el administrador ${req.usuario.nombre}.`);
-        res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
+        res.status(200).json({ 
+            status: 'Éxito', 
+            mensaje: resultado.mensaje 
+        });
     } catch (error) {
         if (error.message === "CURSO_CON_INSCRITOS") {
             console.log(`Intento de borrar curso ID ${req.params.idCurso} denegado (tiene alumnos).`);
@@ -73,7 +82,10 @@ async function actualizarEstadoInstructor(req, res) {
         const { estado } = req.body;
         const resultado = await adminService.actualizarEstadoInstructor(idInstructor, estado);
         console.log(`Estado del instructor ID ${idInstructor} actualizado a ${estado} por el administrador ${req.usuario.nombre_usuario}.`);
-        res.status(200).json({ status: 'Éxito', mensaje: resultado.mensaje });
+        res.status(200).json({ 
+            status: 'Éxito', 
+            mensaje: resultado.mensaje 
+        });
     } catch (error) {
         if (error.message === "ESTADO_INVALIDO") {
             return res.status(400).json({ mensaje: 'El estado proporcionado no es válido. Debe ser 0 (inactivo) o 1 (activo).' });
@@ -86,10 +98,31 @@ async function actualizarEstadoInstructor(req, res) {
     }
 }
 
+async function editarInstructor(req, res) {
+    try {
+        if (!req.usuario || req.usuario.rol !== 'ADMINISTRADOR') {
+            console.log(`Usuario no autorizado para editar instructor. ID: ${req.usuario ? req.usuario.id_usuario : 'desconocido'}`);
+            return res.status(403).json({ mensaje: 'No tienes permisos para editar instructores.' });
+        }
+        const { idInstructor } = req.params;
+        const datos = req.body;
+        const resultado = await adminService.editarInstructor(idInstructor, datos);
+        console.log(`Datos del instructor ID ${idInstructor} actualizados por el admin ${req.usuario.nombre_usuario || 'Administrador'}.`);
+        res.status(200).json({ 
+            status: 'Éxito', 
+            mensaje: resultado.mensaje 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al actualizar los datos del instructor.' });
+    }
+}
+
 module.exports = { 
     registrarInstructor, 
     actualizarCurso, 
     eliminarCurso,
     listarInstructores,
-    actualizarEstadoInstructor
+    actualizarEstadoInstructor,
+    editarInstructor
 };

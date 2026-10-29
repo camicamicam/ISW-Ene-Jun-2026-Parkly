@@ -37,10 +37,12 @@ CREATE TABLE usuario (
     apellido_materno VARCHAR2(50),
     correo VARCHAR2(100) NOT NULL,
     nivel_acceso NUMBER(1) DEFAULT 0 NOT NULL,
+    estado_usuario NUMBER(1) DEFAULT 1 NOT NULL,
 
     CONSTRAINT pk_usuario PRIMARY KEY (id_usuario),
     CONSTRAINT uq_usuario_numero UNIQUE (numero_empleado),
-    CONSTRAINT chk_nivel_acceso CHECK (nivel_acceso IN (0,1))
+    CONSTRAINT chk_nivel_acceso CHECK (nivel_acceso IN (0,1)),
+    CONSTRAINT chk_estado_usuario CHECK (estado_usuario IN (0, 1))
 );
 
 ------------ DOCENTE ---------------
@@ -223,7 +225,9 @@ CREATE OR REPLACE VIEW v_usuarios_roles AS
 SELECT 
     u.id_usuario,
     u.numero_empleado,
-    u.nombre || ' ' || u.apellido_paterno || ' ' || NVL(u.apellido_materno, '') AS nombre_completo,
+    u.nombre AS nombre_usuario,
+    u.apellido_paterno AS apellido_p_usuario,
+    u.apellido_materno AS apellido_m_usuario,
     u.correo,
     u.nivel_acceso,
     CASE 
@@ -233,7 +237,8 @@ SELECT
         WHEN a.id_usuario IS NOT NULL THEN 'ADMINISTRATIVO'
         ELSE 'USUARIO_SIN_ROL'
     END AS rol,
-    NVL(ad.password_acceso, i.password_acceso) AS password_acceso
+    NVL(ad.password_acceso, i.password_acceso) AS password_acceso,
+    u.estado_usuario AS estado_usuario
 FROM usuario u
 LEFT JOIN administrador ad ON u.id_usuario = ad.id_usuario
 LEFT JOIN instructor i ON u.id_usuario = i.id_usuario
@@ -275,9 +280,12 @@ CREATE OR REPLACE VIEW v_instructores AS
 SELECT 
     i.id_usuario,
     u.numero_empleado,
-    u.nombre || ' ' || u.apellido_paterno || ' ' || NVL(u.apellido_materno, '') AS nombre_instructor,
+    u.nombre AS nombre_instructor,
+    u.apellido_paterno AS apellido_p_instructor,
+    u.apellido_materno AS apellido_m_instructor,
     u.correo,
-    i.password_acceso
+    i.password_acceso,
+    u.estado_usuario AS estado_usuario
 FROM instructor i
 JOIN usuario u ON i.id_usuario = u.id_usuario
 ORDER BY u.apellido_paterno ASC;
@@ -302,7 +310,8 @@ CREATE OR REPLACE VIEW v_detalle_cursos AS
 SELECT 
     c.id_curso,
     c.nombre AS nombre_curso,
-    tc_cat.nombre AS tipo_curso, -- Nombre desde el catálogo
+    tc_cat.nombre AS tipo_curso,
+    c.id_instructor,
     u.nombre || ' ' || u.apellido_paterno || ' ' || NVL(u.apellido_materno, '') AS instructor,
     c.total_horas,
     (SELECT COUNT(*) FROM inscripcion i WHERE i.id_curso = c.id_curso) AS total_inscritos,
@@ -317,7 +326,7 @@ SELECT
     tc.horas_duracion AS horas_tema
 FROM curso c
 JOIN usuario u ON c.id_instructor = u.id_usuario
-JOIN tipo_curso tc_cat ON c.id_tipo_curso = tc_cat.id_tipo_curso -- Unión con el nuevo catálogo
+JOIN tipo_curso tc_cat ON c.id_tipo_curso = tc_cat.id_tipo_curso
 LEFT JOIN tema_curso tc ON c.id_curso = tc.id_curso;
 
 -- Vista con solo curso resumido
@@ -394,3 +403,21 @@ JOIN inscripcion ins ON con.id_inscripcion = ins.id_inscripcion
 JOIN usuario u ON ins.id_usuario = u.id_usuario
 JOIN curso c ON ins.id_curso = c.id_curso
 ORDER BY con.fecha_generacion DESC;
+
+-- INFORMACION PARA CONSTANCIA
+CREATE OR REPLACE VIEW v_alumnos_aprobados AS
+SELECT 
+    i.id_inscripcion,
+    i.id_usuario AS id_alumno,
+    u.nombre || ' ' || u.apellido_paterno || NVL2(u.apellido_materno, ' ' || u.apellido_materno, '') AS nombre_completo_alumno,
+    c.nombre AS nombre_curso,
+    c.total_horas,
+    c.fecha_inicio,
+    c.fecha_termino
+FROM 
+    inscripcion i
+    INNER JOIN usuario u ON i.id_usuario = u.id_usuario
+    INNER JOIN curso c ON i.id_curso = c.id_curso
+WHERE 
+    i.horas_completadas >= c.total_horas
+;

@@ -180,6 +180,62 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20061, 'Error al insertar usuario: ' || SQLERRM);
 END;
 /
+-- Insertar especificamente un instructor
+CREATE OR REPLACE PROCEDURE registrar_instructor (
+    p_num_empleado   IN usuario.numero_empleado%TYPE,
+    p_nombre         IN usuario.nombre%TYPE,
+    p_ap_paterno     IN usuario.apellido_paterno%TYPE,
+    p_ap_materno     IN usuario.apellido_materno%TYPE,
+    p_correo         IN usuario.correo%TYPE,
+    p_password       IN instructor.password_acceso%TYPE
+) IS
+    v_id_usuario   usuario.id_usuario%TYPE;
+    v_nombre_exist usuario.nombre%TYPE;
+    v_ap_p_exist   usuario.apellido_paterno%TYPE;
+    v_ap_m_exist   usuario.apellido_materno%TYPE;
+BEGIN
+    -- Registrar al usuario base o validar si ya existe
+    BEGIN
+        INSERT INTO usuario (numero_empleado, nombre, apellido_paterno, apellido_materno, correo, nivel_acceso)
+        VALUES (p_num_empleado, p_nombre, p_ap_paterno, p_ap_materno, p_correo, 0)
+        RETURNING id_usuario INTO v_id_usuario;
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+            -- Si el número de empleado ya existe, recuperamos sus datos actuales
+            SELECT id_usuario, nombre, apellido_paterno, apellido_materno 
+            INTO v_id_usuario, v_nombre_exist, v_ap_p_exist, v_ap_m_exist
+            FROM usuario WHERE numero_empleado = p_num_empleado;
+
+            -- Validamos que los datos coincidan
+            IF UPPER(v_nombre_exist) <> UPPER(p_nombre) OR 
+               UPPER(v_ap_p_exist)   <> UPPER(p_ap_paterno) OR 
+               UPPER(NVL(v_ap_m_exist, ' ')) <> UPPER(NVL(p_ap_materno, ' ')) THEN
+                RAISE_APPLICATION_ERROR(-20030, 'Error: Datos incoherentes para el número de empleado ' || p_num_empleado);
+            END IF;
+    END;
+
+    -- Registrar o validar el rol en la tabla Instructor
+    BEGIN
+        INSERT INTO instructor (id_usuario, password_acceso)
+        VALUES (v_id_usuario, p_password);
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+            RAISE_APPLICATION_ERROR(-20050, 'El usuario con número de empleado ' || p_num_empleado || ' ya está registrado como instructor.');
+    END;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        IF SQLCODE BETWEEN -20999 AND -20000 THEN
+            RAISE;
+        ELSE
+            RAISE_APPLICATION_ERROR(-20051, 'Error crítico al registrar instructor: ' || SQLERRM);
+        END IF;
+END;
+/
+
 -- UPDATE
 CREATE OR REPLACE PROCEDURE actualizar_usuario (
     p_id_usuario     IN usuario.id_usuario%TYPE,
@@ -216,6 +272,30 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20061, 'Error inesperado al actualizar usuario: ' || SQLERRM);
 END;
 /
+
+--UPDATE el estado de un usuario
+CREATE OR REPLACE PROCEDURE actualizar_u_estado (
+    p_id_usuario     IN usuario.id_usuario%TYPE,
+    p_estado_usuario   IN usuario.estado_usuario%TYPE
+) IS
+BEGIN
+    UPDATE usuario 
+    SET estado_usuario = p_estado_usuario
+    WHERE id_usuario = p_id_usuario;
+    
+    -- Si no se encontró el ID del usuario
+    IF SQL%NOTFOUND THEN
+        RAISE_APPLICATION_ERROR(-20062, 'Error: No se encontró el usuario con ID ' || p_id_usuario);
+    END IF;
+
+    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20061, 'Error inesperado al actualizar usuario: ' || SQLERRM);
+END;
+/
+
 -- DELETE
 CREATE OR REPLACE PROCEDURE eliminar_usuario (
     p_id_usuario IN usuario.id_usuario%TYPE
@@ -564,6 +644,7 @@ EXCEPTION
 END alta_curso;
 /
 -- UPDATE
+-- (solo el curso)
 CREATE OR REPLACE PROCEDURE actualizar_curso (
     p_id_curso     IN curso.id_curso%TYPE,
     p_nombre       IN curso.nombre%TYPE,
@@ -602,6 +683,77 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20111, 'Error al actualizar el curso: ' || SQLERRM);
 END;
 /
+-- ACTUALIZAR TODO EL CURSO INCLUYENDO TEMAS
+-- Dato personalizado (Objeto) para el Tema
+CREATE OR REPLACE TYPE t_tema_objeto AS OBJECT (
+    titulo_tema    VARCHAR2(100),
+    horas_duracion NUMBER
+);
+/
+
+-- Tabla/colección basada en ese objeto para recibir la lista
+CREATE OR REPLACE TYPE t_lista_temas AS TABLE OF t_tema_objeto;
+/
+
+-- PROCEDIMIENTO PRINCIPAL DE ACTUALIZACIÓN
+CREATE OR REPLACE PROCEDURE actualizar_curso_y_temas (
+    p_id_curso        IN curso.id_curso%TYPE,
+    p_nombre          IN curso.nombre%TYPE,
+    p_cupo_maximo     IN curso.cupo_maximo%TYPE,
+    p_anio            IN curso.anio%TYPE,
+    p_periodo         IN curso.periodo%TYPE,
+    p_id_tipo_curso   IN curso.id_tipo_curso%TYPE,
+    p_fecha_inicio    IN curso.fecha_inicio%TYPE,
+    p_fecha_termino   IN curso.fecha_termino%TYPE,
+    p_dias_semana     IN curso.dias_semana%TYPE,
+    p_horario         IN curso.horario%TYPE,
+    p_id_instructor   IN curso.id_instructor%TYPE,
+    p_nuevos_temas    IN t_lista_temas
+) IS
+    v_total_horas     NUMBER := 0;
+BEGIN
+    -- Calcular el nuevo total de horas sumando los elementos de la colección
+    FOR i IN 1..p_nuevos_temas.COUNT LOOP
+        v_total_horas := v_total_horas + p_nuevos_temas(i).horas_duracion;
+    END LOOP;
+
+    -- Actualizar los datos principales de la tabla Curso
+    UPDATE curso 
+    SET nombre         = p_nombre,
+        cupo_maximo    = p_cupo_maximo,
+        anio           = p_anio,
+        periodo        = p_periodo,
+        id_tipo_curso  = p_id_tipo_curso,
+	fecha_inicio   = p_fecha_inicio,
+        fecha_termino  = p_fecha_termino,
+        dias_semana    = p_dias_semana,
+        horario        = p_horario,
+        id_instructor  = p_id_instructor,
+        total_horas    = v_total_horas,   
+        duracion       = v_total_horas
+    WHERE id_curso = p_id_curso;
+
+    -- Si el curso no existe, lanzamos error
+    IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20040, 'Error: El curso con ID ' || p_id_curso || ' no existe.');
+    END IF;
+
+    DELETE FROM tema_curso WHERE id_curso = p_id_curso;
+
+    FOR i IN 1..p_nuevos_temas.COUNT LOOP
+        INSERT INTO tema_curso (id_curso, titulo_tema, horas_duracion)
+        VALUES (p_id_curso, p_nuevos_temas(i).titulo_tema, p_nuevos_temas(i).horas_duracion);
+    END LOOP;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20041, 'Error crítico en la actualización del curso: ' || SQLERRM);
+END;
+/
+
 -- DELETE
 CREATE OR REPLACE PROCEDURE eliminar_curso (
     p_id_curso IN curso.id_curso%TYPE
@@ -898,12 +1050,12 @@ CREATE OR REPLACE PROCEDURE registrar_horas_inscripcion (
     v_horas_totales_curso NUMBER;
     v_id_curso            inscripcion.id_curso%TYPE;
 BEGIN
-    -- 1. Obtenemos el ID del curso vinculado a esa inscripción
+    -- 1. Obtenemos el ID del curso
     SELECT id_curso INTO v_id_curso 
     FROM inscripcion 
     WHERE id_inscripcion = p_id_inscripcion;
 
-    -- 2. Calculamos la duración total del curso sumando sus temas
+    -- 2. Calculamos la duración total del curso
     SELECT SUM(horas_duracion) INTO v_horas_totales_curso
     FROM tema_curso
     WHERE id_curso = v_id_curso;
@@ -914,7 +1066,7 @@ BEGIN
                                 ' horas porque el curso solo dura ' || v_horas_totales_curso || ' horas.');
     END IF;
 
-    -- 4. Si todo está bien, actualizamos las horas completadas
+    -- 4. Actualizamos las horas completadas
     UPDATE inscripcion 
     SET horas_completadas = p_horas_nuevas
     WHERE id_inscripcion = p_id_inscripcion;

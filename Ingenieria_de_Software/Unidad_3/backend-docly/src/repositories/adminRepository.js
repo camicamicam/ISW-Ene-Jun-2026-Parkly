@@ -163,10 +163,44 @@ async function cambiarEstadoInstructor(idInstructor, nuevoEstado) {
     }
 }
 
+
+async function editarInstructor(idInstructor, datos) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        const query = `
+            BEGIN
+                actualizar_usuario(:p_id_usuario, :p_num_empleado, :p_nombre, :p_ap_paterno, :p_ap_materno, :p_correo, :p_nivel_acceso);
+            END;
+        `;
+
+        const bindVars = {
+            p_id_usuario: parseInt(idInstructor),
+            p_num_empleado: datos.numero_empleado,
+            p_nombre: datos.nombre,
+            p_ap_paterno: datos.apellido_paterno,
+            p_ap_materno: datos.apellido_materno || "",
+            p_correo: datos.correo,
+            p_nivel_acceso: datos.nivel_acceso
+        };
+        await connection.execute(query, bindVars, { autoCommit: true });
+        return { mensaje: 'Datos del instructor actualizados correctamente.'};
+    } catch (error) {
+        if(error.message.includes('-20040')) throw new Error('NO_EXISTE');
+        if(error.message.includes('-20050')) throw new Error('NUMERO_EMPLEADO_DUPLICADO');
+        throw new Error("Error al actualizar el instructor." + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
 module.exports = { 
     guardarInstructor, 
     editarCurso, 
     eliminarCurso,
     obtenerInstructores,
-    cambiarEstadoInstructor
+    cambiarEstadoInstructor,
+    editarInstructor
 };

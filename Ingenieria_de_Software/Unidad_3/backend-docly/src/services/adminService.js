@@ -29,10 +29,18 @@ async function actualizarEstadoInstructor(idInstructor, estado) {
     return await adminRepository.cambiarEstadoInstructor(idInstructor, estado);
 }
 
+async function editarInstructor(idInstructor, datos) {
+    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo || datos.nivel_acceso === undefined || datos.nivel_acceso === null) {
+        throw new Error("FALTAN_DATOS");
+    }
+    return await adminRepository.editarInstructor(idInstructor, datos);
+}
+
 module.exports = { 
     crearInstructor, 
     modificarCurso, 
     removerCurso, 
     listarInstructores, 
-    actualizarEstadoInstructor 
+    actualizarEstadoInstructor,
+    editarInstructor 
 };

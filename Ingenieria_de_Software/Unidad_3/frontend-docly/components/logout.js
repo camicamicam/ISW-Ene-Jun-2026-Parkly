@@ -13,7 +13,15 @@ export function logoutButton(tipoModulo) {
                     localStorage.removeItem(`usuario_${tipoModulo}`);
                     localStorage.removeItem("token");
                     localStorage.removeItem("usuario");
-                    navigate(`/login?tipo=${tipoModulo}`);
+
+                    localStorage.removeItem("token_admin");
+                    localStorage.removeItem("usuario_admin");
+
+                    if(tipoModulo == "admin"){
+                        navigate(`/login?tipo=instructor`);
+                    }else{
+                        navigate(`/login?tipo=${tipoModulo}`);
+                    }
                 });
                 btn.dataset.initialized = "true";
             }

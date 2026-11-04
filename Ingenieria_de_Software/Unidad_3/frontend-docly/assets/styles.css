@@ -655,3 +655,17 @@ select {
     padding: 3px 1px;
     width: 100%;
 }
+
+/*================TABLA DE INSTRUCTORES ====================*/
+
+.claves{
+    padding: 12px 15px;
+    -webkit-text-security: disc;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.claves:hover{
+    -webkit-text-security: none;
+    background-color: #f8f9fa;
+}

@@ -134,7 +134,7 @@ export function loginPage() {
 
                     // GUARDADO 100% AISLADO (Ya no pisa los demás módulos)
                     localStorage.setItem(`token_${tipoEnClick}`, data.token);
-                    localStorage.setItem("token_admin", data.token); // Respaldo global permanente para el admin
+                    //localStorage.setItem("token_admin", data.token); // Respaldo global permanente para el admin
 
                     const usuarioParaGuardar = {
                         numero_empleado: data.numero_empleado,
@@ -146,7 +146,12 @@ export function loginPage() {
                         tipoAcceso: tipoEnClick
                     };
                     localStorage.setItem(`usuario_${tipoEnClick}`, JSON.stringify(usuarioParaGuardar));
-                    localStorage.setItem("usuario_admin", JSON.stringify(usuarioParaGuardar)); // Respaldo global de usuario admin
+                    //localStorage.setItem("usuario_admin", JSON.stringify(usuarioParaGuardar)); // Respaldo global de usuario admin
+
+                    if (userRole.includes("administrador")) {
+                        localStorage.setItem("token_admin", data.token);
+                        localStorage.setItem("usuario_admin", JSON.stringify(usuarioParaGuardar));
+                    }
 
                     mostrarMensaje("¡Éxito! Redirigiendo...", false);
 

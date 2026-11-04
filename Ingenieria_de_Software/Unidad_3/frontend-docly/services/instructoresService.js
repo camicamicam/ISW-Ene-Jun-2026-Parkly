@@ -72,5 +72,29 @@ export const instructoresService = {
             console.error("Error en actualizarEstadoInstructor:", err);
             throw err;
         }
+    },
+
+    async actualizarInstructor(idInstructor, datosInstructor){
+        try{
+            const token = localStorage.getItem("token_admin");
+            const respuesta = await fetch(`${BASE_URL}/admin/instructores/${idInstructor}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(datosInstructor)
+            });
+
+            if(!respuesta.ok){
+                const errorData = await respuesta.json().catch(() => ({}));
+                throw new Error(errorData.mensaje || "Error al actualizar el instructor.");
+            }
+
+            return await respuesta.json();            
+        }catch (err){
+            console.error("Error en actualizarInstructor:", err);
+            throw err;
+        }
     }
 };

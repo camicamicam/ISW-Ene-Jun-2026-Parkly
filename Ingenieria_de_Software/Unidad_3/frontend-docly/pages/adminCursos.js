@@ -66,6 +66,7 @@ export async function adminCursosPage(tipoCurso = null) {
         try {
             Loader.show();
             const respuesta = await instructoresService.listarInstructores();
+            console.log("=== JSON DE INSTRUCTORES RECIBIDO ===", respuesta);
             instructoresLocales = respuesta.datos || respuesta || [];
         } catch (err) {
             console.error("No se pudieron cargar los instructores", err);
@@ -108,6 +109,47 @@ function renderizarInterfazGlobal() {
                         "consultar": renderizarSeccionConsulta()
                     }[vistaActualAdmin] || "<div>Vista no válida</div>"
                 }
+            </div>
+        </div>
+
+        <!-- FORMULARIO DE EDICION DE INSTRUCTOR -->
+        <div id="modal-editar-instructor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); box-sizing: border-box;">
+                <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 20px;">Editar Instructor</h3>
+                
+                <form id="form-editar-instructor">
+                    <input type="hidden" id="edit-id-instructor">
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">N° Empleado</label>
+                        <input type="text" id="edit-numero-empleado" required style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">Nombre</label>
+                        <input type="text" id="edit-nombre" required style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">Apellido Paterno</label>
+                        <input type="text" id="edit-paterno" required style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">Apellido Materno</label>
+                        <input type="text" id="edit-materno" style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">Correo Electrónico</label>
+                        <input type="email" id="edit-correo" required style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" id="btn-cancelar-edicion" style="padding: 8px 15px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+                        <button type="submit" style="padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     `;
@@ -292,7 +334,7 @@ function renderizarSeccionConsulta(){
 
             <!-- BARRA DE BÚSQUEDA Y FILTROS -->
             <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                <div style="flex: 3; min-width: 250px; position: relative;">
+                <div style="flex: 1 1 250px; min-width: 0; position: relative;">
                     <input type="text" id="input-buscar-instructor" placeholder="Buscar por nombre o apellidos..." 
                             style="width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none;">
                 </div>
@@ -314,6 +356,7 @@ function renderizarSeccionConsulta(){
                             <th style="padding: 12px 15px;">N° Empleado</th>
                             <th style="padding: 12px 15px;">Nombre Completo</th>
                             <th style="padding: 12px 15px;">Correo Electrónico</th>
+                            <th style="padding: 12px 15px;">Clave</th>
                             <th style="padding: 12px 15px; text-align: center;">Estado</th>
                             <th style="padding: 12px 15px; text-align: center;">Acción</th>
                         </tr>
@@ -325,22 +368,32 @@ function renderizarSeccionConsulta(){
                                 <td colspan="5" style="text-align: center; padding: 25px; color: #7f8c8d;">No hay instructores registrados.</td>
                             </tr>
                         ` : instructoresLocales.map(inst => {
-                            const activo = inst.ESTADO === 1 || inst.estado === 1 || inst.ESTADO === true || inst.estado === true;
-                            const nombreCompleto = inst.NOMBRE_COMPLETO || `${inst.NOMBRE || inst.nombre || ''} ${inst.APELLIDO_PATERNO || inst.apellido_paterno || ''} ${inst.APELLIDO_MATERNO || inst.apellido_materno || ''}`.trim();
+                            const activo = inst.ESTADO_USUARIO === 1 ;
+                            const nombreCompleto = `${inst.NOMBRE_INSTRUCTOR} ${inst.APELLIDO_P_INSTRUCTOR} ${inst.APELLIDO_M_INSTRUCTOR}`.trim();
                             
                             return `
                                 <tr class="fila-instructor" data-nombre="${nombreCompleto.toLowerCase()}" data-estado="${activo ? 'activo' : 'inactivo'}" style="border-bottom: 1px solid #eee;">
                                     <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">${inst.NUMERO_EMPLEADO || inst.numero_empleado}</td>
                                     <td style="padding: 12px 15px;">${nombreCompleto}</td>
                                     <td style="padding: 12px 15px; color: #555;">${inst.CORREO || inst.correo}</td>
+                                    <td class="claves" data-pass="${inst.password_acceso || inst.PASSWORD_ACCESO}">${inst.password_acceso || inst.PASSWORD_ACCESO}</td>
                                     <td style="padding: 12px 15px; text-align: center;">
                                         <span style="background: ${activo ? '#d4edda' : '#f8d7da'}; color: ${activo ? '#155724' : '#721c24'}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
                                             ${activo ? 'Activo' : 'Inactivo'}
                                         </span>
                                     </td>
                                     <td style="padding: 12px 15px; text-align: center;">
+                                        <!-- BOTON EDITAR -->
+                                        <button type="button" class="btn-editar" 
+                                            data-id="${inst.ID_USUARIO}" 
+                                            style="padding: 5px 8px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-bottom: 4px;"
+                                            title="Editar instructor">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+
+                                        <!-- BOTON ACTIVAR/DESACTIVAR -->
                                         <button type="button" class="btn-cambiar-estado" 
-                                            data-id="${inst.ID_INSTRUCTOR || inst.id_instructor || inst.ID || inst.id}" 
+                                            data-id="${inst.ID_USUARIO}" 
                                             data-estado="${activo ? 0 : 1}"
                                             style="padding: 6px 12px; background: ${activo ? '#e74c3c' : '#27ae60'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
                                             ${activo ? 'Desactivar' : 'Activar'}
@@ -411,6 +464,20 @@ function setupAdminEvents() {
             }
         }
 
+        //COPIAR CLAVE EN CONSULTA DE INSTRUCTORES
+
+        if (e.target.classList.contains("claves")) {
+            // Obtenemos el valor oculto en el atributo data-pass de esa celda específica
+            const password = e.target.dataset.pass;
+
+            if (password) {
+                navigator.clipboard.writeText(password);
+                alert("¡Contraseña copiada al portapapeles!");
+            } else {
+                alert("No hay una contraseña disponible para copiar.");
+            }
+        }
+
         //CAMBIAR ESTADO DE INSTRUCTORES
 
         if (e.target.classList.contains("btn-cambiar-estado")) {
@@ -475,9 +542,38 @@ function setupAdminEvents() {
                 actualizarSeccionTemasUI();
             } else { alert("El curso debe tener al menos un tema."); }
         }
+
+        const btnEditar = e.target.closest(".btn-editar");
+        if (btnEditar) {
+            const idInstructor = btnEditar.getAttribute("data-id");
+            console.log("ID DEL INSTRUCTOR", idInstructor)
+            
+            //Buscamos el instructor
+            const instructor = instructoresLocales.find(inst => 
+                String(inst.ID_USUARIO) === String(idInstructor)
+            );
+
+            if (instructor) {
+                //Rellenamos el formulario con los datos actuales
+                document.getElementById("edit-id-instructor").value = idInstructor;
+                document.getElementById("edit-numero-empleado").value = instructor.NUMERO_EMPLEADO;
+                document.getElementById("edit-nombre").value = instructor.NOMBRE_INSTRUCTOR;
+                document.getElementById("edit-paterno").value = instructor.APELLIDO_P_INSTRUCTOR;
+                document.getElementById("edit-materno").value = instructor.APELLIDO_M_INSTRUCTOR;
+                document.getElementById("edit-correo").value = instructor.CORREO;
+
+                //Mostramos el formulario
+                document.getElementById("modal-editar-instructor").style.display = "flex";
+            }
+        }
+
+        //Botón para cerrar/cancelar el modal
+        if (e.target && e.target.id === "btn-cancelar-edicion") {
+            document.getElementById("modal-editar-instructor").style.display = "none";
+        }
     });
 
-    // CAPTURA DE SUBMITS DE AMBOS FORMULARIOS
+    //CAPTURA DE SUBMITS DE LOS FORMULARIOS
     mainContent.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -553,6 +649,50 @@ function setupAdminEvents() {
             } finally {
                 Loader.hide();
             }
+        }
+
+        //SUBMIT 3: EDITAR INSTRUCTOR
+
+        if(e.target && e.target.id === "form-editar-instructor"){
+            e.preventDefault();
+
+            const idInstructor = document.getElementById("edit-id-instructor").value;
+
+            //Objeto con la estructura del backend
+            const datosActualizados = {
+                numero_empleado: document.getElementById("edit-numero-empleado").value.trim(),
+                nombre: document.getElementById("edit-nombre").value.trim(),
+                apellido_paterno: document.getElementById("edit-paterno").value.trim(),
+                apellido_materno: document.getElementById("edit-materno").value.trim(),
+                correo: document.getElementById("edit-correo").value.trim(),
+                nivel_acceso: 0
+            }
+
+            try{
+                Loader.show();
+
+                await instructoresService.actualizarInstructor(idInstructor, datosActualizados);
+
+                //Ocultar el formulario
+                document.getElementById("modal-editar-instructor").style.display = "none";
+                alert(`¡Instructor ${datosActualizados.numero_empleado} actualizado con éxito!`);
+
+                // Recargamos la lista de instructores para ver los cambios reflejados en la tabla
+                const respuesta = await instructoresService.listarInstructores();
+                instructoresLocales = respuesta.datos || respuesta || [];
+
+                //Volver a renderizar la vista
+                const mainContent = document.getElementById("main-content");
+                if (mainContent) {
+                    mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
+                }
+            }catch (err) {
+                console.error("Error al actualizar instructor:", err);
+                alert("Hubo un error al guardar los cambios: " + err.message);
+            } finally {
+                Loader.hide();
+            }
+
         }
     });
 

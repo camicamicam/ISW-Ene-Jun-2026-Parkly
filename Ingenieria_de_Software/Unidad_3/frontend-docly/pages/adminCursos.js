@@ -260,17 +260,6 @@ function renderizarSeccionInstructores() {
                     <input type="email" id="inst-correo" placeholder="ejemplo@gmail.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
                 </div>
 
-                <div>
-                    <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Contraseña de Acceso</label>
-                    <div class="input-container">
-                        <input type="password" id="inst-password" placeholder="Haz clic en Generar" style="flex: 1; border: none; padding: 10px 0; outline: none; background: transparent;" required disabled>
-                        <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar contraseña"></i>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button type="button" id="btnGenerar" style="flex: 1; padding: 10px 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Generar</button>
-                        <button type="button" id="btnCopiar" style="flex: 1; padding: 10px 15px; background: #95a5a6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Copiar</button>
-                    </div>
-                </div>
                 <div style="margin-top: 10px; display: flex; justify-content: center;">
                     <button type="submit" style="padding: 12px 40px; background: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; width: 100%; max-width: 300px;">
                      Registrar Instructor
@@ -538,15 +527,15 @@ function setupAdminEvents() {
                 apellido_paterno: document.getElementById("inst-paterno").value.trim(),
                 apellido_materno: document.getElementById("inst-materno").value.trim(),
                 correo: document.getElementById("inst-correo").value.trim(),
-                password_acceso: document.getElementById("inst-password").value
+                //password_acceso: document.getElementById("inst-password").value
             };
 
             console.log("=> Enviando datos para alta de Instructor (POST):", bodyInstructor);
 
             try {
                 Loader.show();
-                await instructoresService.registrarInstructor(bodyInstructor);
-                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema!`);
+                const resp = await instructoresService.registrarInstructor(bodyInstructor);
+                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema!\n\nContraseña generada: ${resp.password_generada}\n\nAnótala antes de cerrar este mensaje.`);                
                 e.target.reset();
             } catch (err) {
                 alert("Error al registrar instructor: " + err.message);

@@ -6,7 +6,8 @@ async function registrarInstructor(req, res) {
         console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre}.`);
         res.status(201).json({ 
             status: 'Éxito', 
-            mensaje: resultado.mensaje 
+            mensaje: resultado.mensaje,
+            password_generada: resultado.password_generada 
         });
     } catch (error) {
         if (error.message === "FALTAN_DATOS") {

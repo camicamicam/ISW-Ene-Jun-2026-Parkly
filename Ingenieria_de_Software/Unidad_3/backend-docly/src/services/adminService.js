@@ -1,10 +1,22 @@
+const crypto = require('crypto');
 const adminRepository = require('../repositories/adminRepository');
+const CARACTERES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+
+function generarPasswordAleatoria(longitud = 12) {
+    let password = "";
+    for (let i = 0; i < longitud; i++) {
+        password += CARACTERES[crypto.randomInt(CARACTERES.length)];
+    }
+    return password;
+}
 
 async function crearInstructor(datos) {
-    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo || !datos.password_acceso) {
+    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo) {
         throw new Error("FALTAN_DATOS");
     }
-    return await adminRepository.guardarInstructor(datos);
+    const password = generarPasswordAleatoria(12);
+    const resultado = await adminRepository.guardarInstructor({ ...datos, password_acceso: password });
+    return { ...resultado, password_generada: password };
 }
 
 async function modificarCurso(idCurso, curso, temas) {
@@ -42,5 +54,6 @@ module.exports = {
     removerCurso, 
     listarInstructores, 
     actualizarEstadoInstructor,
-    editarInstructor 
+    editarInstructor,
+    generarPasswordAleatoria
 };

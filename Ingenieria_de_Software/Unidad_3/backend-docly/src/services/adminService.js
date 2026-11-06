@@ -1,5 +1,6 @@
-const crypto = require('crypto');
 const adminRepository = require('../repositories/adminRepository');
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const CARACTERES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
 
 function generarPasswordAleatoria(longitud = 12) {
@@ -15,7 +16,9 @@ async function crearInstructor(datos) {
         throw new Error("FALTAN_DATOS");
     }
     const password = generarPasswordAleatoria(12);
-    const resultado = await adminRepository.guardarInstructor({ ...datos, password_acceso: password });
+    const passwordHash = await bcrypt.hash(password, 10);
+    datos.password_acceso = passwordHash;
+    const resultado = await adminRepository.guardarInstructor(datos);
     return { ...resultado, password_generada: password };
 }
 

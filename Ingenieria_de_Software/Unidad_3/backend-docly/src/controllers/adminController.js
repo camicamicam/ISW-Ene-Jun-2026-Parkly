@@ -3,7 +3,7 @@ const adminService = require('../services/adminService');
 async function registrarInstructor(req, res) {
     try {
         const resultado = await adminService.crearInstructor(req.body);
-        console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre}.`);
+        console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre_usuario}.`);
         res.status(201).json({ 
             status: 'Éxito', 
             mensaje: resultado.mensaje,

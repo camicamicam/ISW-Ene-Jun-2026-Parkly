@@ -35,6 +35,13 @@ async function removerCurso(idCurso) {
 
 async function listarInstructores() {
     return await adminRepository.obtenerInstructores();
+    /*
+    const instructores = await adminRepository.obtenerInstructores();
+    return instructores.map(instructor => {
+        const { password_acceso, ...datosSeguros } = instructor;
+        return datosSeguros;
+    });
+    */
 }
 
 async function actualizarEstadoInstructor(idInstructor, estado) {
@@ -48,7 +55,17 @@ async function editarInstructor(idInstructor, datos) {
     if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo || datos.nivel_acceso === undefined || datos.nivel_acceso === null) {
         throw new Error("FALTAN_DATOS");
     }
-    return await adminRepository.editarInstructor(idInstructor, datos);
+    let nuevaPasswordPlana = null;
+    if (datos.regenerar_password === true) {
+        nuevaPasswordPlana = generarPasswordAleatoria(12);
+        const nuevaPasswordHash = await bcrypt.hash(nuevaPasswordPlana, 10);
+        datos.password_acceso = nuevaPasswordHash;
+    }
+    const resultado = await adminRepository.editarInstructor(idInstructor, datos);
+    if (nuevaPasswordPlana) {
+        resultado.password_generada = nuevaPasswordPlana;
+    }
+    return resultado;
 }
 
 module.exports = { 

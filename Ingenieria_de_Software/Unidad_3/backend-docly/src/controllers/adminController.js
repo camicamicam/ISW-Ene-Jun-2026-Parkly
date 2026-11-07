@@ -3,7 +3,8 @@ const adminService = require('../services/adminService');
 async function registrarInstructor(req, res) {
     try {
         const resultado = await adminService.crearInstructor(req.body);
-        console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre_usuario}.`);
+        //console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre_usuario}.`);
+        console.log(`Instructor ${req.body.nombre} registrado exitosamente por el administrador ${req.usuario.nombre}.`);
         res.status(201).json({ 
             status: 'Éxito', 
             mensaje: resultado.mensaje,
@@ -108,13 +109,23 @@ async function editarInstructor(req, res) {
         const { idInstructor } = req.params;
         const datos = req.body;
         const resultado = await adminService.editarInstructor(idInstructor, datos);
-        console.log(`Datos del instructor ID ${idInstructor} actualizados por el admin ${req.usuario.nombre_usuario || 'Administrador'}.`);
-        res.status(200).json({ 
-            status: 'Éxito', 
-            mensaje: resultado.mensaje 
-        });
+        //console.log("Contenido de req.usuario:", req.usuario);
+        //console.log(`Datos del instructor ID ${idInstructor} actualizados por el admin ${req.usuario.nombre_usuario || 'Administrador'}.`);
+        console.log(`Datos del instructor ID ${idInstructor} actualizados por el admin ${req.usuario.nombre || 'Administrador'}.`);
+        const respuesta = {
+            status: 'Éxito',
+            mensaje: resultado.mensaje,
+            password_generada: resultado.password_generada || null
+        };
+        if (resultado.nueva_password_generada) {
+            respuesta.nueva_password = resultado.nueva_password_generada;
+        }
+        res.status(200).json(respuesta);
     } catch (error) {
         console.error(error);
+        if (error.message === "FALTAN_DATOS") {
+            return res.status(400).json({ mensaje: 'Todos los campos del instructor son obligatorios.' });
+        }
         res.status(500).json({ mensaje: 'Error al actualizar los datos del instructor.' });
     }
 }

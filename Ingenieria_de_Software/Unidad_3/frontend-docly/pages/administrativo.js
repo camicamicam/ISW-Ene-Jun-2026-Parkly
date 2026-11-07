@@ -163,7 +163,7 @@ export function administrativoPage() {
                                 <div class="form-group"><label>Ap. Paterno</label><input type="text" id="paternoA" required></div>
                                 <div class="form-group"><label>Ap. Materno</label><input type="text" id="maternoA" required></div>
                             </div>
-                            <div class="form-group"><label>Correo Institucional</label><input type="email" id="correoA" required></div>
+                            <div class="form-group"><label>Correo</label><input type="email" id="correoA" required></div>
                             <div class="form-group">
                                 <label>Departamento</label>
                                 <select id="deptoSelectA" required>

@@ -169,7 +169,7 @@ export function docentePage() {
                                 <div class="form-group"><label>Ap. Paterno</label><input type="text" id="paternoD" required></div>
                                 <div class="form-group"><label>Ap. Materno</label><input type="text" id="maternoD" required></div>
                             </div>
-                            <div class="form-group"><label>Correo Institucional</label><input type="email" id="correoD" required></div>
+                            <div class="form-group"><label>Correo</label><input type="email" id="correoD" required></div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                                 <div class="form-group">
                                     <label>Plaza</label>

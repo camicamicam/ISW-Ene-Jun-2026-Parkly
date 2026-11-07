@@ -10,6 +10,7 @@ let cursoSeleccionado = null;
 let temasEditados = []; 
 let tipoCursoActual = "Profesional"; 
 let vistaActualAdmin = "cursos"; // <-- "cursos" o "instructores"
+let resetearPasswordFlag = false;
 
 function generarPassword(longitud = 12){
     const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
@@ -91,7 +92,7 @@ function renderizarInterfazGlobal() {
 
             <div style="width: 100%; max-width: 900px; display: flex; background: white; border-radius: 8px; padding: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); gap: 10px;">
                 <button id="tab-vistas-cursos" style="flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; background: ${vistaActualAdmin === 'cursos' ? '#2c3e50' : 'transparent'}; color: ${vistaActualAdmin === 'cursos' ? 'white' : '#7f8c8d'};">
-                    Gestionar Cursos (${tipoCursoActual}es)
+                    Gestionar Cursos (${tipoCursoActual})
                 </button>
                 <button id="tab-vistas-instructores" style="flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; background: ${vistaActualAdmin === 'instructores' ? '#2c3e50' : 'transparent'}; color: ${vistaActualAdmin === 'instructores' ? 'white' : '#7f8c8d'};">
                     Registrar Instructor
@@ -145,9 +146,14 @@ function renderizarInterfazGlobal() {
                         <input type="email" id="edit-correo" required style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
                     </div>
 
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">Solicitar Contraseña</label>
+                        <button type="button" id="btn-new-password" style="padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Solicitar</button>
+                    </div>
+
                     <div style="display: flex; justify-content: flex-end; gap: 10px;">
                         <button type="button" id="btn-cancelar-edicion" style="padding: 8px 15px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
-                        <button type="submit" style="padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar Cambios</button>
+                        <button type="submit" style="padding: 8px 15px; background: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar Cambios</button>
                     </div>
                 </form>
             </div>
@@ -302,17 +308,6 @@ function renderizarSeccionInstructores() {
                     <input type="email" id="inst-correo" placeholder="ejemplo@gmail.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
                 </div>
 
-                <div>
-                    <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Contraseña de Acceso</label>
-                    <div class="input-container">
-                        <input type="password" id="inst-password" placeholder="Haz clic en Generar" style="flex: 1; border: none; padding: 10px 0; outline: none; background: transparent;" required disabled>
-                        <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar contraseña"></i>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button type="button" id="btnGenerar" style="flex: 1; padding: 10px 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Generar</button>
-                        <button type="button" id="btnCopiar" style="flex: 1; padding: 10px 15px; background: #95a5a6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Copiar</button>
-                    </div>
-                </div>
                 <div style="margin-top: 10px; display: flex; justify-content: center;">
                     <button type="submit" style="padding: 12px 40px; background: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; width: 100%; max-width: 300px;">
                      Registrar Instructor
@@ -328,7 +323,7 @@ function renderizarSeccionConsulta(){
         <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 8px solid #2c3e50; width: 100%; box-sizing: border-box;">
 
             <div style="text-align: center; margin-bottom: 25px;">
-                <h2 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 24px;">Directorio de Instructores</h2>
+                <h2 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 24px;">Lista de Instructores</h2>
                 <p style="color: #7f8c8d; margin: 0; font-size: 14px;">Consulta y gestiona los instructores registrados en la plataforma.</p>
             </div>
 
@@ -356,7 +351,7 @@ function renderizarSeccionConsulta(){
                             <th style="padding: 12px 15px;">N° Empleado</th>
                             <th style="padding: 12px 15px;">Nombre Completo</th>
                             <th style="padding: 12px 15px;">Correo Electrónico</th>
-                            <th style="padding: 12px 15px;">Clave</th>
+                            <!--<th style="padding: 12px 15px;">Clave</th>-->
                             <th style="padding: 12px 15px; text-align: center;">Estado</th>
                             <th style="padding: 12px 15px; text-align: center;">Acción</th>
                         </tr>
@@ -376,7 +371,7 @@ function renderizarSeccionConsulta(){
                                     <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">${inst.NUMERO_EMPLEADO || inst.numero_empleado}</td>
                                     <td style="padding: 12px 15px;">${nombreCompleto}</td>
                                     <td style="padding: 12px 15px; color: #555;">${inst.CORREO || inst.correo}</td>
-                                    <td class="claves" data-pass="${inst.password_acceso || inst.PASSWORD_ACCESO}">${inst.password_acceso || inst.PASSWORD_ACCESO}</td>
+                                    <!--<td class="claves" data-pass="${inst.password_acceso || inst.PASSWORD_ACCESO}">${inst.password_acceso || inst.PASSWORD_ACCESO}</td>-->
                                     <td style="padding: 12px 15px; text-align: center;">
                                         <span style="background: ${activo ? '#d4edda' : '#f8d7da'}; color: ${activo ? '#155724' : '#721c24'}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
                                             ${activo ? 'Activo' : 'Inactivo'}
@@ -543,10 +538,19 @@ function setupAdminEvents() {
             } else { alert("El curso debe tener al menos un tema."); }
         }
 
+        // SOLICITAR NUEVA CONTRASEÑA EN EDICIÓN
+        if (e.target.id === "btn-new-password") {
+            resetearPasswordFlag = true;
+            e.target.innerText = "¡Contraseña lista para restablecer!";
+            e.target.style.background = "#27ae60";
+            alert("Se ha marcado la opción para generar una nueva contraseña. Haz clic en 'Guardar Cambios' para aplicar el cambio y obtenerla.");
+        }
+
         const btnEditar = e.target.closest(".btn-editar");
         if (btnEditar) {
             const idInstructor = btnEditar.getAttribute("data-id");
-            console.log("ID DEL INSTRUCTOR", idInstructor)
+            resetearPasswordFlag = false;
+            //console.log("ID DEL INSTRUCTOR", idInstructor)
             
             //Buscamos el instructor
             const instructor = instructoresLocales.find(inst => 
@@ -633,16 +637,18 @@ function setupAdminEvents() {
                 nombre: document.getElementById("inst-nombre").value.trim(),
                 apellido_paterno: document.getElementById("inst-paterno").value.trim(),
                 apellido_materno: document.getElementById("inst-materno").value.trim(),
-                correo: document.getElementById("inst-correo").value.trim(),
-                password_acceso: document.getElementById("inst-password").value
+                correo: document.getElementById("inst-correo").value.trim()
             };
 
             console.log("=> Enviando datos para alta de Instructor (POST):", bodyInstructor);
 
             try {
                 Loader.show();
-                await instructoresService.registrarInstructor(bodyInstructor);
-                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema!`);
+                const respuestaBackend = await instructoresService.registrarInstructor(bodyInstructor);
+                console.log("Respuesta de registro:", respuestaBackend);
+                const passwordGenerada = respuestaBackend.password_generada;
+                navigator.clipboard.writeText(passwordGenerada).catch(err => console.error("Error al copiar", err));
+                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema! CONTRASEÑA: ${passwordGenerada}\n\n(¡Copiada automáticamente al portapapeles!)`);
                 e.target.reset();
             } catch (err) {
                 alert("Error al registrar instructor: " + err.message);
@@ -665,17 +671,29 @@ function setupAdminEvents() {
                 apellido_paterno: document.getElementById("edit-paterno").value.trim(),
                 apellido_materno: document.getElementById("edit-materno").value.trim(),
                 correo: document.getElementById("edit-correo").value.trim(),
-                nivel_acceso: 0
+                nivel_acceso: 0,
+                regenerar_password: resetearPasswordFlag
             }
+
+            console.log("📤 JSON ENVIADO A EDITAR:", datosActualizados);
 
             try{
                 Loader.show();
 
-                await instructoresService.actualizarInstructor(idInstructor, datosActualizados);
+                const respuestaEdicion = await instructoresService.actualizarInstructor(idInstructor, datosActualizados);
+                console.log("=== RESPUESTA EDITAR INSTRUCTOR ===", respuestaEdicion);
 
                 //Ocultar el formulario
                 document.getElementById("modal-editar-instructor").style.display = "none";
-                alert(`¡Instructor ${datosActualizados.numero_empleado} actualizado con éxito!`);
+                if (resetearPasswordFlag && respuestaEdicion && (respuestaEdicion.password_generada)) {
+                    const nuevaClave = respuestaEdicion.password_generada;
+                    navigator.clipboard.writeText(nuevaClave).catch(err => console.error("Error al copiar", err));
+                    alert(`¡Instructor actualizado y contraseña restablecida con éxito!\n\nNUEVA CONTRASEÑA: ${nuevaClave}\n\n(¡Copiada automáticamente al portapapeles!)`);
+                } else {
+                    alert(`¡Instructor ${datosActualizados.numero_empleado} actualizado con éxito!`);
+                }
+
+                resetearPasswordFlag = false;
 
                 // Recargamos la lista de instructores para ver los cambios reflejados en la tabla
                 const respuesta = await instructoresService.listarInstructores();

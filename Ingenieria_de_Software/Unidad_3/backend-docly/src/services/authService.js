@@ -37,7 +37,7 @@ async function procesarLogin(password_acceso, rol_esperado) {
     const datosUsuario = {
         id: usuarioEncontrado.ID,
         rol: usuarioEncontrado.ROL,
-        nombre: usuarioEncontrado.NOMBRE_COMPLETO
+        nombre: usuarioEncontrado.NOMBRE_USUARIO
     };
 
     const token = jwt.sign(datosUsuario, "Mi_llave_secreta", { expiresIn: '2h' });

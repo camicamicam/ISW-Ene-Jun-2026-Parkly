@@ -15,7 +15,7 @@ async function guardarInstructor(datos) {
             p_num_empleado: datos.numero_empleado,
             p_nombre: datos.nombre,
             p_ap_paterno: datos.apellido_paterno,
-            p_ap_materno: datos.apellido_materno,
+            p_ap_materno: datos.apellido_materno || "",
             p_correo: datos.correo,
             p_password: datos.password_acceso
         };
@@ -170,7 +170,7 @@ async function editarInstructor(idInstructor, datos) {
         connection = await db.getConnection();
         const query = `
             BEGIN
-                actualizar_usuario(:p_id_usuario, :p_num_empleado, :p_nombre, :p_ap_paterno, :p_ap_materno, :p_correo, :p_nivel_acceso);
+                actualizar_instructor(:p_id_usuario, :p_num_empleado, :p_nombre, :p_ap_paterno, :p_ap_materno, :p_correo, :p_nivel_acceso, :p_password_acceso);
             END;
         `;
 
@@ -181,7 +181,8 @@ async function editarInstructor(idInstructor, datos) {
             p_ap_paterno: datos.apellido_paterno,
             p_ap_materno: datos.apellido_materno || "",
             p_correo: datos.correo,
-            p_nivel_acceso: datos.nivel_acceso
+            p_nivel_acceso: datos.nivel_acceso,
+            p_password_acceso: datos.password_acceso
         };
         await connection.execute(query, bindVars, { autoCommit: true });
         return { mensaje: 'Datos del instructor actualizados correctamente.'};

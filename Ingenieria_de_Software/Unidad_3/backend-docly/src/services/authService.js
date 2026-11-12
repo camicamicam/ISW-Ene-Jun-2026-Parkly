@@ -35,6 +35,7 @@ async function procesarLoginAdministrativo(correo, password_acceso, rol_esperado
         throw new Error("ROL_INCORRECTO");
     }*/
 
+    // 1. Verificamos que tenga permiso de entrar al portal
     if (portal === 'instructor' || portal === 'administrador' || portal === 'admin') {
         if (rol !== 'INSTRUCTOR' && rol !== 'ADMINISTRADOR') throw new Error("ROL_INCORRECTO");
     } else {
@@ -42,8 +43,19 @@ async function procesarLoginAdministrativo(correo, password_acceso, rol_esperado
     }
 
     if (!usuarioEncontrado.PASSWORD_ACCESO) throw new Error("CREDENCIAL_INVALIDA");
-    const passwordValido = await bcrypt.compare(password_acceso, usuarioEncontrado.PASSWORD_ACCESO);
-    if (!passwordValido) throw new Error("CREDENCIAL_INVALIDA");
+
+    // 2. Lógica mixta de validación de contraseñas
+    if (rol === 'INSTRUCTOR') {
+        // Los instructores usan bcrypt
+        const passwordValido = await bcrypt.compare(password_acceso, usuarioEncontrado.PASSWORD_ACCESO);
+        if (!passwordValido) throw new Error("CREDENCIAL_INVALIDA");
+        
+    } else if (rol === 'ADMINISTRADOR') {
+        // Los administradores validan en texto plano
+        if (password_acceso !== usuarioEncontrado.PASSWORD_ACCESO) {
+            throw new Error("CREDENCIAL_INVALIDA");
+        }
+    }
     
     return {
         id: usuarioEncontrado.ID,

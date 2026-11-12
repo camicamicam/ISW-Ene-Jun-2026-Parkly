@@ -1,4 +1,5 @@
 const cursoRepository = require("../repositories/cursoRepository");
+const emailService = require("./emailService");
 
 async function crearCurso(datosCurso, temas) {
 
@@ -118,11 +119,28 @@ async function listarMisCursos(idInstructor) {
     return cursosAgrupadosIndiv;
 }
 
+async function notificarInscripcion(datos) {
+    try {
+        const cursos = await listarCursos();
+        const curso = cursos.find(c => c.ID_CURSO === Number(datos.id_curso));
+        if (!curso) return;
+        await emailService.enviarConfirmacionInscripcion({
+            correo: datos.correo,
+            nombre: datos.nombre,
+            numero_empleado: datos.numero_empleado,
+            curso
+        });
+    } catch (error) {
+        console.error("No se pudo enviar el correo de confirmación:", error.message);
+    }
+}
+
 async function inscripcionDocente(datos) {
     if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.correo || !datos.id_departamento || !datos.id_plaza || !datos.id_curso) {
         throw new Error("FALTAN_DATOS");
     }
     await cursoRepository.inscribirDocente(datos);
+    await notificarInscripcion(datos);
     return { mensaje: `El docente ${datos.nombre} fue inscrito con éxito.` };
 }
 
@@ -131,6 +149,7 @@ async function inscripcionAdministrativo(datos) {
         throw new Error("FALTAN_DATOS");
     }
     await cursoRepository.inscribirAdministrativo(datos);
+    await notificarInscripcion(datos);
     return { mensaje: `El administrativo ${datos.nombre} fue inscrito con éxito.` };
 }
 

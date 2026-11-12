@@ -37,8 +37,7 @@ async function enviarConfirmacionInscripcion({ correo, nombre, numero_empleado, 
         ${temario ? `<h3>Temario</h3><ul>${temario}</ul>` : ''}
 
         <h3>Acceso a constancias</h3>
-        <p>Para consultar tus constancias, entra al portal de Constancias con la siguiente clave de acceso:</p>
-        <p><strong>${esc(numero_empleado)}</strong></p>
+        <p>Para consultar tus constancias, entra al portal de Constancias con tu clave de acceso.</p>
     `;
 
     const respuesta = await fetch('https://api.resend.com/emails', {

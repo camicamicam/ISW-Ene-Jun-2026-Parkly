@@ -1,15 +1,33 @@
 const BASE_URL = "https://api-cursos-itq.onrender.com";
 
 export const apiService = {
-    async login(password, tipoPortal) {
+    async login(credenciales, tipoPortal) {
         try {
-            const response = await fetch(`${BASE_URL}/api/v1/auth/login`, {
+
+            let endpoint = "/api/v1/auth/loginAdmin";
+            let bodyData = {};
+
+            if (tipoPortal === "constancia") {
+                // Docentes entran por número de empleado
+                endpoint = "/api/v1/auth/loginDoc";
+                bodyData = {
+                    numero_empleado: credenciales.numeroEmpleado,
+                    rol_esperado: "DOCENTE"
+                };
+            } else {
+                // Instructores entran por correo y contraseña
+                endpoint = "/api/v1/auth/loginAdmin";
+                bodyData = {
+                    correo: credenciales.correo,
+                    password_acceso: credenciales.password,
+                    rol_esperado: tipoPortal === "admin" ? "ADMINISTRADOR" : "INSTRUCTOR"
+                };
+            }
+
+            const response = await fetch(`${BASE_URL}${endpoint}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    password_acceso: password,
-                    rol_esperado: tipoPortal
-                })
+                body: JSON.stringify(bodyData)
             });
 
             const data = await response.json();

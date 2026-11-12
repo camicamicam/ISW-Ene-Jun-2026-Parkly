@@ -228,6 +228,14 @@ input {
     margin-bottom: 10px;
 }
 
+#numero_empleado{
+    border: none;
+    background-color: transparent;
+    outline: none;
+    padding: 3px 1px;
+    width: 100%;
+}
+
 #password{
     border: none;
     background-color: transparent;

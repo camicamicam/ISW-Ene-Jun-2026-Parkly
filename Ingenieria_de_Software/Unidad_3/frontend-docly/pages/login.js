@@ -36,7 +36,6 @@ export function loginPage() {
             const esAdmin = userRole.includes("administrador");
             const esInstructor = userRole.includes("instructor") || userRole.includes("docente");
 
-            // Redirección automática si ya hay sesión válida en ESTE módulo
             if (tipoActual === "admin" && esAdmin) {
                 setTimeout(() => navigate("/admin-cursos"), 0);
                 return `<div class="container"><p style="text-align:center; padding:50px;">Redirigiendo al panel de administración...</p></div>`;
@@ -67,7 +66,7 @@ export function loginPage() {
             nota: "La clave fue proporcionada en su correo de confirmación." 
         },
         admin: {
-            title: "Acceso Instructor", 
+            title: "Acceso Administrador", 
             redirect: "/admin-cursos",
             nota: "En caso de no contar con su contraseña, favor de pasar a <b>DDA</b> para solicitarla."
         }
@@ -79,9 +78,6 @@ export function loginPage() {
     if (!window.loginInitialized) {
         const ejecutarLogin = async () => {
             Loader.show();
-            const urlParams = new URLSearchParams(window.location.search);
-            const tipoEnClick = urlParams.get("tipo") || "instructor";
-            const pass = document.getElementById("password").value.trim();
             const errorElement = document.getElementById("mensaje-login");
 
             const mostrarMensaje = (texto, esError = true) => {
@@ -95,46 +91,48 @@ export function loginPage() {
             errorElement.style.display = "none";
             
             try {
-                const data = await apiService.login(pass, tipoEnClick);
+                const urlParams = new URLSearchParams(window.location.search);
+                const tipoEnClick = urlParams.get("tipo") || "instructor";
+                let credenciales = {};
 
+                if (tipoEnClick === "constancia") {
+                    const inputNumEmp = document.getElementById("numero_empleado");
+                    if (!inputNumEmp) throw new Error("No se encontró el campo de número de empleado.");
+                    credenciales.numeroEmpleado = inputNumEmp.value.trim();
+                } else {
+                    const inputCorreo = document.getElementById("login-correo");
+                    const inputPass = document.getElementById("password");
+                    if (!inputCorreo || !inputPass) throw new Error("Faltan campos en el formulario.");
+                    
+                    credenciales.correo = inputCorreo.value.trim();
+                    credenciales.password = inputPass.value.trim();
+                }
+
+                const data = await apiService.login(credenciales, tipoEnClick);
                 console.log("=== RESPUESTA LOGIN BACKEND ===", data);
 
-                if (data.token) {
+                if (data && data.token) {
                     const userRole = data.rol ? data.rol.toLowerCase() : "";
 
-                    if (userRole.includes("administrador")) {
-                        localStorage.setItem("token_admin", data.token);
-                        localStorage.setItem("usuario_admin", JSON.stringify({
-                            numero_empleado: data.numero_empleado,
-                            nombre: data.nombre,
-                            paterno: data.apellido_paterno,
-                            materno: data.apellido_materno,
-                            correo: data.correo,
-                            rol: data.rol,
-                            tipoAcceso: "admin"
-                        }));
-                    }
-
-                    // Validaciones estrictas por tipo de acceso antes de guardar
+                    // Validaciones estrictas por tipo de acceso
                     if (tipoEnClick === "admin" && !userRole.includes("administrador")) {
-                        mostrarMensaje("Acceso denegado: Esta clave no corresponde a un Administrador.", true);
+                        mostrarMensaje("Acceso denegado: Esta cuenta no corresponde a un Administrador.", true);
                         return;
                     }
                     if (tipoEnClick === "instructor" && !userRole.includes("instructor") && !userRole.includes("docente") && !userRole.includes("administrador")) {
-                        mostrarMensaje("Acceso denegado: Esta clave no pertenece a un Instructor.", true);
+                        mostrarMensaje("Acceso denegado: Esta cuenta no pertenece a un Instructor.", true);
                         return;
                     }
                     if (tipoEnClick === "constancia") {
-                        const rolesPermitidos = ["docente", "administrativo"];
+                        const rolesPermitidos = ["docente", "administrativo", "administrador", "instructor"];
                         if (!rolesPermitidos.some(rol => userRole.includes(rol))) {
                             mostrarMensaje("Acceso denegado para este módulo de constancias.", true);
                             return;
                         }
                     }
 
-                    // GUARDADO 100% AISLADO (Ya no pisa los demás módulos)
+                    // GUARDADO DE SESIÓN AISLADA Y GLOBAL
                     localStorage.setItem(`token_${tipoEnClick}`, data.token);
-                    //localStorage.setItem("token_admin", data.token); // Respaldo global permanente para el admin
 
                     const usuarioParaGuardar = {
                         numero_empleado: data.numero_empleado,
@@ -146,8 +144,8 @@ export function loginPage() {
                         tipoAcceso: tipoEnClick
                     };
                     localStorage.setItem(`usuario_${tipoEnClick}`, JSON.stringify(usuarioParaGuardar));
-                    //localStorage.setItem("usuario_admin", JSON.stringify(usuarioParaGuardar)); // Respaldo global de usuario admin
 
+                    // Respaldo global indispensable para administradores
                     if (userRole.includes("administrador")) {
                         localStorage.setItem("token_admin", data.token);
                         localStorage.setItem("usuario_admin", JSON.stringify(usuarioParaGuardar));
@@ -155,31 +153,34 @@ export function loginPage() {
 
                     mostrarMensaje("¡Éxito! Redirigiendo...", false);
 
-                    // Redirección final al panel correspondiente
-                    if (tipoEnClick === "admin" || userRole.includes("administrador")) {
-                        navigate("/admin-cursos");
-                    } else if (tipoEnClick === "instructor") {
-                        navigate("/instructor");
-                    } else if (tipoEnClick === "constancia") {
-                        navigate("/constancias");
-                    } else {
-                        navigate(currentConfig.redirect);
-                    }
+                    // Redirección inteligente basada en el rol y el tipo de portal
+                    setTimeout(() => {
+                        if (tipoEnClick === "admin" || userRole.includes("administrador")) {
+                            navigate("/admin-cursos");
+                        } else if (tipoEnClick === "instructor") {
+                            navigate("/instructor");
+                        } else if (tipoEnClick === "constancia") {
+                            navigate("/constancias");
+                        } else {
+                            navigate(currentConfig.redirect);
+                        }
+                    }, 800);
 
                 } else {
                     mostrarMensaje(data.mensaje || "Credenciales incorrectas.", true);
                 }
             } catch (err) {
-                mostrarMensaje("Error de conexión con el servidor.", true);
+                console.error("🔴 Error en login:", err);
+                mostrarMensaje(err.message || "Error de conexión con el servidor.", true);
             } finally {
                 Loader.hide();
             }
         };
 
-        // Evento para ver/ocultar contraseña
+        // Evento para ver/ocultar contraseña o clave
         document.addEventListener("click", (e) => {
             if (e.target && e.target.id === "toggle-pass") {
-                const inputPass = document.getElementById("password");
+                const inputPass = document.getElementById("password") || document.getElementById("numero_empleado");
                 if (inputPass) {
                     const esPassword = inputPass.type === "password";
                     inputPass.type = esPassword ? "text" : "password";
@@ -189,7 +190,7 @@ export function loginPage() {
             }
         });
 
-        // Evento de envío del formulario de login
+        // Evento de envío del formulario
         document.addEventListener("submit", async (e) => {
             if (e.target && e.target.id === "loginForm") {
                 e.preventDefault();
@@ -200,6 +201,8 @@ export function loginPage() {
         window.loginInitialized = true;
     }
 
+    const esModuloDocente = tipoActual === "constancia";
+
     return `
         <div class="container">
             <form id="loginForm" class="card">
@@ -207,10 +210,22 @@ export function loginPage() {
                 <p style="font-size: 13px; color: #666; margin-bottom: 15px; background: #e9ecef; padding: 8px; border-radius: 4px; border-left: 4px solid #34495e;">
                     <strong>Nota:</strong> ${currentConfig.nota}
                 </p>
-                <div class="input-password">
-                    <input type="password" id="password" placeholder="Ingrese su clave" required>
-                    <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar contraseña"></i>
-                </div>
+
+                ${esModuloDocente ? `
+                    <div class="input-password" style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 4px; padding: 0 10px; background: white; margin-bottom: 15px;">
+                        <input type="password" id="numero_empleado" placeholder="Ingrese su clave" required>
+                        <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar"></i>
+                    </div>
+                ` : `
+                    <div style="margin-bottom: 15px;">
+                        <input type="email" id="login-correo" placeholder="correo@ejemplo.com" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <div class="input-password" style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 4px; padding: 0 10px; background: white; margin-bottom: 15px;">
+                        <input type="password" id="password" placeholder="Ingrese su clave" required>
+                        <i id="toggle-pass" class="fa-solid fa-eye" style="cursor: pointer; color: #7f8c8d; font-size: 1.2rem; padding: 0 5px;" title="Ver/Ocultar"></i>
+                    </div>
+                `}
+
                 <div id="mensaje-login" style="
                     display: none; 
                     padding: 10px; 
@@ -219,7 +234,7 @@ export function loginPage() {
                     font-size: 14px;
                     text-align: left;
                 "></div>
-                <button type="submit" id="btnLogin">Ingresar</button>
+                <button type="submit" id="btnLogin" style="width: 100%; padding: 10px; background: #2c3e50; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Ingresar</button>
             </form>
         </div>
     `;

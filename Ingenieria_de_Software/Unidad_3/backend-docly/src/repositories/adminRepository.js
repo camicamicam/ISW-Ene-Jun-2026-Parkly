@@ -12,7 +12,7 @@ async function guardarInstructor(datos) {
             END;
         `;
         const bindVars = {
-            p_num_empleado: datos.numero_empleado,
+            p_num_empleado: datos.numero_empleado || "",
             p_nombre: datos.nombre,
             p_ap_paterno: datos.apellido_paterno,
             p_ap_materno: datos.apellido_materno || "",
@@ -176,7 +176,7 @@ async function editarInstructor(idInstructor, datos) {
 
         const bindVars = {
             p_id_usuario: parseInt(idInstructor),
-            p_num_empleado: datos.numero_empleado,
+            p_num_empleado: datos.numero_empleado || "",
             p_nombre: datos.nombre,
             p_ap_paterno: datos.apellido_paterno,
             p_ap_materno: datos.apellido_materno || "",

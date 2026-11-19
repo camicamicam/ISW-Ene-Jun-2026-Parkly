@@ -1,4 +1,5 @@
-const PdfPrinter = require("pdfmake");
+const PrinterModule = require('pdfmake/js/Printer');
+const PdfPrinter = PrinterModule.default || PrinterModule;
 
 const fonts = {
     Helvetica: {
@@ -10,11 +11,12 @@ const fonts = {
 };
 
 const printer = new PdfPrinter(fonts);
+
 /**
  * @param {Object} datos
  * @param {Object} res
  */
-function generarConstancia(datos, res) {
+async function generarConstancia(datos, res) {
     // 1. Preparamos las 6 filas del reverso (Temas 1-6 a la izquierda, 7-12 a la derecha)
     const temario = datos.temario || [];
     const filasContenido = [
@@ -305,14 +307,11 @@ function generarConstancia(datos, res) {
     };
 
     // 3. Generamos el stream y lo enviamos directo en la respuesta HTTP
-    const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    const nombreArchivo = `Constancia_${datos.nombre_completo.replace(/\s+/g, "_")}.pdf`;
+    const pdfDoc = await printer.createPdfKitDocument(docDefinition);
+    const nombreArchivo = `Constancia_${datos.nombre_completo.replace(/\s+/g, '_')}.pdf`;
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${nombreArchivo}"`,
-    );
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
 
     pdfDoc.pipe(res);
     pdfDoc.end();

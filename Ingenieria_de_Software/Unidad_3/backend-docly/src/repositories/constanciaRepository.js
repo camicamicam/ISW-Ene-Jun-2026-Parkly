@@ -32,4 +32,32 @@ async function obtenerConstancia(idUsuario) {
     }
 }
 
-module.exports = { obtenerConstancia };
+async function buscarDatosInscripcion(idInscripcion) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+
+    } catch (error) {
+        throw new Error('Error al conectar a la base de datos: ' + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+async function buscarTemarioCurso(idCurso) {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        
+    } catch (error) {
+        throw new Error('Error al conectar a la base de datos: ' + error.message);
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (e) { console.error(e); }
+        }
+    }
+}
+
+module.exports = { obtenerConstancia, buscarDatosInscripcion, buscarTemarioCurso };

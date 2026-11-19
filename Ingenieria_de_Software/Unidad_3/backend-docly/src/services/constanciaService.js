@@ -5,4 +5,9 @@ async function consultarMisConstancias(idUsuario) {
     return constancias;
 }
 
+async function obtenerDatosPdf(idInscripcion) {
+    const datos = await constanciaRepository.buscarDatosInscripcion(idInscripcion);
+    return datos;
+}
+
 module.exports = { consultarMisConstancias };

@@ -21,7 +21,7 @@ async function guardarCurso(datosCurso, temas) {
 
         const bindVarCurso = {
             // Datos del instructor
-            p_num_empleado: datosCurso.instructor_numero_empleado,
+            p_num_empleado: datosCurso.instructor_numero_empleado || null,
             p_nombre_inst: datosCurso.instructor_nombre,
             p_ap_paterno: datosCurso.instructor_paterno,
             p_ap_materno: datosCurso.instructor_materno,

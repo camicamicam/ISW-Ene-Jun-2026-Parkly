@@ -287,7 +287,7 @@ export function instructorPage() {
         const payload = {
             curso: {
                 tipo_curso: tipoDeCursoActual,
-                instructor_numero_empleado: Number(data.curso.instructor_numero_empleado),
+                instructor_numero_empleado: null,
                 instructor_nombre: normalizarTexto(data.curso.instructor_nombre),
                 instructor_paterno: normalizarTexto(data.curso.instructor_paterno),
                 instructor_materno: normalizarTexto(data.curso.instructor_materno),
@@ -378,10 +378,12 @@ export function instructorPage() {
                 <form id="instructorForm">
                     
                     <h3 style="margin-bottom: 15px; color: #555;">Datos del Instructor</h3>
+                    <!--
                     <div class="form-group">
                         <label>Número de Empleado</label>
                         <input type="number" id="numEmpI" value="${numEmpleado}" placeholder="Ej. 21140780" required disabled>
                     </div>
+                    -->
 
                     <div class="form-group">
                         <label>Nombre del Instructor</label>

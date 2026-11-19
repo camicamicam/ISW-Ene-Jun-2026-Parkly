@@ -121,10 +121,12 @@ function renderizarInterfazGlobal() {
                 <form id="form-editar-instructor">
                     <input type="hidden" id="edit-id-instructor">
                     
+                    <!--
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">N° Empleado</label>
                         <input type="text" id="edit-numero-empleado" required style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
                     </div>
+                    -->
 
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333;">Nombre</label>
@@ -282,14 +284,17 @@ function renderizarSeccionInstructores() {
 
             <form id="form-registrar-instructor" style="display: flex; flex-direction: column; gap: 18px;">
                 <div style="display: flex; gap: 15px;">
+                    <!--
                     <div style="flex: 1;">
                         <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Número de Empleado</label>
                         <input type="number" id="inst-numero" placeholder="Ej: 5555" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
                     </div>
+                    -->
                     <div style="flex: 2;">
                         <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #34495e; font-size: 14px;">Nombre(s)</label>
                         <input type="text" id="inst-nombre" placeholder="Ej: Roberto" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
                     </div>
+                    
                 </div>
 
                 <div style="display: flex; gap: 15px;">
@@ -348,7 +353,7 @@ function renderizarSeccionConsulta(){
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
                     <thead>
                         <tr style="background-color: #2c3e50; color: white;">
-                            <th style="padding: 12px 15px;">N° Empleado</th>
+                            <!--<th style="padding: 12px 15px;">N° Empleado</th>-->
                             <th style="padding: 12px 15px;">Nombre Completo</th>
                             <th style="padding: 12px 15px;">Correo Electrónico</th>
                             <!--<th style="padding: 12px 15px;">Clave</th>-->
@@ -368,7 +373,7 @@ function renderizarSeccionConsulta(){
                             
                             return `
                                 <tr class="fila-instructor" data-nombre="${nombreCompleto.toLowerCase()}" data-estado="${activo ? 'activo' : 'inactivo'}" style="border-bottom: 1px solid #eee;">
-                                    <td style="padding: 12px 15px; font-weight: 600; color: #34495e;">${inst.NUMERO_EMPLEADO || inst.numero_empleado}</td>
+                                    <!--<td style="padding: 12px 15px; font-weight: 600; color: #34495e;">${inst.NUMERO_EMPLEADO || inst.numero_empleado}</td>-->
                                     <td style="padding: 12px 15px;">${nombreCompleto}</td>
                                     <td style="padding: 12px 15px; color: #555;">${inst.CORREO || inst.correo}</td>
                                     <!--<td class="claves" data-pass="${inst.password_acceso || inst.PASSWORD_ACCESO}">${inst.password_acceso || inst.PASSWORD_ACCESO}</td>-->
@@ -560,7 +565,7 @@ function setupAdminEvents() {
             if (instructor) {
                 //Rellenamos el formulario con los datos actuales
                 document.getElementById("edit-id-instructor").value = idInstructor;
-                document.getElementById("edit-numero-empleado").value = instructor.NUMERO_EMPLEADO;
+                //document.getElementById("edit-numero-empleado").value = instructor.NUMERO_EMPLEADO;
                 document.getElementById("edit-nombre").value = instructor.NOMBRE_INSTRUCTOR;
                 document.getElementById("edit-paterno").value = instructor.APELLIDO_P_INSTRUCTOR;
                 document.getElementById("edit-materno").value = instructor.APELLIDO_M_INSTRUCTOR;
@@ -633,7 +638,7 @@ function setupAdminEvents() {
         // SUBMIT 2: REGISTRO DE NUEVO INSTRUCTOR
         if (e.target.id === "form-registrar-instructor") {
             const bodyInstructor = {
-                numero_empleado: Number(document.getElementById("inst-numero").value),
+                numero_empleado: null,
                 nombre: document.getElementById("inst-nombre").value.trim(),
                 apellido_paterno: document.getElementById("inst-paterno").value.trim(),
                 apellido_materno: document.getElementById("inst-materno").value.trim(),
@@ -648,7 +653,7 @@ function setupAdminEvents() {
                 console.log("Respuesta de registro:", respuestaBackend);
                 const passwordGenerada = respuestaBackend.password_generada;
                 navigator.clipboard.writeText(passwordGenerada).catch(err => console.error("Error al copiar", err));
-                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema! CONTRASEÑA: ${passwordGenerada}\n\n(¡Copiada automáticamente al portapapeles!)`);
+                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema! CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`);
                 e.target.reset();
             } catch (err) {
                 alert("Error al registrar instructor: " + err.message);
@@ -666,7 +671,8 @@ function setupAdminEvents() {
 
             //Objeto con la estructura del backend
             const datosActualizados = {
-                numero_empleado: document.getElementById("edit-numero-empleado").value.trim(),
+                numero_empleado: null,
+                //numero_empleado: document.getElementById("edit-numero-empleado").value.trim(),
                 nombre: document.getElementById("edit-nombre").value.trim(),
                 apellido_paterno: document.getElementById("edit-paterno").value.trim(),
                 apellido_materno: document.getElementById("edit-materno").value.trim(),
@@ -688,9 +694,9 @@ function setupAdminEvents() {
                 if (resetearPasswordFlag && respuestaEdicion && (respuestaEdicion.password_generada)) {
                     const nuevaClave = respuestaEdicion.password_generada;
                     navigator.clipboard.writeText(nuevaClave).catch(err => console.error("Error al copiar", err));
-                    alert(`¡Instructor actualizado y contraseña restablecida con éxito!\n\nNUEVA CONTRASEÑA: ${nuevaClave}\n\n(¡Copiada automáticamente al portapapeles!)`);
+                    alert(`¡Instructor actualizado y contraseña restablecida con éxito!\n\nNUEVA CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`);
                 } else {
-                    alert(`¡Instructor ${datosActualizados.numero_empleado} actualizado con éxito!`);
+                    alert(`¡Instructor ${datosActualizados.nombre} actualizado con éxito!`);
                 }
 
                 resetearPasswordFlag = false;

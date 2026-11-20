@@ -182,10 +182,10 @@ END;
 /
 -- Insertar especificamente un instructor
 CREATE OR REPLACE PROCEDURE registrar_instructor (
-    p_num_empleado   IN usuario.numero_empleado%TYPE,
+    p_num_empleado   IN usuario.numero_empleado%TYPE DEFAULT NULL,
     p_nombre         IN usuario.nombre%TYPE,
     p_ap_paterno     IN usuario.apellido_paterno%TYPE,
-    p_ap_materno     IN usuario.apellido_materno%TYPE,
+    p_ap_materno     IN usuario.apellido_materno%TYPE DEFAULT NULL,
     p_correo         IN usuario.correo%TYPE,
     p_password       IN instructor.password_acceso%TYPE
 ) IS
@@ -477,19 +477,45 @@ END;
 /
 -- UPDATE
 CREATE OR REPLACE PROCEDURE actualizar_instructor (
-    p_id_usuario      IN instructor.id_usuario%TYPE,
-    p_password_acceso IN instructor.password_acceso%TYPE
+    p_id_usuario     IN usuario.id_usuario%TYPE,
+    p_num_empleado   IN usuario.numero_empleado%TYPE DEFAULT NULL,
+    p_nombre         IN usuario.nombre%TYPE,
+    p_ap_paterno     IN usuario.apellido_paterno%TYPE,
+    p_ap_materno     IN usuario.apellido_materno%TYPE,
+    p_correo         IN usuario.correo%TYPE,
+    p_nivel_acceso   IN usuario.nivel_acceso%TYPE,
+    p_password_acceso IN instructor.password_acceso%TYPE DEFAULT NULL
 ) IS
 BEGIN
-    UPDATE instructor 
-    SET password_acceso = p_password_acceso
+    UPDATE usuario 
+    SET numero_empleado = p_num_empleado,
+        nombre = p_nombre,
+        apellido_paterno = p_ap_paterno,
+        apellido_materno = p_ap_materno,
+        correo = p_correo,
+        nivel_acceso = p_nivel_acceso
     WHERE id_usuario = p_id_usuario;
 
-    IF SQL%NOTFOUND THEN
-        RAISE_APPLICATION_ERROR(-20093, 'Error: No se encontró el registro del instructor con ID ' || p_id_usuario);
+    IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20093, 'Error: No se encontró el registro del usuario con ID ' || p_id_usuario);
+    END IF;
+    
+    IF p_password_acceso IS NOT NULL THEN
+        UPDATE instructor 
+        SET password_acceso = p_password_acceso
+        WHERE id_usuario = p_id_usuario;
+
+        -- Validar que el perfil de instructor exista
+        IF SQL%ROWCOUNT = 0 THEN
+            RAISE_APPLICATION_ERROR(-20094, 'Error: El usuario existe, pero no tiene perfil de instructor asignado (ID: ' || p_id_usuario || ')');
+        END IF;
     END IF;
     
     COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
 END;
 /
 -- DELETE

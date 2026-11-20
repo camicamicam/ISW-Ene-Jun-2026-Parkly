@@ -7,4 +7,6 @@ const { checkRole } = require('../middlewares/roleAuth');
 
 router.get('/mis-constancias', checkRole(['DOCENTE', 'ADMINISTRATIVO', 'ADMINISTRADOR']), constanciaController.obtenerConstanciasDisponibles);
 
+router.get('/descargar-constancia/:idInscripcion', checkRole(['DOCENTE', 'ADMINISTRATIVO', 'ADMINISTRADOR']), constanciaController.descargarConstancia);
+
 module.exports = router;

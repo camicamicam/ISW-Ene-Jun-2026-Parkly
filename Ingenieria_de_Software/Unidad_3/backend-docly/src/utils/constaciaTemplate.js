@@ -1,5 +1,10 @@
 const PrinterModule = require('pdfmake/js/Printer');
+const VirtualFsModule = require('pdfmake/js/virtual-fs');
+const UrlResolverModule = require('pdfmake/js/URLResolver');
+
 const PdfPrinter = PrinterModule.default || PrinterModule;
+const virtualfs = VirtualFsModule.default || VirtualFsModule;
+const URLResolver = UrlResolverModule.default || UrlResolverModule;
 
 const fonts = {
     Helvetica: {
@@ -10,8 +15,7 @@ const fonts = {
     },
 };
 
-const printer = new PdfPrinter(fonts);
-
+const printer = new PdfPrinter(fonts, virtualfs, new URLResolver(virtualfs));
 /**
  * @param {Object} datos
  * @param {Object} res
@@ -74,6 +78,18 @@ async function generarConstancia(datos, res) {
             font: "Helvetica",
             fontSize: 10,
             color: "#1a1a1a",
+        },
+        footer: function (currentPage, pageCount) {
+            if (currentPage === 2) {
+                return {
+                    columns: [
+                        { text: "ITQ-AC-PO-006-07", bold: true, fontSize: 9 },
+                        { text: "Rev.1", bold: true, fontSize: 9, alignment: "right" },
+                    ],
+                    margin: [55, 10, 55, 0], // Mismos márgenes laterales de 55
+                };
+            }
+            return null;
         },
         content: [
             // ==========================================
@@ -155,7 +171,7 @@ async function generarConstancia(datos, res) {
                 color: "#555555",
                 alignment: "center",
                 lineHeight: 1.3,
-                margin: [0, 0, 0, 65],
+                margin: [0, 0, 0, 40],
             },
             {
                 text: `${datos.nombre_director || "RAMÓN SOTO ARRIOLA"}\nDIRECTOR`,
@@ -294,21 +310,26 @@ async function generarConstancia(datos, res) {
                     ],
                 },
                 margin: [0, 0, 0, 45],
-            },
+            }
 
-            // Pie de página con código oficial
+            /*// Pie de página con código oficial
             {
                 columns: [
                     { text: "ITQ-AC-PO-006-07", bold: true, fontSize: 9 },
                     { text: "Rev.1", bold: true, fontSize: 9, alignment: "right" },
                 ],
-            },
+            },*/
         ],
     };
 
     // 3. Generamos el stream y lo enviamos directo en la respuesta HTTP
     const pdfDoc = await printer.createPdfKitDocument(docDefinition);
-    const nombreArchivo = `Constancia_${datos.nombre_completo.replace(/\s+/g, '_')}.pdf`;
+    const nombreBase = datos.nombre_completo || datos.NOMBRE_COMPLETO_ALUMNO || "Alumnno";
+    const nombreLimpio = nombreBase
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "_");
+    const nombreArchivo = `Constancia_${nombreLimpio}.pdf`;
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}"`);

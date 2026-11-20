@@ -2,6 +2,7 @@ import { cursosService } from "../services/cursosService.js";
 import { instructoresService } from "../services/instructoresService.js";
 import { Loader } from "../components/loader.js";
 import { logoutButton } from "../components/logout.js";
+import { Popup } from "../components/popup.js";
 
 // VARIABLES DE ESTADO LOCAL
 let cursosLocales = []; 
@@ -487,10 +488,12 @@ function setupAdminEvents() {
             try {
                 Loader.show();
                 await instructoresService.actualizarEstadoInstructor(idInstructor, nuevoEstado);
-                alert("¡Estado del instructor actualizado con éxito!");
+                await Popup.notify("¡Estado del instructor actualizado con éxito!", "success");
+                //alert("¡Estado del instructor actualizado con éxito!");
                 mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
             } catch (err) {
-                alert("Error al actualizar estado: " + err.message);
+                //alert("Error al actualizar estado: " + err.message);
+                await Popup.notify("Error al actualizar estado: " + err.message, "error");
             } finally {
                 Loader.hide();
             }
@@ -508,16 +511,28 @@ function setupAdminEvents() {
 
         if (e.target.classList.contains("btn-eliminar-trigger")) {
             const id = Number(e.target.getAttribute("data-id"));
-            if (confirm("¿Estás seguro de eliminar este curso?")) {
+
+            const confirmado = await Popup.confirm(
+                "¿Estás seguro de eliminar este curso? Esta acción no se puede deshacer.",
+                {
+                    titulo: "Eliminar curso",
+                    textoConfirmar: "Sí, eliminar",
+                    textoCancelar: "Cancelar",
+                    peligro: true
+                }
+            );
+            if (confirmado) {
                 try {
                     Loader.show();
                     await cursosService.eliminarCurso(id);
-                    alert("Curso eliminado del catálogo.");
+                    //alert("Curso eliminado del catálogo.");
+                    await Popup.notify("Curso eliminado del catálogo.", "success");
                     cursosLocales = cursosLocales.filter(c => c.ID_CURSO !== id);
                     if (cursoSeleccionado?.ID_CURSO === id) cursoSeleccionado = null;
                     mainContent.innerHTML = renderizarInterfazGlobal();
                 } catch (err) {
-                    alert("Error al eliminar: " + err.message);
+                    //alert("Error al eliminar: " + err.message);
+                    await Popup.notify("Error al eliminar: " + err.message, "error");
                 } finally { Loader.hide(); }
             }
         }
@@ -540,7 +555,10 @@ function setupAdminEvents() {
             if (temasEditados.length > 1) {
                 temasEditados.splice(index, 1);
                 actualizarSeccionTemasUI();
-            } else { alert("El curso debe tener al menos un tema."); }
+            } else { 
+                //alert("El curso debe tener al menos un tema."); 
+                await Popup.notify("El curso debe tener al menos un tema.", "warning");
+            }
         }
 
         // SOLICITAR NUEVA CONTRASEÑA EN EDICIÓN
@@ -548,7 +566,11 @@ function setupAdminEvents() {
             resetearPasswordFlag = true;
             e.target.innerText = "¡Contraseña lista para restablecer!";
             e.target.style.background = "#27ae60";
-            alert("Se ha marcado la opción para generar una nueva contraseña. Haz clic en 'Guardar Cambios' para aplicar el cambio y obtenerla.");
+            await Popup.notify(
+                "Se ha marcado la opción para generar una nueva contraseña. Haz clic en 'Guardar Cambios' para aplicar el cambio y obtenerla.",
+                "info"
+            );
+            //alert("Se ha marcado la opción para generar una nueva contraseña. Haz clic en 'Guardar Cambios' para aplicar el cambio y obtenerla.");
         }
 
         const btnEditar = e.target.closest(".btn-editar");
@@ -628,10 +650,14 @@ function setupAdminEvents() {
             try {
                 Loader.show();
                 await cursosService.actualizarCurso(cursoSeleccionado.ID_CURSO, jsonUpdate);
-                alert("¡Curso actualizado con éxito!");
+                await Popup.notify("¡Curso actualizado con éxito!", "success")
+                //alert("¡Curso actualizado con éxito!");
                 cursoSeleccionado = null;
                 mainContent.innerHTML = await adminCursosPage(tipoCursoActual);
-            } catch (err) { alert("Error al actualizar: " + err.message); } 
+            } catch (err) { 
+                await Popup.notify("Error al actualizar: " + err.message, "error")
+                //alert("Error al actualizar: " + err.message);
+            } 
             finally { Loader.hide(); }
         }
 
@@ -653,10 +679,12 @@ function setupAdminEvents() {
                 console.log("Respuesta de registro:", respuestaBackend);
                 const passwordGenerada = respuestaBackend.password_generada;
                 navigator.clipboard.writeText(passwordGenerada).catch(err => console.error("Error al copiar", err));
-                alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema! CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`);
+                await Popup.notify(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema! CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`, "success")
+                //alert(`¡Profesor(a) ${bodyInstructor.nombre} registrado con éxito en el sistema! CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`);
                 e.target.reset();
             } catch (err) {
-                alert("Error al registrar instructor: " + err.message);
+                await Popup.notify("Error al registrar instructor: " + err.message, "error");
+                //alert("Error al registrar instructor: " + err.message);
             } finally {
                 Loader.hide();
             }
@@ -694,9 +722,11 @@ function setupAdminEvents() {
                 if (resetearPasswordFlag && respuestaEdicion && (respuestaEdicion.password_generada)) {
                     const nuevaClave = respuestaEdicion.password_generada;
                     navigator.clipboard.writeText(nuevaClave).catch(err => console.error("Error al copiar", err));
-                    alert(`¡Instructor actualizado y contraseña restablecida con éxito!\n\nNUEVA CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`);
+                    await Popup.notify(`¡Instructor actualizado y contraseña restablecida con éxito!\n\nNUEVA CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`, "success");
+                    //alert(`¡Instructor actualizado y contraseña restablecida con éxito!\n\nNUEVA CONTRASEÑA: \n¡Copiada automáticamente al portapapeles!`);
                 } else {
-                    alert(`¡Instructor ${datosActualizados.nombre} actualizado con éxito!`);
+                    await Popup.notify(`¡Instructor ${datosActualizados.nombre} actualizado con éxito!`, "success");
+                    //alert(`¡Instructor ${datosActualizados.nombre} actualizado con éxito!`);
                 }
 
                 resetearPasswordFlag = false;
@@ -712,7 +742,8 @@ function setupAdminEvents() {
                 }
             }catch (err) {
                 console.error("Error al actualizar instructor:", err);
-                alert("Hubo un error al guardar los cambios: " + err.message);
+                await Popup.notify("Hubo un error al guardar los cambios: " + err.message, "error");
+                //alert("Hubo un error al guardar los cambios: " + err.message);
             } finally {
                 Loader.hide();
             }

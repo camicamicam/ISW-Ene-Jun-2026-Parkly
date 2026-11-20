@@ -1,5 +1,5 @@
 // services/constanciasService.js
-const { jsPDF } = window.jspdf;
+//const { jsPDF } = window.jspdf;
 
 const BASE_URL = "https://api-cursos-itq.onrender.com/api/v1";
 
@@ -32,7 +32,49 @@ export const constanciasService = {
         }
     },
 
-    generarPDF(nombreCurso, nombreAlumno) {
+    async descargarConstancia(idInscripcion, nombreArchivo = "constancia.pdf") {
+        if (!idInscripcion) {
+            throw new Error("No se encontró el ID de inscripción para esta constancia.");
+        }
+
+        const token = localStorage.getItem("token_constancia");
+        const response = await fetch(`${BASE_URL}/constancias/descargar-constancia/${idInscripcion}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(
+                errorData.mensaje ||
+                errorData.message ||
+                errorData.error ||
+                `Error ${response.status}: No se encontró el recurso en el servidor.`
+            );
+            //throw new Error(errorData.mensaje || "No se pudo descargar la constancia desde el servidor.");
+        }
+
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Abre el PDF en una pestaña nueva; si el navegador bloquea pop-ups, fuerza la descarga
+        const ventana = window.open(blobUrl, "_blank");
+        if (!ventana) {
+            const enlace = document.createElement("a");
+            enlace.href = blobUrl;
+            enlace.download = nombreArchivo;
+            document.body.appendChild(enlace);
+            enlace.click();
+            enlace.remove();
+        }
+
+        // Liberar memoria después de un momento
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+    }
+
+    /*generarPDF(nombreCurso, nombreAlumno) {
         const doc = new jsPDF({ 
             orientation: "landscape", 
             unit: "cm", 
@@ -84,9 +126,9 @@ export const constanciasService = {
         
         // Abrimos la pestaña nueva con el visor de PDF nativo del navegador
         window.open(blobUrl, "_blank");
-    }
+    }*/
 };
 
-window.descargarConstanciaReal = (curso, alumno) => {
+/*window.descargarConstanciaReal = (curso, alumno) => {
     constanciasService.generarPDF(curso, alumno);
-};
+};*/

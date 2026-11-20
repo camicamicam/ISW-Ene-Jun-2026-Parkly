@@ -1,8 +1,23 @@
 // pages/constancias.js
 import { constanciasService } from '../services/constanciasService.js';
 import { logoutButton } from "../components/logout.js";
+import { Loader } from "../components/loader.js";
+import { Popup } from "../components/popup.js";
 
 export const constanciasPage = async () => {
+
+    window.descargarConstanciaBackend = async (idInscripcion, nombreCurso = "constancia") => {
+        try {
+            Loader.show();
+            const nombreLimpio = `constancia_${String(nombreCurso).replace(/[^a-zA-Z0-9_-]/g, "_")}.pdf`;
+            await constanciasService.descargarConstancia(idInscripcion, nombreLimpio);
+        } catch (err) {
+            console.error("Error al descargar constancia:", err);
+            await Popup.notify(err.message || "Error al generar la constancia.", "error");
+        } finally {
+            Loader.hide();
+        }
+    };
     
     setTimeout(async () => {
         const contenedor = document.getElementById('contenedor-dinamico-constancias');
@@ -37,6 +52,7 @@ export const constanciasPage = async () => {
             `;
 
             lista.forEach(item => {
+                const idInscripcion = item.ID_INSCRIPCION || item.id_inscripcion;
                 // Mapeamos las propiedades idénticas a la respuesta de la base de datos de Oracle
                 const nombreCurso = item.NOMBRE_CURSO || "Curso de Capacitación";
                 const nombreAlumno = item.NOMBRE_COMPLETO_ALUMNO || item.NOMBRE_COMPLETO || "Participante";
@@ -56,7 +72,7 @@ export const constanciasPage = async () => {
                             <p style="margin: 0 0 20px 0; font-size: 14px; color: #4a5568;"><strong>Beneficiario:</strong> ${nombreAlumno}</p>
                         </div>
                         <button 
-                            onclick="window.descargarConstanciaReal('${cursoLimpio}', '${alumnoLimpio}')"
+                            onclick="window.descargarConstanciaBackend('${idInscripcion}', '${cursoLimpio}')"
                             style="background: #143464; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; transition: background 0.2s;"
                             onmouseover="this.style.background='#1d4ed8'"
                             onmouseout="this.style.background='#143464'"

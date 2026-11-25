@@ -74,7 +74,8 @@ window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
                 const horasNuevas = inputHoras.value;
 
                 if (!horasNuevas || horasNuevas < 0) {
-                    return alert("Ingresa un número válido de horas.");
+                    await Popup.notify("Ingresa un número válido de horas.", "warning");
+                    //return alert("Ingresa un número válido de horas.");
                 }
 
                 try {
@@ -82,9 +83,11 @@ window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
                     e.target.disabled = true;
 
                     await cursosService.registrarHorasAlumno(idInscripcion, horasNuevas);
-                    alert("¡Horas actualizadas correctamente!");
+                    await Popup.notify("¡Horas actualizadas correctamente!", "success");
+                    //alert("¡Horas actualizadas correctamente!");
                 } catch (err) {
-                    alert("Error al guardar: " + err.message);
+                    await Popup.notify("Error al guardar: " + err.message, "error");
+                    //alert("Error al guardar: " + err.message);
                 } finally {
                     e.target.innerText = "Actualizar";
                     e.target.disabled = false;
@@ -93,7 +96,8 @@ window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
         });
 
     } catch (error) {
-        alert("Error al cargar alumnos: " + error.message);
+        await Popup.notify("Error al cargar alumnos: " + error.message, "error");
+        //alert("Error al cargar alumnos: " + error.message);
     }
 };
 
@@ -153,26 +157,28 @@ export function instructorPage() {
         }
 
         if (containerTemas) {
-            containerTemas.addEventListener("click", (e) => {
+            containerTemas.addEventListener("click", async (e) => {
                 if (e.target.classList.contains("btn-remove-tema")) {
                     const rows = document.querySelectorAll(".tema-row");
                     if (rows.length > 1) {
                         e.target.parentElement.remove();
                     } else {
-                        alert("El curso debe tener al menos un tema.");
+                        await Popup.notify("El curso debe tener al menos un tema.", "warning");
+                        //alert("El curso debe tener al menos un tema.");
                     }
                 }
             });
         }
 
         if (form) {
-            form.addEventListener("submit", (e) => {
+            form.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 
                 // Obtener los días seleccionados por checkboxes
                 const diasCheckboxes = document.querySelectorAll('.chk-dia:checked');
                 if (diasCheckboxes.length === 0) {
-                    alert("Por favor selecciona al menos un día de la semana.");
+                    await Popup.notify("Por favor selecciona al menos un día de la semana.", "warning");
+                    //alert("Por favor selecciona al menos un día de la semana.");
                     return;
                 }
                 const diasSeleccionados = Array.from(diasCheckboxes).map(cb => cb.value).join(", ");
@@ -181,7 +187,8 @@ export function instructorPage() {
                 const horaInicio = document.getElementById("horaInicio").value;
                 const horaFin = document.getElementById("horaFin").value;
                 if (!horaInicio || !horaFin) {
-                    alert("Por favor ingresa el horario de inicio y término.");
+                    await Popup.notify("Por favor ingresa el horario de inicio y término.", "warning");
+                    //alert("Por favor ingresa el horario de inicio y término.");
                     return;
                 }
                 const horarioFormateado = `${horaInicio} - ${horaFin}`;
@@ -309,11 +316,13 @@ export function instructorPage() {
         try {
             const resultado = await cursosService.registrarCurso(payload);
             if (resultado) {
-                alert('¡Curso registrado con éxito!');
+                await Popup.notify('¡Curso registrado con éxito!', "success");
+                //alert('¡Curso registrado con éxito!');
                 location.reload();
             }
         } catch (error) {
-            alert(`Error: ${error.message}`);
+            await Popup.notify("Error: " + error.message, "error");
+            //alert(`Error: ${error.message}`);
         }
     };
 

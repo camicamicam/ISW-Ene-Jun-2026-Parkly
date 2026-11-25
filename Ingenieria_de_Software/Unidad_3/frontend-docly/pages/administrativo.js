@@ -1,6 +1,7 @@
 import { cursosService } from "../services/cursosService.js";
 import { inscripcionesService } from "../services/inscripcionesService.js";
 import { Loader } from "../components/loader.js";
+import { Popup } from "../components/popup.js";
 
 export function administrativoPage() {
     // Aquí replicamos la lógica de docente.js
@@ -85,10 +86,11 @@ export function administrativoPage() {
         cargarTarjetasCursos();
 
         if (form) {
-            form.addEventListener("submit", (e) => {
+            form.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 if (!cursoSeleccionadoId) {
-                    alert("Por favor, selecciona un curso.");
+                    await Popup.notify("Por favor, selecciona un curso.", "warning");
+                    //alert("Por favor, selecciona un curso.");
                     return;
                 }
 
@@ -117,10 +119,12 @@ export function administrativoPage() {
             const { nombreCursoVisual, ...payload } = window.tempInscripcionData;
             // Aquí enviamos a la ruta administrativo
             const data = await inscripcionesService.inscribir(payload, "administrativo");
-            alert(data.mensaje || "¡Inscripción Exitosa!");
+            await Popup.notify(data.mensaje || "¡Inscripción Exitosa!", "success");
+            //alert(data.mensaje || "¡Inscripción Exitosa!");
             location.reload();
         } catch (error) {
-            alert("Error: " + error.message);
+            await Popup.notify("Error: " + error.message, "error");
+            //alert("Error: " + error.message);
         } finally {
             Loader.hide();
         }

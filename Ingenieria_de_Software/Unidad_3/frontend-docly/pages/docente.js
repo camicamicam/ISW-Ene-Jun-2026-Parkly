@@ -89,10 +89,11 @@ export function docentePage() {
 
         // 2. MANEJO DEL FORMULARIO
         if (form) {
-            form.addEventListener("submit", (e) => {
+            form.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 if (!cursoSeleccionadoId) {
-                    alert("Por favor, selecciona un curso de la lista superior.");
+                    await Popup.notify("Por favor, selecciona un curso.", "warning");
+                    //alert("Por favor, selecciona un curso de la lista superior.");
                     return;
                 }
 
@@ -123,10 +124,12 @@ export function docentePage() {
         try {
             const { nombreCursoVisual, ...payload } = window.tempInscripcionData;
             const data = await inscripcionesService.inscribir(payload);
-            alert(data.mensaje || "¡Inscripción exitosa!");
+            await Popup.notify(data.mensaje || "¡Inscripción Exitosa!", "success");
+            //alert(data.mensaje || "¡Inscripción exitosa!");
             location.reload();
         } catch (error) {
-            alert("Error: " + error.message);
+            await Popup.notify("Error: " + error.message, "error");
+            //alert("Error: " + error.message);
         } finally {
             Loader.hide();
         }

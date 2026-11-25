@@ -410,10 +410,13 @@ SELECT
     i.id_inscripcion,
     i.id_usuario AS id_alumno,
     u.nombre || ' ' || u.apellido_paterno || NVL2(u.apellido_materno, ' ' || u.apellido_materno, '') AS nombre_completo_alumno,
+    c.id_curso AS id_curso,
     c.nombre AS nombre_curso,
     c.total_horas,
     c.fecha_inicio,
-    c.fecha_termino
+    c.fecha_termino,
+    c.anio,
+    c.periodo
 FROM 
     inscripcion i
     INNER JOIN usuario u ON i.id_usuario = u.id_usuario

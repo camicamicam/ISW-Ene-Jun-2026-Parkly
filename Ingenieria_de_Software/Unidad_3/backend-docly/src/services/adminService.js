@@ -12,7 +12,7 @@ function generarPasswordAleatoria(longitud = 12) {
 }
 
 async function crearInstructor(datos) {
-    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo) {
+    if (/*!datos.numero_empleado ||*/ !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo) {
         throw new Error("FALTAN_DATOS");
     }
     const password = generarPasswordAleatoria(12);
@@ -52,7 +52,7 @@ async function actualizarEstadoInstructor(idInstructor, estado) {
 }
 
 async function editarInstructor(idInstructor, datos) {
-    if (!datos.numero_empleado || !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo || datos.nivel_acceso === undefined || datos.nivel_acceso === null) {
+    if (/*!datos.numero_empleado ||*/ !datos.nombre || !datos.apellido_paterno || !datos.apellido_materno || !datos.correo || datos.nivel_acceso === undefined || datos.nivel_acceso === null) {
         throw new Error("FALTAN_DATOS");
     }
     let nuevaPasswordPlana = null;

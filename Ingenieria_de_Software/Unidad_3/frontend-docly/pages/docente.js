@@ -125,7 +125,7 @@ export function docentePage() {
         try {
             const { nombreCursoVisual, ...payload } = window.tempInscripcionData;
             const data = await inscripcionesService.inscribir(payload);
-            await Popup.notify(data.mensaje || "¡Inscripción Exitosa!", "success");
+            await Popup.notify("¡Inscripción Exitosa! \n Se ha enviado un correo a la dirección registrada con los detalles del registro.", "success");
             //alert(data.mensaje || "¡Inscripción exitosa!");
             location.reload();
         } catch (error) {

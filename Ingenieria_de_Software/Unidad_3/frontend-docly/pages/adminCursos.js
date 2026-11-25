@@ -459,9 +459,11 @@ function setupAdminEvents() {
             const inputPass = document.getElementById("inst-password");
             if (inputPass && inputPass.value) {
                 navigator.clipboard.writeText(inputPass.value);
-                alert("¡Contraseña copiada al portapapeles!");
+                await Popup.notify("¡Contraseña copiada al portapapeles!", "success");
+                //alert("¡Contraseña copiada al portapapeles!");
             } else {
-                alert("Primero genera una contraseña para poder copiarla.");
+                //alert("Primero genera una contraseña para poder copiarla.");
+                await Popup.notify("Primero genera una contraseña para poder copiarla.", "warning");
             }
         }
 
@@ -473,9 +475,11 @@ function setupAdminEvents() {
 
             if (password) {
                 navigator.clipboard.writeText(password);
-                alert("¡Contraseña copiada al portapapeles!");
+                await Popup.notify("¡Contraseña copiada al portapapeles!", "success");
+                //alert("¡Contraseña copiada al portapapeles!");
             } else {
-                alert("No hay una contraseña disponible para copiar.");
+                await Popup.notify("No hay una contraseña disponible para copiar.", "info");
+                //alert("No hay una contraseña disponible para copiar.");
             }
         }
 

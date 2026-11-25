@@ -1,5 +1,6 @@
 import { inscripcionesService } from "../services/inscripcionesService.js";
 import { Loader } from "../components/loader.js";
+import { Popup } from "../components/popup.js";
 
 export function docentePage() {
     const tipoDeCursoActual = localStorage.getItem("seccion_itq") || "Docente";

@@ -1,5 +1,3 @@
-// components/popup.js
-
 const ESTILOS_TIPO = {
     success: {
         accent: "#27ae60",

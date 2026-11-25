@@ -1,6 +1,7 @@
 import { navigate } from "../routes/router.js";
 import { cursosService } from "../services/cursosService.js";
 import { logoutButton } from "../components/logout.js";
+import { Popup } from "../components/popup.js";
 
 // --- GESTIÓN DE ALUMNOS EN TABLA ---
 window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
@@ -75,6 +76,7 @@ window.abrirGestionAlumnos = async (idCurso, nombreCurso) => {
 
                 if (!horasNuevas || horasNuevas < 0) {
                     await Popup.notify("Ingresa un número válido de horas.", "warning");
+                    return;
                     //return alert("Ingresa un número válido de horas.");
                 }
 
